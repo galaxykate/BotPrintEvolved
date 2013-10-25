@@ -1,0 +1,128 @@
+div {
+	font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
+}
+
+body {
+	scroll: hidden;
+	background-color: black;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+ul {
+	list-style-type: none;
+}
+
+li {
+	font-size: 50%;
+	padding: 5px;
+	background-color: rgba(220, 225, 240, 1);
+	box-shadow: 2px 2px 5px #000000;
+	border-radius: 5px;
+	border: 2px solid rgba(255, 255, 255, 1);
+}
+
+#app {
+	width: 1800px;
+	height: 1600px;
+	z-index: 0;
+	left: 0px;
+	top: 0px;
+	position: relative;
+}
+
+.main_panel {
+	float: left;
+	margin: 8px;
+	background-color: rgba(220, 225, 240, 1);
+	box-shadow: 2px 2px 5px #000000;
+	border-radius: 15px;
+	border: 2px solid rgba(255, 255, 255, 1);
+	overflow: hidden;
+}
+
+#alternates_panel {
+	width: 400px;
+	height: 400px;
+}
+
+#build_panel {
+	width: 1400px;
+	height: 1400px;
+	float: left;
+}
+
+#test_drive_panel {
+	width: 400px;
+	height: 400px;
+}
+#test_drive_canvas {
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+.gene_sequence:hover {
+	background-color: red;
+	border: 3px solid rgba(255, 0, 255, 1);
+	margin: 0px;
+}
+
+.gene_sequence {
+	top: 0px;
+	float: left;
+	background-color: white;
+	border: 1px solid rgba(255, 255, 255, 1);
+	box-shadow: 1px 1px 5px #000000;
+	margin: 2px;
+}
+
+.gene {
+	position: relative;
+	background-color: white;
+	font-size: 70%;
+	height: 100%;
+	top: 0px;
+	float: left;
+}
+
+.gene_fill {
+	position: absolute;
+	width: 100%;
+	height: 50%;
+	background-color: gray;
+	bottom: 0px;
+	left: 0px;
+	transition: all 200ms cubic-bezier(.56,.33,.6,1.36);
+}
+
+.gene_sequence_name {
+	position: relative;
+	float: left;
+	padding-right: 10px;
+	height: 80%;
+	text-align: right;
+	background-color: white;
+	font-size: 70%;
+	width: 80px;
+}
+.gene_sequence_score {
+	position: relative;
+	float: right;
+	padding-left: 10px;
+	height: 80%;
+	text-align: right;
+	background-color: red;
+	font-size: 70%;
+	width: 20px;
+}
+
+#alternates_grid {
+	width: 92%;
+}
+
+.tile_canvas {
+	width: 60px;
+	height: 60px;
+	background-color: red;
+}
+
