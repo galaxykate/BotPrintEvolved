@@ -8,7 +8,6 @@ var testDots = [];
 var b2DWorld;
 var b2DBodyDef;
 
-var botApp = {};
 var app;
 
 define(["jQuery", "processing", "evo", "modules/bots/bot", "botInspector", "box2D", "common", "modules/bots/arena"], function(JQUERY, Processing, EvoPopulation, Bot, BotInspector, Box2D, COMMON, BotArena) {
@@ -17,7 +16,10 @@ define(["jQuery", "processing", "evo", "modules/bots/bot", "botInspector", "box2
     app = {
         world : {
             lightMap : new Map(),
+
         },
+
+        worldTime : 0,
         options : {
             drawB2D : false,
             debugDrawLightmap : false,
@@ -175,11 +177,28 @@ define(["jQuery", "processing", "evo", "modules/bots/bot", "botInspector", "box2
         var relX = e.pageX - parentOffset.left;
         var relY = e.pageY - parentOffset.top;
         var pos = new Vector(relX, processingG.height - relY);
-        console.log("Click " + pos);
-        
+        console.log("move " + pos);
+
         var bot = arena.getAt(pos);
         population.selectIndividual(bot);
-        
+
+    });
+
+    arenaCanvas.click(function(e) {
+        var parentOffset = $(this).parent().offset();
+        //or $(this).offset(); if you really just want the current element's offset
+        var relX = e.pageX - parentOffset.left;
+        var relY = e.pageY - parentOffset.top;
+        var pos = new Vector(relX, processingG.height - relY);
+
+        var bot = arena.getAt(pos);
+        console.log("Click " + bot);
+        population.selectIndividual(bot);
+
+        arena.clear();
+        population.createPopulation(bot);
+        arena.addBots(population.activePopulation);
+
     });
 
     var botDriveG = new Processing(botDriveCanvas, function(g) {
@@ -194,6 +213,7 @@ define(["jQuery", "processing", "evo", "modules/bots/bot", "botInspector", "box2
         g.draw = function() {
             testDots = [];
             debug.clear();
+            app.worldTime = g.millis() * .001;
 
             g.background(.55, .7, 1);
 

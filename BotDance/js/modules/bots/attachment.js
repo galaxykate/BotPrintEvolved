@@ -17,6 +17,12 @@ define(["common"], function(COMMON) {
         getForce : function() {
 
         },
+
+        compileAll : function(list, filter) {
+            if (filter(this)) {
+                list.push(this);
+            }
+        },
     });
     //==========================================
     //==========================================
@@ -27,6 +33,7 @@ define(["common"], function(COMMON) {
         init : function(attachPoint) {
             this._super(attachPoint);
             this.reading = 0;
+            this.name = "Sensor";
         },
 
         update : function(time) {
@@ -34,6 +41,10 @@ define(["common"], function(COMMON) {
 
             // Sense
             this.reading = app.world.lightMap.sampleAt(this.globalPosition);
+        },
+
+        sense : function() {
+            return this.reading;
         },
 
         draw : function(g, t) {
@@ -45,6 +56,10 @@ define(["common"], function(COMMON) {
             app.world.lightMap.setFill(g, this.reading);
             g.ellipse(0, 0, r * .6, r);
         },
+
+        toString : function() {
+            return this.name + " (" + this.reading + ")";
+        }
     });
 
     //==========================================
@@ -66,12 +81,16 @@ define(["common"], function(COMMON) {
                 direction : 0,
                 p : new Vector(),
             };
+            this.name = "Thruster";
         },
 
         update : function(time) {
             var t = time.total;
-            this.firePct = utilities.constrain(6 * Math.sin(t * (.3 + .2 * (this.idNumber * 20) % 10) - 2), 0, 1);
+            this.firePct *= .9;
+        },
 
+        actuate : function(pct) {
+            this.firePct = pct;
         },
 
         getForce : function(t) {
@@ -80,9 +99,10 @@ define(["common"], function(COMMON) {
             this.force.p.setTo(this.globalPosition);
             return this.force;
         },
+
         draw : function(g, t) {
 
-            var endR = .75*(this.firePct + .2) * thrusterWidth;
+            var endR = .75 * (this.firePct + .2) * thrusterWidth;
             g.fill(.9, 1, 1);
             g.ellipse(-thrusterWidth * .4, 0, thrusterWidth, thrusterWidth * 1.5);
             g.rect(-thrusterLength * .8, -thrusterWidth, thrusterLength, thrusterWidth * 2);
@@ -90,6 +110,10 @@ define(["common"], function(COMMON) {
             g.fill(.11 + .05 * Math.sin(20 * t + 20 * this.idNumber), 1, this.firePct);
             g.ellipse(endR, 0, 2 * endR, endR);
 
+        },
+
+        toString : function() {
+            return this.name + " (" + this.firePct + ")";
         }
     });
 

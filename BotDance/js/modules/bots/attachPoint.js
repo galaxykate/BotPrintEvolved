@@ -11,6 +11,13 @@ define(["common"], function(COMMON) {
             this.attachAngle = 2 * (Math.random() - .5);
         },
 
+       
+        compileAll : function(list, filter) {
+            if (this.child !== undefined) {
+                return this.child.compileAll(list, filter);
+            }
+        },
+
         attach : function(attachment) {
             this.child = attachment;
             this.child.parent = this;

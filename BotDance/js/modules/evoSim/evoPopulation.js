@@ -52,7 +52,7 @@ define(["common"], function(COMMON) {
             // Must take an array of floats and return an object
             this.createIndividual = options.createIndividual;
             this.geneLength = 40;
-            this.populationCount = 15;
+            this.populationCount = 3;
             this.activePopulation = [];
 
             // Create the genotype pool
@@ -116,7 +116,6 @@ define(["common"], function(COMMON) {
             // If the genotype is clicked on, clone it into the population
             div.click(function() {
                 population.selectIndividual(individual);
-                
 
             })
         },
@@ -180,7 +179,12 @@ define(["common"], function(COMMON) {
             return holder;
         },
 
+        clearPopulation : function() { 
+        //    .removeAll();
+        },
+
         createPopulation : function(individual) {
+            this.clearPopulation();
             for ( i = 0; i < this.populationCount; i++) {
                 if (individual !== undefined) {
                     this.activePopulation[i] = this.cloneIndividual(individual);

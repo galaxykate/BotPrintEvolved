@@ -2,7 +2,7 @@
  * @author Kate Compton
  */
 
-define(["common", "modules/bots/attachment", "modules/bots/attachPoint", "box2DHelpers"], function(COMMON, Attachment, AttachPoint, box2DHelpers) {
+define(["common", "modules/bots/attachment", "modules/bots/attachPoint", "box2DHelpers", "./botBrain"], function(COMMON, Attachment, AttachPoint, box2DHelpers, BotBrain) {
     var botCount = 0;
 
     // Genotype indices
@@ -55,7 +55,7 @@ define(["common", "modules/bots/attachment", "modules/bots/attachPoint", "box2DH
             this.edges = [];
             for (var i = 0; i < pointCount; i++) {
                 var theta = i * dTheta;
-                var r = this.radius * (.4 + 2*pointGenes[i]*pointGenes[i]);
+                var r = this.radius * (.4 + 2 * pointGenes[i] * pointGenes[i]);
                 this.points[i] = Vector.polar(r, theta);
 
                 this.attachPoints.push(new AttachPoint(this, this.points[i], theta));
@@ -81,6 +81,7 @@ define(["common", "modules/bots/attachment", "modules/bots/attachPoint", "box2DH
             });
 
             this.createBody();
+            this.brain = new BotBrain(this);
 
         },
 
@@ -121,13 +122,15 @@ define(["common", "modules/bots/attachment", "modules/bots/attachPoint", "box2DH
             this.body.SetLinearVelocity(new Box2D.b2Vec2(0, 0));
             this.body.SetAwake(1);
             this.body.SetActive(1);
-          
+
         },
 
         update : function(time) {
             $.each(this.attachPoints, function(index, point) {
                 point.update(time);
             });
+
+            this.brain.makeDecision();
 
             //  if (Math.random() > .9)
             //  this.gainScore(1);
@@ -153,6 +156,44 @@ define(["common", "modules/bots/attachment", "modules/bots/attachPoint", "box2DH
         },
         setAngle : function(angle) {
             this.rotation = angle;
+        },
+
+        // Create a list of all this bots sensors
+        getAttachmentMap : function() {
+            var map = {
+                sensors : [],
+                actuators : [],
+                debugOutput : function() {
+                    // for each sensor
+                    console.log("Sensors");
+                    $.each(this.sensors, function(index, sensor) {
+                        console.log(index + ": " + sensor);
+                    });
+
+                    console.log("Actuators");
+                    $.each(this.actuators, function(index, actuator) {
+                        console.log(index + ": " + actuator);
+                    });
+                }
+            }
+
+            // From wikipedia: An actuator is the mechanism by which a control system acts upon an environment.
+
+            // Compile a list of all attachments that have the "sense" function
+            $.each(this.attachPoints, function(index, point) {
+                point.compileAll(map.sensors, function(attachment) {
+                    return attachment.sense !== undefined;
+                });
+                point.compileAll(map.actuators, function(attachment) {
+                    return attachment.actuate !== undefined;
+                });
+
+            });
+            return map;
+        },
+
+        getActuators : function() {
+
         },
 
         drawDetails : function(g, t) {
@@ -215,6 +256,10 @@ define(["common", "modules/bots/attachment", "modules/bots/attachPoint", "box2DH
                 g.popMatrix();
             }
         },
+
+        toString : function() {
+            return "Bot" + this.idNumber;
+        }
     });
 
     return Bot;
