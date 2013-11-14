@@ -65,7 +65,7 @@ define(["common"], function(common) {'use strict';
         },
 
         update : function(time) {
-            this.excitement = Math.max(0, this.excitement - .92 * time.ellapsed);
+            this.excitement = Math.max(0, this.excitement - 1.5 * time.ellapsed);
         },
 
         moveTo : function(pos) {

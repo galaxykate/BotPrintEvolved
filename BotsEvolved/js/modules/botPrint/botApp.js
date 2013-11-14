@@ -196,6 +196,7 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", "c
         //create an empty container
         app.threeBotMesh = new THREE.Object3D();
         app.threeRender.scene.add(app.threeBotMesh);
+        
 
         app.getInspectorLocalPosition = function(touch) {
             var screenPos = app.getPositionRelativeTo(app.inspectorDiv, touch.pos);
@@ -299,6 +300,17 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", "c
 
         logAndBubbleMouseActions("render_panel");
         logAndBubbleMouseActions("inspector_panel");
+
+        // Enlarge the render panel...but how to increase camera size?
+        $("#render_panel").dblclick(function() {
+            /*
+             $("#render_panel").css({
+             width : "500px",
+             height : "500px",
+
+             });
+             */
+        });
 
     };
 

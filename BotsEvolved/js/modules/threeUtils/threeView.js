@@ -27,11 +27,11 @@ define(["common", "three", "./threeCam"], function(common, THREE, ThreeCam) {'us
 
             view.scene = new THREE.Scene();
             var sphere = new THREE.Mesh(new THREE.SphereGeometry(40, 5, 5), new THREE.MeshNormalMaterial());
-            view.scene.add(sphere);
+          //  view.scene.add(sphere);
 
             this.marker = new THREE.Mesh(new THREE.SphereGeometry(10, 5, 5), new THREE.MeshNormalMaterial());
             this.marker.position.x += 80;
-            view.scene.add(this.marker);
+          //  view.scene.add(this.marker);
 
             // add the camera to the scene
             view.scene.add(camera);

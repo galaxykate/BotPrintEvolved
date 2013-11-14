@@ -20,7 +20,37 @@ define(["common", "evo", "./pathPoint", "./wiring"], function(common, Evo, PathP
             geom.faces.push(f);
         }
 
+        addSideStrip(geom, points, 0, 10);
+        geom.computeFaceNormals();
         return geom;
+    };
+
+    var addSideStrip = function(geom, points, z0, z1) {
+        var startIndex = geom.vertices.length;
+
+        $.each(points, function(index, vertex) {
+            var v0 = vertex.toThreeVector();
+            v0.z = z0;
+            var v1 = vertex.toThreeVector();
+            v1.z = z1;
+            geom.vertices.push(v0);
+            geom.vertices.push(v1);
+        });
+
+        for (var i = 0; i < points.length; i++) {
+            var i0 = (i % points.length);
+            var i1 = ((i + 1) % points.length);
+
+            var p0 = i0 * 2 + startIndex;
+            var p1 = i0 * 2 + 1 + startIndex;
+            var p2 = i1 * 2 + startIndex;
+            var p3 = i1 * 2 + 1 + startIndex;
+
+            var f0 = new THREE.Face3(p0, p1, p3);
+            var f1 = new THREE.Face3(p3, p2, p0);
+            geom.faces.push(f0);
+            geom.faces.push(f1);
+        }
     };
 
     var Chassis = Class.extend({
@@ -53,9 +83,9 @@ define(["common", "evo", "./pathPoint", "./wiring"], function(common, Evo, PathP
 
             // Create components
             this.components = [];
-            for (var i = 0; i < 0; i++) {
-                var volume = Math.random() * 450 + 200;
-                var aspectRatio = Math.random() * 2 + .5;
+            for (var i = 0; i < 5; i++) {
+                var volume = Math.random() * 850 + 400;
+                var aspectRatio = Math.random() * 1 + .5;
 
                 var component = new Wiring.Component({
                     name : "obj" + i,
@@ -183,8 +213,11 @@ define(["common", "evo", "./pathPoint", "./wiring"], function(common, Evo, PathP
 
         },
         createThreeMesh : function() {
+            
+            var material = new THREE.MeshNormalMaterial();
+            material.side = THREE.DoubleSide;
             var geom = geomFromPointLoop(this.center, this.points, 15);
-            this.mesh = new THREE.Mesh(geom, new THREE.MeshNormalMaterial());
+            this.mesh = new THREE.Mesh(geom, material);
             return this.mesh;
         }
     });
