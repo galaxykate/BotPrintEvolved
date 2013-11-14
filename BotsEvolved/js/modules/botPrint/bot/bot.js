@@ -2,34 +2,33 @@
  * @author Kate Compton
  */
 
-define(["common", "./chassis", "three"], function(COMMON, Chassis, THREE) {'use strict';
+define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use strict';
 
     var Bot = Class.extend({
         init : function() {
             this.mainChassis = new Chassis();
+            this.transform = new common.Transform();
+
         },
 
         //-------------------------------------------
         // View stuff - will probably end up in it's own file
         // render this bot in a 2D frame
 
-        setScreenPositions : function(camera) {
-            this.mainChassis.setScreenPositions(camera);
-        },
-
         update : function(time) {
             this.mainChassis.update(time);
         },
 
-        render2D : function(g) {
-            this.mainChassis.render2D(g);
+        render : function(context) {
+            this.mainChassis.render(context);
         },
 
         hover : function(pos) {
+            app.moveLog("Hovered " + pos);
             var pt = this.getAt({
-                screenPos : pos,
-
+                pos : pos,
             });
+
             if (pt !== undefined)
                 pt.excite();
 
@@ -37,22 +36,32 @@ define(["common", "./chassis", "three"], function(COMMON, Chassis, THREE) {'use 
 
         selectPoint : function(pos) {
             var pt = this.getAt({
-                screenPos : pos,
-
+                pos : pos,
             });
 
             this.selectedPoint = pt;
-        },
-
-        dragPoint : function(pos) {
-            
-         
             if (this.selectedPoint !== undefined) {
-                this.selectedPoint.moveTo(pos);
+                this.selectedPoint.select();
             }
         },
 
+        dragPoint : function(pos) {
+            app.moveLog("Dragging " + this.selectedPoint);
+            if (this.selectedPoint !== undefined) {
+                this.selectedPoint.moveTo(pos);
+            }
+
+        },
+
+        releasePoint : function() {
+            if (this.selectedPoint !== undefined) {
+                this.selectedPoint.deselect();
+            }
+            this.selectedPoint = undefined;
+        },
+
         getAt : function(query) {
+
             return this.mainChassis.getAt(query);
 
         },

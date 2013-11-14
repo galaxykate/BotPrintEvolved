@@ -5,14 +5,17 @@
 // Reusable Vector class
 
 define(["modules/common/vector"], function(Vector) {
-    function Edge(start, end) {
-        this.start = start;
-        this.end = end;
+    var Edge = Class.extend({
+        init : function(start, end) {
+            this.start = start;
+            this.end = end;
+        },
 
-    };
+        setToPct : function(p, pct) {
+            p.setToLerp(this.end, this.start, pct);
 
-    // Shared class attributes
-    Edge.prototype = {
+        },
+
         getAngleTo : function(p) {
             var u = this.getOffset();
             var v = this.start.getOffsetTo(p);
@@ -21,7 +24,6 @@ define(["modules/common/vector"], function(Vector) {
             return theta;
 
         },
-
         getOtherEnd : function(p) {
             if (p === this.start)
                 return this.end;
@@ -29,7 +31,6 @@ define(["modules/common/vector"], function(Vector) {
                 return this.start;
 
         },
-
         getSide : function(p) {
             var offset = this.getOffset();
             var val = (offset.x * (p.y - this.start.y) - offset.y * (p.x - this.start.x));
@@ -50,7 +51,7 @@ define(["modules/common/vector"], function(Vector) {
         toString : function() {
             return "[" + this.start + " to " + this.end + "]";
         },
-    };
+    });
 
     return Edge;
 

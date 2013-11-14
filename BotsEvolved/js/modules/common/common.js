@@ -4,7 +4,7 @@
 
 var utilities = {};
 var prefix = "modules/common/";
-define('common', ["inheritance", "noise", prefix + "region", prefix + "vector", prefix + "edge", prefix + "rect", prefix + "map", prefix + "kcolor", prefix + "timespan", prefix + "utilities", prefix + "range", "jQueryUI", "underscore"], function(Inheritance, _Noise, _Region, _Vector, _Edge, _Rect, _Map, _KColor, _TimeSpan, _utilities, _Range, JQUERY, _) {
+define('common', ["inheritance", "noise", prefix + "transform", prefix + "region", prefix + "vector", prefix + "edge", prefix + "rect", prefix + "map", prefix + "kcolor", prefix + "timespan", prefix + "utilities", prefix + "range", "jQueryUI", "underscore"], function(Inheritance, _Noise, _Transform, _Region, _Vector, _Edge, _Rect, _Map, _KColor, _TimeSpan, _utilities, _Range, JQUERY, _) {
     var common = {
         Vector : _Vector,
 
@@ -15,6 +15,7 @@ define('common', ["inheritance", "noise", prefix + "region", prefix + "vector", 
         TimeSpan : _TimeSpan,
         Range : _Range,
         Rect : _Rect,
+        Transform : _Transform,
 
     }
 
@@ -48,7 +49,7 @@ define('common', ["inheritance", "noise", prefix + "region", prefix + "vector", 
     };
 
     // test noise
-   
+
     utilities = _utilities;
 
     console.log("utilities = " + utilities);

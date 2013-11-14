@@ -58,8 +58,6 @@ define(["common", "three"], function(common, THREE) {'use strict';
             screenPos.setTo(threeScreen.x * this.w * scale, -threeScreen.y * this.h * scale, d);
             screenPos.add(this.screenCenter);
 
-            //  app.log(worldPos + "=>" + screenPos);
-
             return true;
         },
 

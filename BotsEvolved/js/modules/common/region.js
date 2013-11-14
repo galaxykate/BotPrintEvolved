@@ -4,7 +4,7 @@
 
 // Reusable Vector class
 
-define(["modules/common/vector"], function(Vector) {
+define(["./vector", "./edge"], function(Vector, Edge) {
     var regionCount = 0;
     var Region = Class.extend({
 
@@ -14,6 +14,7 @@ define(["modules/common/vector"], function(Vector) {
             this.center = center;
             this.points = [];
             this.paths = [];
+            this.valid = true;
         },
 
         addPath : function(edge) {
@@ -23,6 +24,13 @@ define(["modules/common/vector"], function(Vector) {
         select : function() {
             this.selected = true;
         },
+
+        getRandomEdge : function() {
+            var index = Math.floor(Math.random() * this.points.length);
+            var index2 = (index + 1) % this.points.length;
+            return new Edge(this.points[index], this.points[index2]);
+        },
+
         getTriangleAt : function(p, useScreenPos) {
             var found;
             if (this.triangles) {
@@ -94,52 +102,23 @@ define(["modules/common/vector"], function(Vector) {
             return h;
         },
 
-        renderAsPolygon : function(context) {
-            this.valid = true;
-            if (context.useScreenPositions)
-                this.setScreenPositions(context);
+        render : function(context) {
+            app.log("Render: " + this.center);
 
             var g = context.g;
-            var h = this.getHue();
-            if (this.valid) {
-                if (context.renderAsTriangles) {
-                    if (this.triangles) {
-                        $.each(this.triangles, function(index, triangle) {
-                            g.fill(h, .3 + index * .1, .6);
-                            g.noStroke();
-                            triangle.render(context);
-                        });
-                    }
-                } else {
 
-                    g.fill(h, .3, 1, context.opacity);
-                    g.noStroke();
-                    g.beginShape();
+            g.pushMatrix();
+            this.center.translateTo(g);
+            app.log(this.center);
 
-                    app.log(this.points.length);
-                    $.each(this.points, function(index, pt) {
-                        if (context.useScreenPositions)
-                            pt.screenPos.vertex(g);
-                        else
-                            pt.vertex(g);
+            g.beginShape();
+            $.each(this.points, function(index, pt) {
+                pt.vertex(g);
+            });
 
-                        app.log(index + ": " + pt);
-                    });
+            g.endShape();
 
-                    g.endShape();
-
-                }
-            }
-
-            g.fill(h, 1, 1);
-            var radius = 10;
-
-            var r2 = radius;
-            if (context.useScreenPositions) {
-                r2 = this.center.screenScale * radius;
-                g.ellipse(this.center.screenPos.x, this.center.screenPos.y, r2, r2);
-            } else
-                g.ellipse(this.center.x, this.center.y, r2, r2);
+            g.popMatrix();
 
         },
 
@@ -169,18 +148,17 @@ define(["modules/common/vector"], function(Vector) {
             this.addPoint.push(p2);
         },
 
-        renderAsPolygon : function(context) {
+        render : function(context) {
 
             var g = context.g;
 
-            if (this.selected) {
-                g.fill(.85, 1, 1, context.opacity);
-                g.stroke(0, 0, 0, context.opacity);
-            }
-
             g.beginShape();
             $.each(this.points, function(index, pt) {
-                pt.screenPos.vertex(g);
+                if (context.useScreenPos) {
+                    pt.screenPos.vertex(g);
+                } else {
+                    pt.vertex(g);
+                }
             });
             g.endShape();
 
@@ -223,6 +201,15 @@ define(["modules/common/vector"], function(Vector) {
             return (u >= 0) && (v >= 0) && (u + v < 1)
         },
     });
+
+    Region.makeRectangle = function(center, w, h) {
+        var rect = new Region(center);
+        rect.addPoint(new Vector(-w / 2, h / 2));
+        rect.addPoint(new Vector(w / 2, h / 2));
+        rect.addPoint(new Vector(w / 2, -h / 2));
+        rect.addPoint(new Vector(-w / 2, -h / 2));
+        return rect;
+    };
 
     Region.Triangle = Triangle;
     return Region;

@@ -29,10 +29,6 @@ define(["common", "processing", "modules/ui/panel", "modules/ui/controls", "modu
                 mode.enabled = false;
             });
 
-            this.moveOutput = new Output($("#moveOutput"));
-            this.modeOutput = new Output($("#modeOutput"));
-            this.output = new Output($("#debugOutput"));
-
         },
 
         addProcessingWindow : function(div, setupFunc, drawFunc) {
@@ -137,6 +133,10 @@ define(["common", "processing", "modules/ui/panel", "modules/ui/controls", "modu
                 description : "For Dev Eyes Only",
                 panels : ui.getPanels(["devOptions", "devSliders", "devOutput"]),
             });
+
+            this.moveOutput = new Output($("#moveOutput"));
+            this.modeOutput = new Output($("#modeOutput"));
+            this.output = new Output($("#debugOutput"));
         },
 
         addOption : function(key, defaultValue, onChange) {

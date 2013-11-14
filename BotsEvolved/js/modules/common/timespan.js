@@ -33,7 +33,6 @@ define(["inheritance"], function(Inheritance) {
         },
 
         finish : function() {
-            console.log("FINISH");
             this.completed = true;
 
             if (this.onFinish)

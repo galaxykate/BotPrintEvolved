@@ -117,6 +117,14 @@ define(["three", "inheritance", "box2D"], function(THREE, Inheritance, Box2D) {
             }
 
         },
+
+        setScreenPosition : function(g) {
+            if (this.screenPos === undefined)
+                this.screenPos = new Vector();
+
+            this.screenPos.setTo(g.screenX(this.x, this.y), g.screenY(this.x, this.y));
+        },
+
         magnitude : function() {
             return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
         },
@@ -132,6 +140,7 @@ define(["three", "inheritance", "box2D"], function(THREE, Inheritance, Box2D) {
                 this.mult(d2 / d);
             }
         },
+
         getDistanceTo : function(p) {
             var dx = this.x - p.x;
             var dy = this.y - p.y;
@@ -173,8 +182,8 @@ define(["three", "inheritance", "box2D"], function(THREE, Inheritance, Box2D) {
             this.x += v.x;
             this.y += v.y;
             this.z += v.z;
-
         },
+
         sub : function(v) {
             this.x -= v.x;
             this.y -= v.y;
@@ -195,6 +204,15 @@ define(["three", "inheritance", "box2D"], function(THREE, Inheritance, Box2D) {
         },
         getAngle : function() {
             return Math.atan2(this.y, this.x);
+        },
+
+        rotate : function(theta) {
+            var cs = Math.cos(theta);
+            var sn = Math.sin(theta);
+            var x = this.x * cs - this.y * sn;
+            var y = this.x * sn + this.y * cs;
+            this.x = x;
+            this.y = y;
         },
 
         //===========================================================

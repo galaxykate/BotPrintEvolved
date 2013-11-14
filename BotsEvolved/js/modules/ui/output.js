@@ -9,6 +9,7 @@ define(["common"], function(COMMON) {'use strict';
         init : function(div) {
             this.div = div;
             console.log(this.div);
+            this.div.html("DEBUG");
         },
 
         log : function(line) {

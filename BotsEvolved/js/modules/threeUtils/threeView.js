@@ -42,7 +42,6 @@ define(["common", "three", "./threeCam"], function(common, THREE, ThreeCam) {'us
             function render() {
                
                 if (view.rendering) {
-                 //  console.log("Render " + view.frameCount);
                     view.frameCount++;
                     if (view.prerender !== undefined)
                        view.prerender();

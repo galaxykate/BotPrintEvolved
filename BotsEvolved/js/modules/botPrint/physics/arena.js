@@ -20,17 +20,15 @@ define(["common", "./boxWorld"], function(common, boxWorld) {'use strict';
         //-------------------------------------------
         // View stuff - will probably end up in it's own file
         // render this bot in a 2D frame
-        render2D : function(g) {
-            var context = {
-                g : g
-            }
+        render : function(context) {
+           var g =context.g;
             g.pushMatrix();
             g.translate(g.width / 2, g.height / 2);
             g.ellipse(0, 0, 400, 400);
 
             // Draw the edges
             g.fill(.68, 1, 1);
-            this.border.renderAsPolygon(context);
+            this.border.render(context);
             g.popMatrix();
         },
 

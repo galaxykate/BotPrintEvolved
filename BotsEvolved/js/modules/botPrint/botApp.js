@@ -36,7 +36,6 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", "c
 
         app.currentBot = bot;
         app.threeBotMesh.add(bot.createThreeMesh());
-        app.currentBot.setScreenPositions(app.inspectorCamera);
 
     };
 
@@ -49,11 +48,12 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", "c
 
         time.worldTime += ellapsed;
         time.ellapsed = ellapsed;
-        app.log("Time: ");
-        app.log("  world: " + time.worldTime.toFixed(2));
-        app.log("  ellapsed: " + time.ellapsed.toFixed(2));
-        app.log("  FPS: " + (1 / time.ellapsed).toFixed(2));
-
+        /*
+         app.log("Time: ");
+         app.log("  world: " + time.worldTime.toFixed(2));
+         app.log("  ellapsed: " + time.ellapsed.toFixed(2));
+         app.log("  FPS: " + (1 / time.ellapsed).toFixed(2));
+         */
         app.timespans.update(ellapsed);
         app.currentBot.update(time);
 
@@ -73,6 +73,11 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", "c
         // Make a shortcut for outputs
         app.log = function(line) {
             app.ui.output.log(line);
+            //   console.log(app.ui.output);
+        };
+        app.moveLog = function(line) {
+            app.ui.moveOutput.log(line);
+            //   console.log(app.ui.output);
         };
 
         ui.addDevUI($("#dev_controls"));
@@ -132,36 +137,22 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", "c
         // Iniialize the viewing ports (Processing and Three.JS)
         // Create the processing.  camera stuff will move into own file eventually
 
-        app.inspectorCamera = {
-            scale : 2,
-            center : new Vector(),
-            setScreenPosition : function(point, layer) {
-                if (point.screenPos === undefined) {
-                    point.screenPos = new Vector();
-                }
-
-                point.screenPos.setTo(point);
-                point.screenPos.mult(this.scale);
-                point.screenPos.add(this.center);
-
-            },
-
-            screenPosToWorldPos : function(screenPos) {
-                var worldPos = new Vector(screenPos);
-                worldPos.sub(this.center);
-                worldPos.div(this.scale);
-                return worldPos;
-            },
-        };
+        app.inspectorCamera = new common.Transform();
 
         app.arenaDiv = $("#arena_canvas");
         app.inspectorDiv = $("#inspector_canvas");
 
         app.inspectorProcessing = ui.addProcessingWindow(app.inspectorDiv, function(g) {
-            app.inspectorCamera.center.setTo(g.width / 2, g.height / 2);
+            app.inspectorCamera.translation.setTo(g.width / 2, g.height / 2);
+
         }, function(g) {
             // Updates
             app.ui.output.clear();
+            app.log("Test");
+            var context = {
+                g : g,
+                transform : app.inspectorCamera,
+            }
 
             // Updates
             app.updateWorld(g.millis() * .001);
@@ -172,20 +163,24 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", "c
             g.fill(.6, 1, .2);
             g.ellipse(0, 0, 400, 400);
 
-            app.currentBot.setScreenPositions(app.inspectorCamera);
-
-            app.currentBot.render2D(g);
+            g.pushMatrix();
+            app.inspectorCamera.applyTransform(g);
+            app.currentBot.render(context);
+            g.popMatrix();
         });
 
         // Create the arena
         app.arenaProcessing = ui.addProcessingWindow(app.arenaDiv, function(g) {
         }, function(g) {
             app.updateWorld(g.millis() * .001);
-
+            var context = {
+                g : g,
+                useScreenPos : false,
+            }
             g.colorMode(g.HSB, 1);
             g.background(.75, .1, 1);
 
-            app.arena.render2D(g);
+            app.arena.render(context);
 
         });
 
@@ -195,13 +190,20 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", "c
 
             if (!app.pauseSpinning)
                 this.camera.orbit.theta += .03;
-            app.log(this.camera.orbit.theta);
+            // app.log(this.camera.orbit.theta);
             this.camera.updateOrbit();
         });
         //create an empty container
         app.threeBotMesh = new THREE.Object3D();
         app.threeRender.scene.add(app.threeBotMesh);
 
+        app.getInspectorLocalPosition = function(touch) {
+            var screenPos = app.getPositionRelativeTo(app.inspectorDiv, touch.pos);
+            var localPos = new Vector();
+
+            app.inspectorCamera.toLocal(screenPos, localPos);
+            return localPos;
+        }
     };
 
     app.initializeControls = function() {
@@ -223,15 +225,8 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", "c
             },
 
             onPress : function(touch) {
-                switch(app.focusedWindow) {
-                    case "render_panel":
-                        app.pauseSpinning = true;
-                        break;
-                    case "inspector_panel":
-                        app.currentBot.selectPoint(touch.pos);
-                        break;
-
-                }
+                var localPos = app.getInspectorLocalPosition(touch);
+                app.currentBot.selectPoint(localPos);
 
             },
 
@@ -239,18 +234,14 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", "c
 
                 app.pauseSpinning = false;
                 app.focusedWindow = undefined;
+                app.re
             },
 
             onMove : function(touch) {
+                var localPos = app.getInspectorLocalPosition(touch);
+                app.moveLog("localPos: " + localPos);
 
-                switch(app.focusedWindow) {
-                    case "render_panel":
-                        break;
-                    case "inspector_panel":
-                        app.currentBot.hover(touch.pos);
-                        break;
-
-                }
+                app.currentBot.hover(localPos);
 
             },
 
@@ -266,11 +257,10 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", "c
 
                     case "inspector_panel":
 
-                        var localPos = app.getPositionRelativeTo(app.inspectorDiv, touch.pos);
+                        var localPos = app.getInspectorLocalPosition(touch);
 
-                        var worldPos = app.inspectorCamera.screenPosToWorldPos(localPos);
-                        app.currentBot.dragPoint(worldPos);
-                        console.log("WorldPos: " + worldPos);
+                        app.currentBot.dragPoint(localPos);
+                        app.moveLog("Drag to: " + localPos);
 
                         break;
                 }
@@ -287,14 +277,12 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", "c
 
             div.on('mousedown', function(event) {
                 event.preventDefault();
-                console.log(this);
                 app.focusedWindow = id;
 
             });
 
             div.on('mouseup', function(event) {
                 event.preventDefault();
-                console.log(this);
                 app.focusedWindow = undefined;
 
             });
@@ -315,9 +303,7 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", "c
     };
 
     app.getPositionRelativeTo = function(div, pos) {
-        console.log(div);
         var v = new Vector(pos.x - div.offset().left, pos.y - div.offset().top);
-        console.log("pos: " + pos + "relpos: " + v);
         return v;
     };
 
@@ -343,8 +329,9 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", "c
             divName : "news_bar"
         }));
 
-        ui.modes.main.activate(app.arenaMode);
-      //  ui.modes.dev.activate();
+        //ui.modes.main.activate(app.arenaMode);
+        ui.modes.main.activate(app.inspectMode);
+        //  ui.modes.dev.activate();
 
     };
 

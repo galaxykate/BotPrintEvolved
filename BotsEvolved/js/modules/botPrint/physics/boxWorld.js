@@ -13,7 +13,28 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
     }
 
     var BoxWorld = Class.extend({
+        addObject : function(regionPath, density) {
 
+        },
+        removeShape : function(obj) {
+            world.DestroyBody(obj);
+        },
+
+        removeAll : function() {
+            for (var i = 0; i < bodies.length; i++) {
+                world.DestroyBody(bodies[i]);
+            }
+
+            bodies = [];
+
+        },
+
+        // add something that has a body
+        addShape : function(obj) {
+
+            bodies.push(obj.body);
+
+        },
     });
 
     var forceOffsets = [];
@@ -48,32 +69,6 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
         shape0.Set(corners[i], corners[(4 + i + 1) % 4]);
         ground.CreateFixture(shape0, 0.0);
     }
-
-    var removeShape = function(obj) {
-        world.DestroyBody(obj);
-    };
-
-    var removeAll = function() {
-        console.log("Remove all");
-        for (var i = 0; i < bodies.length; i++) {
-            world.DestroyBody(bodies[i]);
-        }
-
-        bodies = [];
-
-    };
-
-    // add something that has a body
-    var addShape = function(obj) {
-
-        bodies.push(obj.body);
-
-    };
-
-    // Indexes start from 1
-
-    var spawnPoint = new Box2D.b2Vec2(150.0, 0.0);
-    var temp = new Box2D.b2Vec2(0.0, 0.0);
 
     // Look at the object and read its data into this object
 
@@ -130,22 +125,10 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
         // Read box2d data into JS objects
         for (var i = 0; i < bodies.length; i++) {
-
             objectToData(i);
-
         }
 
         totalTime += dt;
-
-        if (frame % 10 === 0) {
-            var s = "";
-            for (var i = 0; i < objects.length; i++) {
-                var obj = objects[i];
-                s += "(" + obj.x.toFixed(2) + " " + obj.y.toFixed(2) + ")";
-            }
-            //     console.log(s);
-
-        }
 
         frame++;
         return objects;
@@ -166,12 +149,6 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
         });
     }
 
-    return {
-        removeAll : removeAll,
-        applyForce : applyForce,
-        addShape : addShape,
-        simulate : simulate,
-        draw : draw,
-    }
+    return BoxWorld
 
 });

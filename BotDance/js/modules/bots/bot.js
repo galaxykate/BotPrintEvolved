@@ -81,6 +81,8 @@ define(["common", "modules/bots/attachment", "modules/bots/attachPoint", "box2DH
             });
 
             this.createBody();
+
+
             this.brain = new BotBrain(this);
 
         },
