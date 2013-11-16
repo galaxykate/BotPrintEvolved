@@ -5,11 +5,14 @@ define(["inheritance"], function(inher) {
 	
 		condition: {
 			comparator: ">",
-			sensor: "",
-			targetValue: 0.5
+			sensor: "0",
+			targetValue: 1.0,
 		},
-		trueBranch: undefined,
-		falseBranch: undefined,
+		printCondition: function() {
+			return "sensor " + this.condition.sensor + " " + this.condition.comparator + " " + this.condition.targetValue;
+		},
+		trueBranch: emptyAction,
+		falseBranch: emptyAction,
 		
 		init: function() {
 		},
@@ -23,6 +26,8 @@ define(["inheritance"], function(inher) {
 		},
 		
 		setCondition: function(sensor, comparator, targetValue) {
+			// inheritance.js apparently passes objects by ref instead of a deep copy, so we need to recreate condition here.
+			this.condition = {};
 			this.condition.sensor = sensor;
 			this.condition.comparator = comparator;
 			this.condition.targetValue = targetValue;
@@ -31,15 +36,16 @@ define(["inheritance"], function(inher) {
 		testCondition: function(sensors) {
 			if (this.condition.comparator === ">") {
 				if (sensors[this.condition.sensor].sense() > this.condition.targetValue) {
+					console.log("condition true: ", this.printCondition());
 					return true;
 				} 
 			} else if (this.condition.comparator === "<") {
+				console.log("condition true: ", this.printCondition());
 				if (sensors[this.condition.sensor].sense() < this.condition.targetValue) {
 					return true;
 				} 
 			}
-			console.log("nope!");
-			console.log(this.condition);
+			console.log("condition false: ", this.printCondition());
 			return false;
 		},
 		
@@ -57,8 +63,8 @@ define(["inheritance"], function(inher) {
 			this.actionDict = actionDict;
 		},
 		
-		// Note that sensors is not used here, but the variable is there so the function is called the same way as DTree.makeDecision (not that it matters in JS but...)
-		makeDecision : function(actuators, sensors) {
+		// Note that this function will be called with a second parameter (sensors) but we can just ignore that in JS.
+		makeDecision : function(actuators) {
 			// Take action
 			for (key in this.actionDict) {
 				if (this.actionDict.hasOwnProperty(key)) {
@@ -70,7 +76,7 @@ define(["inheritance"], function(inher) {
 		}
 	});
 	
-	
+	var emptyAction = new DTreeAction({});
 	
 	return {
 		DTree: DTree,

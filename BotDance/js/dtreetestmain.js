@@ -26,22 +26,24 @@ require(["dTree"], function(dTree) {
 
     console.log("Ready!");
 	
+	
+	
 	var actuate = function(val) { console.log("Actuating at ", val); };
-	// var sense = function() { console.log("Sensing " + 0.15); return 0.15; };
 	var actuators = [
 		{ actuate: actuate },
 		{ actuate: actuate }		
 	];
+	var sensor1Val = 0;
+	var sensor2Val = 0;
 	var sensors = [
-		{ sense: function() { console.log("Sensing " + 0.15); return 0.15; } },
-		{ sense: function() { console.log("Sensing " + 0.01); return 0.01; } }
+		{ sense: function() { console.log("Sensing " + sensor1Val); return sensor1Val; } },
+		{ sense: function() { console.log("Sensing " + sensor2Val); return sensor2Val; } }
 	];
 	
 	var topLevel = new dTree.DTree();
 
-	var aDTreeAction = new dTree.DTreeAction({
-		0: 0.85,
-		1: 0.5
+	var firstAction = new dTree.DTreeAction({
+		0: 0.3
 	});
 	
 	var secondAction = new dTree.DTreeAction({
@@ -51,17 +53,34 @@ require(["dTree"], function(dTree) {
 	
 	var emptyAction = new dTree.DTreeAction({});
 
+	/* Setup a tree such that:
+		if sensor 0 > .4 and sensor 1 < 0.25, fire actuator 0 at 0.3
+		else if sensor 0 > .4, fire actuators 1 and 2 at 1.0
+		else do nothing.
+	*/
 	var anotherTest = new dTree.DTree();
-	anotherTest.setCondition(1, "<", 0.5);
-	anotherTest.trueBranch = secondAction;
-	anotherTest.falseBranch = emptyAction;
+	anotherTest.setCondition(1, "<", 0.25);
+	anotherTest.trueBranch = firstAction;
+	anotherTest.falseBranch = secondAction;
 
-	topLevel.setCondition(0, ">", 0.25);
-	topLevel.trueBranch = aDTreeAction;
-	topLevel.falseBranch = anotherTest;
+	topLevel.setCondition(0, ">", 0.4);
+	topLevel.trueBranch = anotherTest;
+	topLevel.falseBranch = emptyAction;
 	
-	
+	sensor1Val = 0.5;
+	sensor2Val = 0.1;	
 	var result = topLevel.makeDecision(actuators, sensors);
-	console.log("Result: ", result);
+	console.log("Result should be fire 0 at 0.3: ", result);
+	
+	sensor1Val = 0.99;
+	sensor2Val = 0.5;
+	var result = topLevel.makeDecision(actuators, sensors);
+	console.log("Result should be fire 1 and 2 at 1.0: ", result);
+	
+	sensor1Val = 0.1;
+	sensor2Val = 0.9;
+	var result = topLevel.makeDecision(actuators, sensors);
+	console.log("Result should be fire nothing: ", result);
 
+	
 });
