@@ -51,8 +51,6 @@ require(["dTree"], function(dTree) {
 		1: 1.0
 	});
 	
-	var emptyAction = new dTree.DTreeAction({});
-
 	/* Setup a tree such that:
 		if sensor 0 > .4 and sensor 1 < 0.25, fire actuator 0 at 0.3
 		else if sensor 0 > .4, fire actuators 1 and 2 at 1.0
@@ -65,7 +63,7 @@ require(["dTree"], function(dTree) {
 
 	topLevel.setCondition(0, ">", 0.4);
 	topLevel.trueBranch = anotherTest;
-	topLevel.falseBranch = emptyAction;
+	topLevel.falseBranch = dTree.emptyAction;
 	
 	sensor1Val = 0.5;
 	sensor2Val = 0.1;	

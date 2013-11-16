@@ -60,6 +60,7 @@ define(["inheritance"], function(inher) {
 		actionDict: {},
 		
 		init: function(actionDict) {
+			// TODO: actionDict needs to be cloned so it's not just a reference
 			this.actionDict = actionDict;
 		},
 		
@@ -80,6 +81,7 @@ define(["inheritance"], function(inher) {
 	
 	return {
 		DTree: DTree,
-		DTreeAction: DTreeAction
+		DTreeAction: DTreeAction,
+		emptyAction: emptyAction
 	};
 })
