@@ -6,7 +6,7 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
 
     var Bot = Class.extend({
         init : function() {
-            this.mainChassis = new Chassis();
+            this.mainChassis = new Chassis(this);
             this.transform = new common.Transform();
 
         },

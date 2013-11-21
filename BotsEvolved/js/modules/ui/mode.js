@@ -19,6 +19,9 @@ define(["common"], function(COMMON) {'use strict';
 
             // Overlay with custom context
             $.extend(this, context);
+
+            console.log("Created " + this.title + " " + this.panels);
+
         },
 
         toggle : function() {
@@ -31,6 +34,8 @@ define(["common"], function(COMMON) {'use strict';
 
         activate : function() {
             this.active = true;
+            console.log("Activate Mode " + this.title);
+            console.log(this.panels);
 
             // Activate all of the panels
             $.each(this.panels, function(index, panel) {
@@ -60,45 +65,6 @@ define(["common"], function(COMMON) {'use strict';
         }
     });
 
-    // Mutually exclusive modes
-    var ModeSet = Class.extend({
-        init : function(context) {
-
-            // Overlay with custom context
-            $.extend(this, context);
-            this.active = undefined;
-
-            this.activeIndex = 0;
-            this.activate(this.modes[this.activeIndex]);
-        },
-
-
-        cycle : function() {
-            this.activeIndex = (this.activeIndex + 1) % this.modes.length;
-            var mode = this.modes[this.activeIndex];
-
-            this.activate(mode);
-        },
-
-        getActive : function() {
-            return this.active;
-        },
-
-        activate : function(mode) {
-            console.log("Activate " + mode.title);
-
-            if (this.active !== undefined) {
-                this.active.deactivate();
-            }
-            this.active = mode;
-
-            if (this.active !== undefined) {
-                this.active.activate();
-            }
-        }
-    });
-
-    Mode.ModeSet = ModeSet;
     return Mode;
 
 });

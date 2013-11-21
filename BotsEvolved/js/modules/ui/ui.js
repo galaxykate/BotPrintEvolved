@@ -55,9 +55,12 @@ define(["common", "processing", "modules/ui/panel", "modules/ui/controls", "modu
 
         getPanels : function(names) {
             var ui = this;
-            return _.map(names, function(name) {
+            var panels = _.map(names, function(name) {
                 return ui.panels[name];
             });
+
+            console.log("Get Panels " + names + " -> " + panels);
+            return panels;
         },
 
         addDevUI : function(parentDiv) {
@@ -117,6 +120,7 @@ define(["common", "processing", "modules/ui/panel", "modules/ui/controls", "modu
                     side : "top",
                     sidePos : (w + spacing) * 0 + offset,
                 }),
+
                 devSliders : new Panel({
                     title : "Dev Tuning Values",
                     div : $("#dev_sliders"),
@@ -127,7 +131,7 @@ define(["common", "processing", "modules/ui/panel", "modules/ui/controls", "modu
 
             });
 
-            this.modes.dev = new Mode({
+            this.devMode = new Mode({
 
                 title : "Dev Mode",
                 description : "For Dev Eyes Only",
@@ -166,6 +170,7 @@ define(["common", "processing", "modules/ui/panel", "modules/ui/controls", "modu
                 value : defaultValue,
                 checkbox : checkbox,
             };
+            checkbox.prop('checked', defaultValue);
 
             checkbox.click(function() {
                 ui.options[key].value = checkbox.prop('checked');

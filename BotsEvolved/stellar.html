@@ -8,7 +8,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<title>Design your dream bot!</title>
+		<title>Stellar</title>
 		<meta name="description" content="">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -16,7 +16,7 @@
 
 		<link rel="stylesheet" href="css/normalize.css">
 		<link rel="stylesheet" href="css/main.css">
-		<link rel="stylesheet" href="css/bot_app.css">
+		<link rel="stylesheet" href="css/app.css">
 		<link rel="stylesheet" href="css/jqueryUI/absolution.css">
 		<script src="js/vendor/modernizr-2.6.2.min.js"></script>
 	</head>
@@ -36,29 +36,16 @@
 			</div>
 
 			<div id="inspector_view" class="app_size">
+				<div id="inspector_info" class="panel"></div>
 				<div id="inspector_bubbles" class="app_size"></div>
 				<div id="inspector_labels" class="app_size"></div>
 			</div>
 			<div id="ui" class="app_size app_overlay">
+				<div id="star_info"></div>
 				<div id="news_bar"></div>
 
 				<div id="dev_controls">
 
-					<div id="dev_sliders" class="panel"></div>
-					<div id="dev_options" class="panel"></div>
-					<div id="dev_output" class="panel">
-						<div id="debugOutput">
-							debug output
-						</div>
-
-						<div id="moveOutput">
-							MoveOutput
-						</div>
-
-						<div id="modeOutput">
-							modeOutput
-						</div>
-					</div>
 				</div>
 
 			</div>
@@ -68,7 +55,7 @@
                 window.jQuery || document.write('<script src="js/vendor/jquery-1.10.2.min.js"><\/script>')
 			</script>
 			<script src="js/plugins.js"></script>
-			<script data-main="js/main" src="js/vendor/require.js"></script>
+			<script data-main="js/stellarMain" src="js/vendor/require.js"></script>
 
 			<!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
 			<script>

@@ -12,7 +12,6 @@ define(["common"], function(common) {'use strict';
 
             this.start = start;
             this.end = end;
-            console.log("Wire between " + this.start + " " + this.end);
         },
 
         render : function(context) {
@@ -31,14 +30,14 @@ define(["common"], function(common) {'use strict';
             this.pct = .5;
             _.extend(this, settings);
             this.edgePos = new Vector();
-            
+
             this.wire = undefined;
         },
 
         render : function(context) {
             this.edge.setToPct(this.edgePos, this.pct);
             this.edgePos.add(this.parent.center);
-          
+
             var g = context.g;
             g.fill(0, 0, 0);
             if (this.positive)

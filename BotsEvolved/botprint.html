@@ -16,7 +16,8 @@
 
 		<link rel="stylesheet" href="css/normalize.css">
 		<link rel="stylesheet" href="css/main.css">
-		<link rel="stylesheet" href="css/bot_app.css">
+		<link rel="stylesheet" href="css/app.css">
+		<link rel="stylesheet" href="css/botApp.css">
 		<link rel="stylesheet" href="css/jqueryUI/absolution.css">
 		<script src="js/vendor/modernizr-2.6.2.min.js"></script>
 	</head>
@@ -29,15 +30,20 @@
 
 		<div id="app" class="app_size" >
 
-			<div id="inspector_panel" class="app_size panel">
-
-				<canvas id="inspector_canvas" class="app_size"></canvas>
+			<div id="inspector_panel" class="panel">
+				<div class="app_size">
+					<canvas id="inspector_canvas"></canvas>
+				</div>
+				<button id="test_button">
+					Test!
+				</button>
 
 			</div>
 
-			<div id="arena_panel" class="app_size panel">
+			<div id="arena_panel" class="panel">
 
-				<canvas id="arena_canvas" class="app_size"></canvas>
+				<canvas id="arena_canvas"></canvas>
+				<button id="edit_button"></button>
 			</div>
 
 			<div id="render_panel" class="panel">

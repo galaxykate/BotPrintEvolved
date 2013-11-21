@@ -4,7 +4,7 @@
 
 define(["common"], function(common) {'use strict';
 
-    var closedShowing = 15;
+    var closedShowing = -30;
     var openHidden = 15;
 
     var Panel = Class.extend({
@@ -14,7 +14,8 @@ define(["common"], function(common) {'use strict';
         init : function(options) {
 
             // Default options
-            this.id = id;
+
+            this.id = "id";
             this.title = "Unlabeled Panel";
             this.description = "Does something of interest";
 
@@ -28,13 +29,17 @@ define(["common"], function(common) {'use strict';
 
             // Overlay all the custom options
             $.extend(this, options);
+
+            if (this.div === undefined) {
+                this.div = $("#" + this.id);
+            }
+
             this.openState = new common.Rect(0, 0, 300, 100);
             this.closedState = new common.Rect(0, 0, 200, 200);
             this.openState.setDimensions(this.dimensions);
             this.closedState.setDimensions(this.dimensions);
 
-            this.div.prepend(this.title);
-
+          
             // set the positions
 
             var offsetClosed = closedShowing;
@@ -64,8 +69,12 @@ define(["common"], function(common) {'use strict';
 
         open : function() {
             this.div.css(this.openState.toCSS());
+        },
+        
+        toString: function() {
+            return "Panel " + this.id;
         }
     });
 
     return Panel;
-}); 
+});

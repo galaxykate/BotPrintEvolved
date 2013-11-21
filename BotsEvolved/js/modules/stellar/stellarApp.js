@@ -2,224 +2,184 @@
  * @author Kate Compton
  */
 
-define(["ui", "modules/stellar/universeView", "modules/stellar/universe", "./stellarSettings", "common"], function(UI, UniverseView, Universe, settings, common) {
-    var app = {
-        rect : new common.Rect(),
-        ui : new UI({
-        }),
+define(["ui", "app", "modules/stellar/universeView", "modules/stellar/universe", "modules/stellar/inspector/inspectorView", "./stellarSettings", "common"], function(UI, App, UniverseView, Universe, InspectorView, settings, common) {
+    var StellarApp = App.extend({
+        init : function() {
+            var app = this;
+            app._super("Stellar", new Vector(800, 600));
+            this.settings = settings;
+            app.universe = new Universe();
+            app.universeView = new UniverseView(app.universe, app.processing);
 
-        div : $("#app"),
-
-        width : 800,
-        height : 550,
-
-        time : {
-            worldTime : 0,
-            appTime : 0,
-            ellapsed : 0
+            app.inspectorView = new InspectorView();
+            app.changeMode("nav");
         },
 
-        getTime : function() {
-            var date = new Date();
-            var time = date.getTime() - this.startTime;
-            return time;
+        initModes : function() {
+
+            // create panels
+
+            this.ui.addPanel(new UI.Panel({
+                id : "inspector_info",
+                title : "Inspector info",
+                dimensions : new Vector(200, 300),
+                side : "right",
+                sidePos : 0,
+            }));
+
+            this.modes = {
+                inspect : new UI.Mode({
+                    title : "Inspect",
+                    panels : this.ui.getPanels(["inspector_info"]),
+                }),
+
+                nav : new UI.Mode({
+                    title : "Nav",
+                    panels : []
+                }),
+
+                universe : new UI.Mode({
+                    title : "Universe",
+                    panels : []
+                })
+            };
+
+            $.each(this.modes, function(key, mode) {
+                mode.id = key;
+            });
+
         },
 
-        timespans : new common.TimeSpan.Manager(),
-    };
-
-    // Enum of modes
-    var MODE = {
-
-    };
-
-    app.start = function() {
-
-        // Set the starting time of the app
-        var date = new Date();
-        app.startTime = date.getTime();
-
-        app.rect = new common.Rect(0, 20, 800, 580);
-
-        app.ui.addDevUI();
-        app.ui.addOption("render3D", false, function(key, value) {
-            if (value) {
-                $("#three_overlay").show();
-                app.universeView.threeRender.rendering = true;
-            } else {
-                $("#three_overlay").hide();
-                app.universeView.threeRender.rendering = false;
-            }
-        });
-
-        app.getOption = function(key) {
-            return app.ui.options[key];
-        };
-
-        app.universe = new Universe();
-        app.universeView = new UniverseView(app.universe);
-
-        // Initialize the UI
-        var ui = app.ui;
-
-        // Make a shortcut for outputs
-        app.log = function(line) {
-            app.ui.output.log(line);
-        }
-
-        ui.modes.dev.activate();
-
-        MODE.nav = new UI.Mode({
-            title : "Nav Mode",
-            description : "Zoom around",
-            panels : ui.getPanels([]),
-        });
-
-        MODE.inspect = new UI.Mode({
-            title : "Inspect Mode",
-            description : "Inspect a star",
-            panels : ui.getPanels([]),
-        });
-
-        MODE.universe = new UI.Mode({
-            title : "Universe Mode",
-            description : "Inspect the universe",
-            panels : ui.getPanels([]),
-        });
-
-        ui.modes.main = new UI.Mode.ModeSet({
-            name : "Main mode",
-            modes : [MODE.inspect, MODE.nav, MODE.universe],
-            onChange : function(mode) {
-                ui.modeOutput.log("Changed mode: " + mode.name);
-            }
-        });
-
-        // Update the world
-        var lastUpdateTime = 0;
-        app.updateWorld = function(currentTime) {
-            var ellapsed = currentTime - lastUpdateTime;
-            lastUpdateTime = currentTime;
-
-            var time = app.time;
-            // update the time object
-            time.worldTime += ellapsed;
-            time.ellapsed = ellapsed;
-            app.log("Time: ");
-            app.log("  world: " + time.worldTime.toFixed(2));
-            app.log("  ellapsed: " + time.ellapsed.toFixed(2));
-            app.log("  FPS: " + (1 / time.ellapsed).toFixed(2));
-
-            app.timespans.update(ellapsed);
-            app.universe.update(time);
-            app.universeView.update(time);
-        };
-
-        var processingG = ui.addProcessingWindow("universe_canvas", function(g) {
-            app.universeView.renderArea.setDimensions(g.width, g.height);
-        }, function(g) {
-
-            app.ui.output.clear();
-            app.updateWorld(g.millis() * .001);
-            g.colorMode(g.HSB, 1);
-
-            g.background(.55, .3, .8);
-
-            if (app.ui.mode === MODE.inspect)
-                g.background(.55, .6, .8);
-
-            if (app.ui.mode === MODE.nav)
-                g.background(.6, .7, .7);
-
-            if (app.ui.mode === MODE.universe)
-                g.background(.65, .8, .5);
-
-            app.universeView.renderMain(g);
-        });
-
-        app.navControls = new UI.Controls({
-            touchDiv : $("#app"),
-            onKeyPress : {
-                d : function(event) {
-                    ui.modes.dev.toggle()
-                },
-                m : function(event) {
-                    ui.modes.main.cycle()
-                },
-            },
-
-            onMove : function(touch) {
-                app.universeView.hoverView(touch.pos);
-            },
-
-            onTap : function(touch) {
-
-                app.universeView.zoomCameraTo(touch);
-            },
-
-            onDrag : function(touch) {
-
-                if (app.ui.mode === MODE.nav) {
-                    var planeCenter = app.universeView.getPlanarPos(app.universeView.screenCenter);
-                    var planeTouch = app.universeView.getPlanarPos(touch.pos);
-                    var centerOffset = Vector.sub(planeTouch, planeCenter);
-                    app.ui.moveOutput.log("Drag: " + centerOffset);
-                    app.universeView.pullCamera(touch.pos, centerOffset);
-
-                    app.universeView.siphon();
-                }
-            },
-
-            onMouseWheel : function(delta) {
-
-                app.universeView.changeZoom(-delta);
-                // Is it zoomed in/out far enough to change modes?
-                var zoom = app.universeView.zoom.getValue();
-                if (delta > 0) {
-                    if (zoom < settings.modeSwitchDistances.down[1]) {
-                        if (zoom < settings.modeSwitchDistances.down[0]) {
-                            ui.changeMode(MODE.inspect);
-                        } else {
-                            ui.changeMode(MODE.nav);
-                        }
-                    }
-
+        initControls : function() {
+            app.ui.addOption("render3D", false, function(key, value) {
+                if (value) {
+                    $("#three_overlay").show();
+                    app.universeView.threeRender.rendering = true;
                 } else {
-                    if (zoom > settings.modeSwitchDistances.up[0]) {
-                        if (zoom > settings.modeSwitchDistances.up[1]) {
-                            ui.changeMode(MODE.universe);
-                        } else {
-                            ui.changeMode(MODE.nav);
-                        }
-                    }
+                    $("#three_overlay").hide();
+                    app.universeView.threeRender.rendering = false;
                 }
+            });
 
-            }
-        });
+            // Set all the ui controls
+            app.controls = new UI.Controls({
+                app : app,
+                touchDiv : $("#app"),
 
-        app.touch = app.navControls.touch;
-        app.navControls.activate();
+                onKeyPress : {
+                    d : function(event) {
+                        app.ui.devMode.toggle()
+                    },
+                    m : function(event) {
+                        ui.modes.main.cycle()
+                    },
+                },
 
-        ui.addOption("allowTribbles", false);
-        ui.addOption("useBunnies", true);
-        ui.addOption("manyUnicorns", true);
-        ui.addTuningValue("unicornPrettiness", 50, 0, 100);
-        ui.addTuningValue("unicornFuzziness", 50, 0, 100);
-        ui.addTuningValue("bunnyMultiplier", 50, 0, 100);
+                onMove : function(touch) {
 
-        ui.newsbar = ui.addPopupManager("newsBar", new UI.Popup.NoticeBar({
-            divName : "news_bar"
-        }));
+                    app.moveLog(touch.pos);
+                    var obj = app.universeView.getAt({
+                        screenPos : touch.pos
+                    });
 
-        /*
-         setInterval(function() {
-         ui.popupManagers.newsBar.addPopup({
-         title : utilities.words.getRandomPhrase(),
-         deathLocation : new Vector(-10, 100),
-         });
-         }, 800);
-         */
-    };
+                    //     app.universeView.hoverView(touch.pos);
+                },
 
-    return app;
+                onTap : function(touch) {
+                    var obj = app.universeView.getAt({
+                        screenPos : touch.pos
+                    });
+                    if (obj !== undefined) {
+                        app.universeView.inspect(obj);
+                    }
+                },
+
+                onDrag : function(touch) {
+
+                    if (app.mode === app.modes.nav) {
+                        var planeCenter = app.universeView.getPlanarPos(app.universeView.screenCenter);
+                        var planeTouch = app.universeView.getPlanarPos(touch.pos);
+                        var centerOffset = Vector.sub(planeTouch, planeCenter);
+                        app.ui.moveOutput.log("Drag: " + centerOffset);
+                        app.universeView.pullCamera(touch.pos, centerOffset);
+
+                        app.universeView.siphon();
+                    }
+                },
+
+                onScroll : function(delta) {
+
+                    switch(app.mode.id) {
+
+                        case "inspect":
+                            // Zoom out to the nav view
+                            app.universeView.zoomTo(app.inspectorView.inspected, app.settings.minNavLevel);
+                            app.changeMode("nav");
+                            break;
+                        case "nav":
+                            app.universeView.changeZoom(-delta);
+                            var zoom = app.universeView.zoom.getValue();
+                            //   console.log("consider changing " + delta + " " + zoom + " " + app.settings.navLimit.up);
+                            if (delta < 0 && zoom > app.settings.navLimit.down) {
+                                app.changeMode("universe");
+                            }
+                            break;
+                        case "universe":
+                            app.universeView.changeZoom(-delta);
+                            var zoom = app.universeView.zoom.getValue();
+                            if (delta > 0 && zoom > app.settings.navLimit.up) {
+                                app.changeMode("nav");
+                            }
+                            break;
+
+                    }
+
+                }
+            });
+        },
+
+        updateWorld : function(t) {
+            app.log("MODE: " + this.mode);
+
+            this._super(t);
+            app.universeView.update(app.time);
+            app.universe.update(app.time);
+        },
+
+        initUI : function() {
+            var ui = this.ui;
+            ui.newsbar = ui.addPopupManager("newsBar", new UI.Popup.NoticeBar({
+                divName : "news_bar"
+            }));
+
+            ui.starInfo = ui.addPopupManager("starInfo", new UI.Popup.PopupManager({
+                divName : "star_info"
+            }));
+
+            $("#star_info").css({
+                perspective : "600px"
+            });
+
+            ui.addProcessingWindow($("#universe_canvas"), function(g) {
+                app.processing = g;
+            }, function(g) {
+
+                app.ui.output.clear();
+
+                app.updateWorld(g.millis() * .001);
+
+                g.colorMode(g.HSB, 1);
+
+                g.background(.55, .3, .8);
+
+                app.universeView.renderMain(g);
+            });
+
+            app.ui.addOption("usePositioning", false);
+            app.ui.addOption("use2DTranslate", false);
+            app.ui.addOption("use3DTranslate", true);
+        },
+    });
+
+    return StellarApp;
 });

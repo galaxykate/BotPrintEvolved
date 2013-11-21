@@ -24,6 +24,7 @@ require.config({
         // My modules
         'common' : 'modules/common/common',
         'ui' : 'modules/ui/ui',
+        'io' : 'modules/io/saveFile',
         'evo' : 'modules/evolution/evo',
         'arena' : 'modules/arena/arena',
 
@@ -85,11 +86,9 @@ require.config({
     }
 });
 
-var app;
-require(["modules/stellar/stellarApp", "modules/botPrint/botApp"], function(stellarApp, botApp) {
-    app = stellarApp;
+require(["modules/stellar/stellarApp"], function(StellarApp) {
+    var app = new StellarApp();
     app.start();
-    console.log("Start");
 
 });
 

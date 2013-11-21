@@ -24,6 +24,7 @@ require.config({
         // My modules
         'common' : 'modules/common/common',
         'ui' : 'modules/ui/ui',
+        'io' : 'modules/io/saveFile',
         'evo' : 'modules/evolution/evo',
         'arena' : 'modules/arena/arena',
 
@@ -86,8 +87,8 @@ require.config({
 });
 
 var app;
-require(["modules/botPrint/botApp"], function(botApp) {
-    app = botApp;
+require(["modules/botPrint/botApp"], function(BotApp) {
+    app = new BotApp();
     app.start();
     console.log("Start");
 

@@ -2,350 +2,274 @@
  * @author Kate Compton
  */
 
-define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", "common"], function(UI, Bot, Arena, ThreeView, common) {
+define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", "modules/evo/evoSim", "app", "common"], function(UI, Bot, Arena, ThreeView, EvoSim, App, common) {
 
-    var app = {
-        rect : new common.Rect(),
-        ui : new UI({
-        }),
+    var BotApp = App.extend({
+        init : function() {
+            var app = this;
 
-        div : $("#app"),
+            var w = 800;
+            var h = 600;
+            this.fullPanelDimensions = new Vector(w - 20, h - 40);
 
-        width : 800,
-        height : 550,
+            app._super("Bots", new Vector(w, h));
 
-        time : {
-            worldTime : 0,
-            appTime : 0,
-            ellapsed : 0,
-            lastUpdateTime : 0,
+            app.changeMode("arena");
+
+            app.arena = new Arena();
+            app.editBot(new Bot());
+            this.initEvoSims();
         },
 
-        getTime : function() {
-            var date = new Date();
-            var time = date.getTime() - this.startTime;
-            return time;
+        // Set up all the info about the evolutionary algorithm
+        initEvoSims : function() {
+            // Create the bot evosim
+            app.evoSim = new EvoSim();
+
+            app.evoSim.createGenome = function() {
+                var count = 20;
+                var genome = [];
+                for (var i = 0; i < count; i++) {
+                    genome[i] = Math.random();
+                }
+                return genome;
+            };
+
+            app.evoSim.createIndividualFromGenome = function(genome) {
+                return new Bot();
+            };
+
+            var population = app.evoSim.createPopulation(5);
+            console.log(population);
+            app.arena.runTest(population);
         },
 
-        timespans : new common.TimeSpan.Manager(),
-    };
+        initModes : function() {
+            var ui = app.ui;
+            ui.addPanel({
+                id : "arena",
+                div : $("#arena_panel"),
+                title : "Arena",
+                description : "An arena to view bots in",
+                side : "right",
+                sidePos : 5,
+                dimensions : app.fullPanelDimensions
 
-    app.editBot = function(bot) {
-        if (bot === undefined)
-            bot = new Bot();
+            });
 
-        app.currentBot = bot;
-        app.threeBotMesh.add(bot.createThreeMesh());
+            ui.addPanel({
+                id : "inspector",
+                div : $("#inspector_panel"),
+                title : "Inspector",
+                description : "A window to inspect and modify bots in",
+                side : "left",
+                sidePos : 5,
+                dimensions : app.fullPanelDimensions
 
-    };
+            });
 
-    app.updateWorld = function(currentTime) {
-        var ellapsed = currentTime - app.time.lastUpdateTime;
-        app.time.lastUpdateTime = currentTime;
+            // Create modes:
+            // Each mode has some panels that only appear during that mode, and
+            // Some custom control functionality
 
-        var time = app.time;
-        // update the time object
+            this.modes = {
+                arena : new UI.Mode({
+                    title : "arena",
+                    panels : app.ui.getPanels(["arena"]),
 
-        time.worldTime += ellapsed;
-        time.ellapsed = ellapsed;
-        /*
-         app.log("Time: ");
-         app.log("  world: " + time.worldTime.toFixed(2));
-         app.log("  ellapsed: " + time.ellapsed.toFixed(2));
-         app.log("  FPS: " + (1 / time.ellapsed).toFixed(2));
-         */
-        app.timespans.update(ellapsed);
-        app.currentBot.update(time);
+                    // Custom controls for the arena mode
+                    controls : {
+                        onMove : function(touch) {
+                            var p = app.toArenaRelative(touch.pos);
+                            app.arena.hover(p);
+                        },
 
-    };
+                        onPress : function(touch) {
+                            var p = app.toArenaRelative(touch.pos);
+                            app.arena.selectBotAt(p);
+                        },
+                    }
+                }),
 
-    app.initializeUI = function() {
-        app.rect = new common.Rect(0, 20, 800, 580);
+                edit : new UI.Mode({
+                    title : "inspector",
+                    panels : app.ui.getPanels(["inspector"]),
+                    // Control mapping
+                    controls : {
+                        onMove : function(touch) {
+                            var p = app.toInspectorRelative(touch.pos);
+                            app.currentBot.hover(p);
+                        },
 
-        app.ui = new UI({
-        });
+                        onDrag : function(touch) {
+                            var p = app.toInspectorRelative(touch.pos);
+                            app.currentBot.dragPoint(p);
+                        },
 
-        var appDiv = $("#app");
+                        onPress : function(touch) {
+                            var p = app.toInspectorRelative(touch.pos);
+                            app.currentBot.selectPoint(p);
+                        },
 
-        // Initialize the UI
-        var ui = app.ui;
+                        onRelease : function(touch) {
+                            var p = app.toInspectorRelative(touch.pos);
+                            app.currentBot.releasePoint(p);
 
-        // Make a shortcut for outputs
-        app.log = function(line) {
-            app.ui.output.log(line);
-            //   console.log(app.ui.output);
-        };
-        app.moveLog = function(line) {
-            app.ui.moveOutput.log(line);
-            //   console.log(app.ui.output);
-        };
+                        }
+                    }
+                }),
 
-        ui.addDevUI($("#dev_controls"));
+            };
 
-        var fullPanelDimensions = new Vector(app.rect.w - 20, app.rect.h - 40);
-        ui.addPanel({
-            id : "arena",
-            div : $("#arena_panel"),
-            title : "Arena",
-            description : "An arena to view bots in",
-            side : "right",
-            sidePos : 0,
-            dimensions : fullPanelDimensions
+            $.each(this.modes, function(key, mode) {
+                mode.id = key;
+            });
 
-        });
-        ui.addPanel({
-            id : "inspector",
-            div : $("#inspector_panel"),
-            title : "Inspector",
-            description : "A window to inspect and modify bots in",
-            side : "left",
-            sidePos : 0,
-            dimensions : fullPanelDimensions
+        },
 
-        });
+        initControls : function() {
 
-        // Create modes
-        app.arenaMode = new UI.Mode({
-            title : "Arena Mode",
-            description : "Test and evolve your bots",
-            panels : ui.getPanels(["arena"]),
-        });
+            // Set all the default UI controls
+            app.controls = new UI.Controls($("#app"), {
 
-        app.inspectMode = new UI.Mode({
-            title : "Inspect Mode",
-            description : "Edit and customize your bot",
-            panels : ui.getPanels(["inspector"]),
-        });
+                onKeyPress : {
+                    d : function(event) {
+                        app.ui.devMode.toggle()
+                    },
+                },
 
-        app.saveMode = new UI.Mode({
-            title : "Save Mode",
-            description : "Save or print your bot",
-            panels : ui.getPanels([]),
-        });
+            });
 
-        ui.modes.main = new UI.Mode.ModeSet({
-            name : "Main mode",
-            modes : [app.arenaMode, app.inspectMode],
-            onChange : function(mode) {
-                ui.modeOutput.log("Changed mode: " + mode.name);
-            }
-        });
+            app.setTouchableDivs(["inspector_canvas", "arena_canvas"]);
+        },
 
-        //================================================
-        //================================================
-        //================================================
-        // Iniialize the viewing ports (Processing and Three.JS)
-        // Create the processing.  camera stuff will move into own file eventually
-
-        app.inspectorCamera = new common.Transform();
-
-        app.arenaDiv = $("#arena_canvas");
-        app.inspectorDiv = $("#inspector_canvas");
-
-        app.inspectorProcessing = ui.addProcessingWindow(app.inspectorDiv, function(g) {
-            app.inspectorCamera.translation.setTo(g.width / 2, g.height / 2);
-
-        }, function(g) {
-            // Updates
-            app.ui.output.clear();
-            app.log("Test");
-            var context = {
-                g : g,
-                transform : app.inspectorCamera,
-            }
-
-            // Updates
-            app.updateWorld(g.millis() * .001);
-
-            g.colorMode(g.HSB, 1);
-            g.background(.55, .3, 1);
-
-            g.fill(.6, 1, .2);
-            g.ellipse(0, 0, 400, 400);
-
-            g.pushMatrix();
-            app.inspectorCamera.applyTransform(g);
-            app.currentBot.render(context);
-            g.popMatrix();
-        });
-
-        // Create the arena
-        app.arenaProcessing = ui.addProcessingWindow(app.arenaDiv, function(g) {
-        }, function(g) {
-            app.updateWorld(g.millis() * .001);
-            var context = {
-                g : g,
-                useScreenPos : false,
-            }
-            g.colorMode(g.HSB, 1);
-            g.background(.75, .1, 1);
-
-            app.arena.render(context);
-
-        });
-
-        // Create the Three scene
-        app.threeRender = new ThreeView($("#render_panel"), function() {
-            // update the camera
-
-            if (!app.pauseSpinning)
-                this.camera.orbit.theta += .03;
-            // app.log(this.camera.orbit.theta);
-            this.camera.updateOrbit();
-        });
-        //create an empty container
-        app.threeBotMesh = new THREE.Object3D();
-        app.threeRender.scene.add(app.threeBotMesh);
-        
-
-        app.getInspectorLocalPosition = function(touch) {
-            var screenPos = app.getPositionRelativeTo(app.inspectorDiv, touch.pos);
+        toInspectorRelative : function(p) {
+            var screenPos = app.getPositionRelativeTo(app.inspectorDiv, p);
             var localPos = new Vector();
 
             app.inspectorCamera.toLocal(screenPos, localPos);
             return localPos;
-        }
-    };
+        },
 
-    app.initializeControls = function() {
-        //================================================
-        //================================================
-        //================================================
-        // Setup controls
-        var ui = app.ui;
+        toArenaRelative : function(p) {
+            var screenPos = app.getPositionRelativeTo(app.arenaDiv, p);
+            var localPos = new Vector();
 
-        app.navControls = new UI.Controls({
-            touchDiv : $("#app"),
-            onKeyPress : {
-                d : function(event) {
-                    ui.modes.dev.toggle()
-                },
-                m : function(event) {
-                    ui.modes.main.cycle()
-                },
-            },
+            app.arenaCamera.toLocal(screenPos, localPos);
+            return localPos;
+        },
 
-            onPress : function(touch) {
-                var localPos = app.getInspectorLocalPosition(touch);
-                app.currentBot.selectPoint(localPos);
+        initUI : function() {
 
-            },
+            $("#test_button").click(function() {
+                app.changeMode("arena");
+            });
 
-            onRelease : function(touch) {
+            var ui = this.ui;
+            app.inspectorDiv = $("#inspector_canvas");
+            app.arenaDiv = $("#arena_canvas");
 
-                app.pauseSpinning = false;
-                app.focusedWindow = undefined;
-                app.re
-            },
+            app.inspectorDiv.css({
+                position : "absolute",
+                top : "0px",
+                bottom : "0px",
+                width : app.fullPanelDimensions.x - 5,
+                height : app.fullPanelDimensions.y - 5,
+            });
+            app.arenaDiv.css({
+                position : "absolute",
+                top : "0px",
+                bottom : "0px",
+                width : app.fullPanelDimensions.x - 5,
+                height : app.fullPanelDimensions.y - 5,
+            });
 
-            onMove : function(touch) {
-                var localPos = app.getInspectorLocalPosition(touch);
-                app.moveLog("localPos: " + localPos);
+            app.arenaCamera = new common.Transform();
+            app.inspectorCamera = new common.Transform();
 
-                app.currentBot.hover(localPos);
+            app.inspectorProcessing = ui.addProcessingWindow(app.inspectorDiv, function(g) {
+                app.inspectorCamera.translation.setTo(g.width / 2, g.height / 2);
 
-            },
-
-            onDrag : function(touch) {
-                app.ui.moveOutput.log("focus: " + app.focusedWindow);
-
-                switch(app.focusedWindow) {
-                    case "render_panel" :
-                        app.threeRender.camera.orbit.theta = touch.pos.x * .01;
-                        app.threeRender.camera.orbit.phi = .4 + touch.pos.y * .004;
-                        app.threeRender.camera.updateOrbit();
-                        break;
-
-                    case "inspector_panel":
-
-                        var localPos = app.getInspectorLocalPosition(touch);
-
-                        app.currentBot.dragPoint(localPos);
-                        app.moveLog("Drag to: " + localPos);
-
-                        break;
+            }, function(g) {
+                // Updates
+                app.ui.output.clear();
+                app.log("Test");
+                var context = {
+                    g : g,
+                    transform : app.inspectorCamera,
                 }
 
-            },
+                // Updates
+                app.updateWorld(g.millis() * .001);
 
-            onMouseWheel : function(delta) {
+                g.colorMode(g.HSB, 1);
+                g.background(.55, .3, 1);
 
-            }
-        });
+                g.fill(.6, 1, .2);
+                g.ellipse(0, 0, 400, 400);
 
-        function logAndBubbleMouseActions(id) {
-            var div = $("#" + id);
+                g.pushMatrix();
+                app.inspectorCamera.applyTransform(g);
+                app.currentBot.render(context);
+                g.popMatrix();
+            });
 
-            div.on('mousedown', function(event) {
-                event.preventDefault();
-                app.focusedWindow = id;
+            // Create the arena
+            app.arenaProcessing = ui.addProcessingWindow(app.arenaDiv, function(g) {
+                app.arenaCamera.translation.setTo(g.width / 2, g.height / 2);
+            }, function(g) {
+                app.updateWorld(g.millis() * .001);
+                var context = {
+                    g : g,
+                    useScreenPos : false,
+                }
+                g.colorMode(g.HSB, 1);
+                g.background(.75, .1, 1);
+
+                g.pushMatrix();
+                app.arenaCamera.applyTransform(g);
+                app.arena.render(context);
+                g.popMatrix();
 
             });
 
-            div.on('mouseup', function(event) {
-                event.preventDefault();
-                app.focusedWindow = undefined;
+            //================================================
+            //================================================
+            //================================================
+            // Iniialize the viewing ports (Processing and Three.JS)
+            // Create the processing.  camera stuff will move into own file eventually
 
+            // Create the Three scene
+            app.threeRender = new ThreeView($("#render_panel"), function() {
+                // update the camera
+
+                if (!app.pauseSpinning)
+                    this.camera.orbit.theta += .03;
+                // app.log(this.camera.orbit.theta);
+                this.camera.updateOrbit();
             });
-        }
+            //create an empty container
+            app.threeBotMesh = new THREE.Object3D();
+            app.threeRender.scene.add(app.threeBotMesh);
 
+        },
 
-        app.div.mousedown(function() {
-            app.div.scrollTop(0);
-        });
+        updateWorld : function(t) {
+            app.log("MODE: " + this.mode);
 
-        app.div.mouseup(function() {
-            app.div.scrollTop(0);
-        });
+            this._super(t);
 
-        logAndBubbleMouseActions("render_panel");
-        logAndBubbleMouseActions("inspector_panel");
+        },
 
-        // Enlarge the render panel...but how to increase camera size?
-        $("#render_panel").dblclick(function() {
-            /*
-             $("#render_panel").css({
-             width : "500px",
-             height : "500px",
+        editBot : function(bot) {
+            if (bot === undefined)
+                bot = new Bot();
 
-             });
-             */
-        });
+            app.currentBot = bot;
+            app.threeBotMesh.add(bot.createThreeMesh());
 
-    };
+        },
+    });
 
-    app.getPositionRelativeTo = function(div, pos) {
-        var v = new Vector(pos.x - div.offset().left, pos.y - div.offset().top);
-        return v;
-    };
-
-    app.start = function() {
-
-        app.initializeUI();
-        app.initializeControls();
-        app.arena = new Arena();
-
-        app.navControls.activate();
-
-        app.editBot();
-
-        var ui = app.ui;
-        ui.addOption("allowTribbles", false);
-        ui.addOption("useBunnies", true);
-        ui.addOption("manyUnicorns", true);
-        ui.addTuningValue("unicornPrettiness", 50, 0, 100);
-        ui.addTuningValue("unicornFuzziness", 50, 0, 100);
-        ui.addTuningValue("bunnyMultiplier", 50, 0, 100);
-
-        ui.addPopupManager("newsBar", new UI.Popup.NoticeBar({
-            divName : "news_bar"
-        }));
-
-        //ui.modes.main.activate(app.arenaMode);
-        ui.modes.main.activate(app.inspectMode);
-        //  ui.modes.dev.activate();
-
-    };
-
-    return app;
+    return BotApp;
 });

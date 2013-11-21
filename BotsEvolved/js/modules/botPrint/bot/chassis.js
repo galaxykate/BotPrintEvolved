@@ -2,9 +2,13 @@
  * @author Kate Compton
  */
 
-define(["common", "evo", "./pathPoint", "./wiring"], function(common, Evo, PathPoint, Wiring) {'use strict';
+define(["common", "evo", "./pathPoint", "./wiring", "io"], function(common, Evo, PathPoint, Wiring, IO) {'use strict';
     var chassisCount = 0;
     // Points MUST be coplanar
+
+    // var CylinderGeometry = new
+    //  IO.saveFile("test", "txt", "M 100 100 L 300 100 L 200 300 z");
+
     var geomFromPointLoop = function(center, points, material) {
         var geom = new THREE.Geometry();
         $.each(points, function(index, vertex) {
@@ -54,8 +58,15 @@ define(["common", "evo", "./pathPoint", "./wiring"], function(common, Evo, PathP
     };
 
     var Chassis = Class.extend({
-        init : function() {
+        init : function(parent) {
+
             var chassis = this;
+            this.parent = parent;
+            if (parent.bot === undefined)
+                this.bot = parent;
+            else
+                this.bot = this.parent.bot;
+
             var genome = new Evo.Genome(10);
             this.idNumber = chassisCount;
             chassisCount++;
@@ -66,7 +77,7 @@ define(["common", "evo", "./pathPoint", "./wiring"], function(common, Evo, PathP
             var last = undefined;
             for (var i = 0; i < pointCount; i++) {
                 var theta = i * Math.PI * 2 / pointCount;
-                var r = 250 * utilities.unitNoise(.7 * theta);
+                var r = 250 * utilities.unitNoise(.7 * theta + 50 * this.idNumber);
                 var pt = new PathPoint(0, 0, 30, 30, theta - Math.PI / 2);
                 pt.addPolar(r, theta);
 
@@ -185,9 +196,14 @@ define(["common", "evo", "./pathPoint", "./wiring"], function(common, Evo, PathP
         render : function(context) {
             var g = context.g;
             this.idColor.fill(g, .2, 1);
-            this.idColor.stroke(g, -.4, 1);
 
             g.strokeWeight(1);
+            this.idColor.stroke(g, -.4, 1);
+            if (this.bot.selected) {
+                g.strokeWeight(5);
+                this.idColor.stroke(g, -.7, 1);
+             this.idColor.fill(g, .5, 1);
+ }
 
             g.beginShape();
             this.points[0].vertex(g);
@@ -197,23 +213,25 @@ define(["common", "evo", "./pathPoint", "./wiring"], function(common, Evo, PathP
             })
             g.endShape();
 
-            $.each(this.points, function(index, point) {
-                point.render(context);
-            });
+            if (!context.simplifiedBots) {
 
-            $.each(this.components, function(index, component) {
-                component.render(context);
-            })
+                $.each(this.points, function(index, point) {
+                    point.render(context);
+                });
+                $.each(this.components, function(index, component) {
+                    component.render(context);
+                })
 
-            $.each(this.wires, function(index, wire) {
-                wire.render(context);
-            })
+                $.each(this.wires, function(index, wire) {
+                    wire.render(context);
+                })
+            }
         },
         hover : function(pos) {
 
         },
         createThreeMesh : function() {
-            
+
             var material = new THREE.MeshNormalMaterial();
             material.side = THREE.DoubleSide;
             var geom = geomFromPointLoop(this.center, this.points, 15);

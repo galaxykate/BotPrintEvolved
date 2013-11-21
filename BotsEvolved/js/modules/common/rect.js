@@ -6,11 +6,21 @@
 
 define(["modules/common/vector"], function(Vector) {
     var Rect = Class.extend({
-        init : function(x, y, w, h) {
-            this.w = w;
-            this.h = h;
-            this.x = x;
-            this.y = y;
+
+        // use as init(x, y, w, h) or init(position:Vector, dimensions:Vector)
+        init : function() {
+            if (arguments.length == 4) {
+                this.x = arguments[0];
+                this.y = arguments[1];
+                this.w = arguments[2];
+                this.h = arguments[3];
+
+            } else {
+                this.x = arguments[0].x;
+                this.y = arguments[0].y;
+                this.w = arguments[1].x;
+                this.h = arguments[1].y;
+            }
         },
 
         clone : function() {

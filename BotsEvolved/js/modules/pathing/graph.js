@@ -92,7 +92,7 @@ define(["common"], function(common) {
             var g = context.g;
             g.strokeWeight(2);
                $.each(this.nodes, function(index, node) {
-                node.renderAsPolygon(context);
+                node.render(context);
             });
             
             /*

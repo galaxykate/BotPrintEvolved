@@ -8,6 +8,17 @@
 define(["common"], function(COMMON) {'use strict';
     var popupCount = 0;
 
+    var getRectCSS = function(position, dimensions, css) {
+        if (css === undefined) {
+            css = {};
+        }
+
+        css.left = Math.round(position.x) + "px";
+        css.top = Math.round(position.y) + "px";
+        css.width = Math.round(dimensions.x) + "px";
+        css.height = Math.round(dimensions.y) + "px";
+        return css;
+    };
     // Popup contains a div at some location
     // Popup features
     //      Pointing popups: popups with an arrow to an onscreen object
@@ -28,7 +39,7 @@ define(["common"], function(COMMON) {'use strict';
             this.html = "";
             this.active = false;
             this.timeout = 0;
-            this.animate = false;
+            this.animate = true;
             this.clickToClose = true;
             this.addCloseButton = false;
 
@@ -38,17 +49,53 @@ define(["common"], function(COMMON) {'use strict';
 
             this.closedDimensions = new Vector(0, 0);
             // random location
-            this.location = new Vector(Math.random() * 400, Math.random() * 400);
+            this.positions = {
+                open : new Vector(Math.random() * 400, Math.random() * 400)
+            }
 
             // Overlay with custom context
             $.extend(this, context);
 
-            // If birth and death locations aren't specified, clone the location
-            if (this.birthLocation === undefined)
-                this.birthLocation = new Vector(this.location);
+            if (this.pointerTarget !== undefined) {
+                this.location.setTo(this.pointerTarget);
+                console.log(this.pointerTarget);
+            }
 
-            if (this.deathLocation === undefined)
-                this.deathLocation = new Vector(this.location);
+            // Ignore birth and death locations for now...but how would we do them?
+        },
+
+        setDimensions : function(p) {
+            this.div.css({
+                width : Math.round(p.x) + "px",
+                height : Math.round(p.y) + "px",
+
+            });
+        },
+
+        setPosition : function(p) {
+
+            if (app.getOption("usePositioning")) {
+                app.log("Set using positioning");
+                this.div.css({
+                    left : Math.round(p.x) + "px",
+                    top : Math.round(p.y) + "px",
+
+                });
+            }
+
+            if (app.getOption("use2DTranslate")) {
+                app.log("Set using 2DTranslate");
+                this.div.css({
+                    transform : "translate(" + Math.round(p.x) + "px, " + Math.round(p.y) + "px)",
+                });
+            }
+
+            if (app.getOption("use3DTranslate")) {
+                app.log("Set using 3DTranslate");
+                this.div.css({
+                    transform : "translate3D(" + Math.round(p.x) + "px, " + Math.round(p.y) + "px, 0px)",
+                });
+            }
 
         },
 
@@ -67,27 +114,7 @@ define(["common"], function(COMMON) {'use strict';
             div.html(html);
             div.addClass("popup " + this.classes);
 
-            if (popup.animate) {
-                div.css({
-                    left : this.birthLocation.x + "px",
-                    top : this.birthLocation.y + "px",
-                    width : this.closedDimensions.x + "px",
-                    height : this.closedDimensions.y + "px",
-                    "border-radius" : "0px",
-
-                });
-                div.animate({
-                    left : this.location.x + "px",
-                    top : this.location.y + "px",
-                    width : 200 + "px",
-                    height : 40 + "px",
-
-                }, 300);
-            }
-
-            div.removeClass("popup_hidden");
-            div.addClass("popup_active");
-
+            // Add a click handler
             div.click(function(event) {
                 console.log("clicked " + popup);
                 if (this.onClick !== undefined) {
@@ -98,6 +125,25 @@ define(["common"], function(COMMON) {'use strict';
                     popup.close();
                 }
             });
+
+            this.open();
+
+        },
+
+        open : function() {
+            var div = this.div;
+            var popup = this;
+
+            console.log("Open " + this);
+            div.removeClass("popup_hidden");
+            div.addClass("popup_active");
+
+            this.div.css({
+                width : "auto",
+                height : "auto",
+
+            });
+            this.setPosition(this.positions.open);
 
             // start the timer
             if (this.timeout > 0 && this.timeout !== undefined) {
@@ -123,19 +169,6 @@ define(["common"], function(COMMON) {'use strict';
                 popup.manager.cleanup();
             }, 700);
 
-            if (popup.animate) {
-                popup.div.animate({
-                    left : popup.deathLocation.x + "px",
-                    top : popup.deathLocation.y + "px",
-                    width : popup.closedDimensions.x + "px",
-                    height : popup.closedDimensions.y + "px",
-                    opacity : 0,
-
-                }, 500, function() {
-                    // popup.div.hide()
-
-                });
-            }
         },
     });
 
@@ -174,13 +207,16 @@ define(["common"], function(COMMON) {'use strict';
         // Do something to add a popup
         addPopup : function(context) {
             // Get a free div
-            var div = this.freeDivs.pop();
-            var popup = new Popup(context);
-            popup.manager = this;
-            popup.setDiv(div);
-            this.popups.push(popup);
 
-            return popup;
+            if (this.freeDivs.length > 0) {
+                var div = this.freeDivs.pop();
+                var popup = new Popup(context);
+                popup.manager = this;
+                popup.setDiv(div);
+                this.popups.push(popup);
+
+                return popup;
+            }
         },
 
         cleanup : function() {

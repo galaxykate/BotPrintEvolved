@@ -10,9 +10,35 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
     function set(b2D, x, y) {
         b2D.set_x(x);
         b2D.set_y(y);
-    }
+
+    };
+
+    function objectToData(i) {
+        var body = bodies[i];
+        var data = body.parent;
+
+        var bpos = body.GetPosition();
+        data.setTo(bpos.get_x(), bpos.get_y());
+
+        data.setAngle(body.GetAngle());
+    };
 
     var BoxWorld = Class.extend({
+
+        init : function() {
+            this.gravity = new Box2D.b2Vec2(0.0, -0.0);
+            this.world = new Box2D.b2World(gravity);
+
+            var groundDef = new Box2D.b2BodyDef();
+            this.ground = world.CreateBody(groundDef);
+            ground.CreateFixture(createEdgeShape(points), 0.0);
+
+            // Create a reusable body definition
+            this.bodyDef = new Box2D.b2BodyDef();
+            this.bodyDef.set_type(Box2D.b2_dynamicBody);
+
+        },
+
         addObject : function(regionPath, density) {
 
         },
@@ -29,58 +55,40 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
         },
 
+        createEdgeShape : function(points) {
+            var shape0 = new Box2D.b2EdgeShape();
+
+            for (var i = 0; i < count; i++) {
+                shape0.Set(points[i], points[(count + i + 1) % count]);
+
+            }
+        },
+
+        createPolygonShape : function(vertices) {
+            var shape = new b2PolygonShape();
+            var buffer = Box2D.allocate(vertices.length * 8, 'float', Box2D.ALLOC_STACK);
+            var offset = 0;
+            for (var i = 0; i < vertices.length; i++) {
+                Box2D.setValue(buffer + (offset), vertices[i].get_x(), 'float');
+                // x
+                Box2D.setValue(buffer + (offset + 4), vertices[i].get_y(), 'float');
+                // y
+                offset += 8;
+            }
+            var ptr_wrapped = Box2D.wrapPointer(buffer, Box2D.b2Vec2);
+            shape.Set(ptr_wrapped, vertices.length);
+            return shape;
+        },
+
         // add something that has a body
-        addShape : function(obj) {
+        createBody : function(points) {
+            var count = points.length;
+            // for each corner
 
             bodies.push(obj.body);
 
         },
     });
-
-    var forceOffsets = [];
-    // Box2D representation
-    var bodies = [];
-
-    // My particle representation
-    var objects = [];
-
-    var ZERO = new Box2D.b2Vec2(0.0, 0.0);
-
-    var w = 300;
-    var h = 200;
-    // Make a border
-    var corners = [new Box2D.b2Vec2(w, h), new Box2D.b2Vec2(-w, h), new Box2D.b2Vec2(-w, -h), new Box2D.b2Vec2(w, -h)];
-
-    var gravity = new Box2D.b2Vec2(0.0, -0.0);
-
-    var world = new Box2D.b2World(gravity);
-    b2DWorld = world;
-    var bd_ground = new Box2D.b2BodyDef();
-    var ground = world.CreateBody(bd_ground);
-
-    // Create a reusable body definition
-    var bd = new Box2D.b2BodyDef();
-    bd.set_type(Box2D.b2_dynamicBody);
-    b2DBodyDef = bd;
-
-    // for each corner
-    var shape0 = new Box2D.b2EdgeShape();
-    for (var i = 0; i < 4; i++) {
-        shape0.Set(corners[i], corners[(4 + i + 1) % 4]);
-        ground.CreateFixture(shape0, 0.0);
-    }
-
-    // Look at the object and read its data into this object
-
-    function objectToData(i) {
-        var body = bodies[i];
-        var data = body.parent;
-
-        var bpos = body.GetPosition();
-        data.setTo(bpos.get_x(), bpos.get_y());
-
-        data.setAngle(body.GetAngle());
-    }
 
     var forceDir = new Box2D.b2Vec2(0, 0);
     var forceOffset = new Box2D.b2Vec2(0, 0);

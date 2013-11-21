@@ -5,42 +5,36 @@
 define(["common", "mousewheel"], function(COMMON, MOUSEWHEEL) {'use strict';
     var activateDragDistance = 5;
 
+    var createControlSet = function() {
+        return {
+            onKeyPress : {
+
+            },
+            onMove : function(touch) {
+            },
+            onDrag : function(touch) {
+            },
+            onPress : function(touch) {
+            },
+            onRelease : function(touch) {
+            },
+            onTap : function(touch) {
+            },
+            onDoubleTap : function(touch) {
+            },
+            onScroll : function(delta) {
+            },
+        }
+    }
     var Controls = Class.extend({
 
-        init : function(context) {
+        init : function(touchDiv, defaultControls) {
+            this.touchDiv = touchDiv;
             // Default values:
             this.name = "Undefined control scheme";
-            this.onKeyPress = {
-
-            };
-
-            this.onMove = function(touch) {
-
-            };
-            this.onDrag = function(touch) {
-
-            };
-            this.onHold = function(touch) {
-
-            };
-
-            this.onPress = function(touch) {
-
-            };
-
-            this.onRelease = function(touch) {
-
-            };
-            this.onTap = function(touch) {
-
-            };
-
-            this.onMouseWheel = function(delta) {
-
-            };
-
-            // Overlay with custom context
-            $.extend(this, context);
+            this.defaultControls = createControlSet();
+            if (defaultControls !== undefined)
+                $.extend(this.defaultControls, defaultControls);
 
             this.touch = {
                 pos : new Vector(),
@@ -48,14 +42,17 @@ define(["common", "mousewheel"], function(COMMON, MOUSEWHEEL) {'use strict';
                 lastMove : {
                     pos : new Vector(),
                     time : 0,
+                    divID : undefined
                 },
                 lastDown : {
                     pos : new Vector(),
                     time : 0,
+                    divID : undefined
                 },
                 lastUp : {
                     pos : new Vector(),
                     time : 0,
+                    divID : undefined
                 },
 
                 down : false,
@@ -70,16 +67,26 @@ define(["common", "mousewheel"], function(COMMON, MOUSEWHEEL) {'use strict';
             // Keep sorted by distance?
             this.touchedObjects = [];
             this.heldObject = undefined;
-            this.selecteObjects = [];
+            this.selectedObjects = [];
+            this.setActiveControls();
+
+        },
+
+        setActiveControls : function(customControls) {
+            this.activeControls = { };
+            $.extend(this.activeControls, this.defaultControls);
+            $.extend(this.activeControls, customControls);
+
+            console.log("SET ACTIVE CONTROLS");
 
         },
 
         touchDown : function(position) {
 
-            var controls = this;
+            var controls = this.activeControls;
             var touch = this.touch;
             touch.lastDown.pos.setTo(position);
-            touch.lastDown.time = app.getTime();
+            touch.lastDown.time = app.getAppTime();
             touch.down = true;
             touch.dragging = false;
             touch.draggedDistance = 0;
@@ -88,10 +95,10 @@ define(["common", "mousewheel"], function(COMMON, MOUSEWHEEL) {'use strict';
 
         touchUp : function(position) {
 
-            var controls = this;
+            var controls = this.activeControls;
             var touch = this.touch;
             touch.lastUp.pos.setTo(position);
-            touch.lastUp.time = app.getTime();
+            touch.lastUp.time = app.getAppTime();
             touch.down = false;
             touch.dragging = false;
 
@@ -118,11 +125,12 @@ define(["common", "mousewheel"], function(COMMON, MOUSEWHEEL) {'use strict';
             var d = touch.offset.magnitude();
 
             // velocity
-            var ellapsed = touch.lastMove.time - app.getTime();
+            var t = app.getAppTime();
+            var ellapsed = touch.lastMove.time - t;
             touch.offset.setToMultiple(touch.offset, 1 / ellapsed);
 
             touch.lastMove.pos.setTo(position);
-            touch.lastMove.time = app.getTime();
+            touch.lastMove.time = t;
 
             if (touch.down) {
                 touch.draggedDistance += d;
@@ -134,17 +142,19 @@ define(["common", "mousewheel"], function(COMMON, MOUSEWHEEL) {'use strict';
             // Do something with this info
             if (touch.down) {
                 if (touch.dragging) {
-                    controls.onDrag(touch);
+                    controls.activeControls.onDrag(touch);
                 } else {
-                    controls.onHold(touch);
+                    //   controls.onHold(touch);
                 }
             } else {
-                controls.onMove(touch);
+                controls.activeControls.onMove(touch);
             }
         },
 
         activate : function() {
+
             var controls = this;
+
             var mousePos = new Vector();
             var touchDiv = this.touchDiv;
 
@@ -152,9 +162,9 @@ define(["common", "mousewheel"], function(COMMON, MOUSEWHEEL) {'use strict';
             $(document).keypress(function(event) {
                 var c = String.fromCharCode(event.which);
 
-                var keyHandler = controls.onKeyPress[c];
+                var keyHandler = controls.activeControls.onKeyPress[c];
                 if (keyHandler !== undefined) {
-                    keyHandler.call(controls);
+                    keyHandler.call(controls.activeControls);
                 }
 
             });
@@ -203,7 +213,7 @@ define(["common", "mousewheel"], function(COMMON, MOUSEWHEEL) {'use strict';
 
             // Mousewheel zooming
             touchDiv.mousewheel(function(event, delta) {
-                controls.onMouseWheel(delta);
+                controls.activeControls.onScroll(delta);
                 event.preventDefault();
 
             });

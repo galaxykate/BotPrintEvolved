@@ -54,6 +54,7 @@ define(["./vector", "./edge"], function(Vector, Edge) {
                 this.triangles.push(new Region.Triangle(this.center, this.points[i], this.points[(i + 1) % this.points.length]));
             }
         },
+
         setScreenPositions : function(context) {
 
             this.valid = true;
@@ -103,23 +104,30 @@ define(["./vector", "./edge"], function(Vector, Edge) {
         },
 
         render : function(context) {
-            app.log("Render: " + this.center);
 
             var g = context.g;
 
-            g.pushMatrix();
-            this.center.translateTo(g);
-            app.log(this.center);
+            if (context.useScreenPos) {
+                this.setScreenPositions(context);
+                g.beginShape();
+                $.each(this.points, function(index, pt) {
+                    pt.screenPos.vertex(g);
+                });
+                g.endShape();
+            } else {
 
-            g.beginShape();
-            $.each(this.points, function(index, pt) {
-                pt.vertex(g);
-            });
+                g.pushMatrix();
+                this.center.translateTo(g);
 
-            g.endShape();
+                g.beginShape();
+                $.each(this.points, function(index, pt) {
+                    pt.vertex(g);
+                });
 
-            g.popMatrix();
+                g.endShape(g.CLOSE);
 
+                g.popMatrix();
+            }
         },
 
         toString : function() {
@@ -160,7 +168,7 @@ define(["./vector", "./edge"], function(Vector, Edge) {
                     pt.vertex(g);
                 }
             });
-            g.endShape();
+            g.endShape(g.CLOSE);
 
         },
 

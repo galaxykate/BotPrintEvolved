@@ -84,9 +84,7 @@ define(["common", "voronoi", "modules/pathing/graph", "./universeObject"], funct
             for (var i = 0; i < count; i++) {
                 var r = Math.pow(i, .7) * 8 + 6;
                 var theta = Math.pow(i, .7) * 10 + 5 + region.idNumber;
-                var p = new UniverseObject(0, 0, {
-                    radius : Math.random() * 5 + 5,
-                });
+                var p = new UniverseObject(0, 0);
                 p.add(region.center);
                 p.addPolar(r, theta);
 
@@ -119,13 +117,12 @@ define(["common", "voronoi", "modules/pathing/graph", "./universeObject"], funct
         render : function(context) {
             var g = context.g;
 
-            context.opacity = 1;
-             context.opacity = context.drawPcts[1];
-            /*
-             * */
-
             app.log("Universe opacity:" + context.opacity);
-            if (context.opacity != 0) {
+            g.fill(1, 0, 1, .4);
+            g.stroke(0);
+
+            var opacity = context.lod.region.opacity;
+            if (opacity > 0) {
                 this.regionGraph.render(context);
             }
 

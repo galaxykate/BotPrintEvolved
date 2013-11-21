@@ -83,6 +83,7 @@ define(["common", "three"], function(common, THREE) {'use strict';
 
         updateOrbit : function() {
             var camera = this.camera;
+            
             this.orbit.position.setTo(this.center);
             this.orbit.position.addSpherical(this.orbit.distance, this.orbit.theta, this.orbit.phi);
 
