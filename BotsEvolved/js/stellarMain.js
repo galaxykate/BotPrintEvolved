@@ -25,7 +25,6 @@ require.config({
         'common' : 'modules/common/common',
         'ui' : 'modules/ui/ui',
         'io' : 'modules/io/saveFile',
-        'evo' : 'modules/evolution/evo',
         'arena' : 'modules/arena/arena',
 
     },

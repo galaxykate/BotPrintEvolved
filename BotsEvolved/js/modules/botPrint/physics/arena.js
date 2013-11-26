@@ -2,20 +2,26 @@
  * @author Kate Compton
  */
 
-define(["common", "./boxWorld"], function(common, boxWorld) {'use strict';
+define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
 
     var Arena = Class.extend({
         init : function() {
             this.border = new common.Region(new common.Vector(0, 0));
             this.bots = [];
 
+            this.boxWorld = new BoxWorld(0);
+
             var sides = 8;
             for (var i = 0; i < sides; i++) {
-                var r = 100 + Math.random() * 30;
+                var r = 200 + Math.random() * 130;
                 var theta = i * Math.PI * 2 / sides;
                 var p = common.Vector.polar(r, theta);
                 this.border.addPoint(p);
             }
+            this.boxWorld.makeEdgeRing(this.border.points);
+        },
+
+        reset : function() {
         },
 
         //-------------------------------------------
@@ -25,22 +31,34 @@ define(["common", "./boxWorld"], function(common, boxWorld) {'use strict';
             var bot = this.getAt({
                 pos : p
             });
+            if (this.selected !== undefined)
+                this.deselect(this.selected);
 
             if (bot !== undefined) {
-                if (this.selected !== undefined)
-                    this.deselect(this.selected);
+
                 this.select(bot);
             }
         },
 
         selectBotAt : function(p) {
+            var bot = this.getAt({
+                pos : p
+            });
 
+            if (this.selected !== undefined)
+                this.deselect(this.selected);
+            if (bot !== undefined) {
+                this.select(bot);
+            }
+
+            if (bot !== undefined) {
+                app.editBot(bot);
+            }
         },
 
         // Select and deselect: simple for now,
         // but will eventually trigger more complicated UI
         select : function(bot) {
-            app.moveLog("SELECT: " + bot);
             this.selected = bot;
             bot.selected = true;
         },
@@ -54,39 +72,54 @@ define(["common", "./boxWorld"], function(common, boxWorld) {'use strict';
         // Hit testing
         getAt : function(query) {
 
-            app.moveLog("SEARCH FOR " + query.pos);
             var p = new Vector(query.pos);
             var closest = undefined;
-            var closestDist = 50;
+            var closestDist = 120;
             $.each(this.bots, function(index, bot) {
                 // Transform
-                var p2 = new Vector();
-                bot.arenaTransform.toLocal(p, p2);
-                app.moveLog(bot + ": " + p2);
-                var d = p2.magnitude();
+
+                var d = bot.transform.translation.getDistanceTo(query.pos);
+                app.moveLog(index + ": " + d);
                 if (d < closestDist) {
+                    app.moveLog("  closest!");
                     closest = bot;
                     closestDist = d;
                 }
 
             });
+
             return closest;
         },
+
+        //========================================================
+        //========================================================
+        //========================================================
+
+        //========================================================
+        //========================================================
+        //========================================================
 
         //-------------------------------------------
         // Run a test
 
         runTest : function(population) {
-            this.bots = population;
-
+            var arena = this;
             // Give each bot an arena position
-            $.each(this.bots, function(index, bot) {
+            $.each(population, function(index, bot) {
+                arena.bots.push(bot);
                 var t = new common.Transform();
-                t.scale = .4;
-                t.translation = Vector.polar(Math.random() * 200, Math.random() * 200);
+
+                t.translation = Vector.polar(Math.random() * 400 - 200, Math.random() * 400 - 200);
                 t.rotation = Math.random() * 200;
-                bot.arenaTransform = t;
+                bot.transform = t;
             });
+
+            arena.boxWorld.addObjects(population);
+
+        },
+
+        update : function(time) {
+            this.boxWorld.simulate(time.ellapsed);
         },
 
         //-------------------------------------------
@@ -100,17 +133,20 @@ define(["common", "./boxWorld"], function(common, boxWorld) {'use strict';
             g.fill(.68, 1, 1);
             g.noStroke();
             this.border.render(context);
+
             context.simplifiedBots = true;
             $.each(this.bots, function(index, bot) {
                 g.pushMatrix();
-                bot.arenaTransform.applyTransform(g);
+                bot.transform.applyTransform(g);
                 bot.render(context);
-               
+
                 g.popMatrix();
-                 g.fill(0);
-                g.text(bot.arenaTransform.translation, bot.arenaTransform.translation.x, bot.arenaTransform.translation.y);
+
+                g.fill(0);
+                g.text(bot.transform.translation, bot.transform.translation.x, bot.transform.translation.y);
             });
 
+            this.boxWorld.render(g);
         },
     });
 

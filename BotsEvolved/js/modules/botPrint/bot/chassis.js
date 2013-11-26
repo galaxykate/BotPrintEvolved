@@ -2,7 +2,7 @@
  * @author Kate Compton
  */
 
-define(["common", "evo", "./pathPoint", "./wiring", "io"], function(common, Evo, PathPoint, Wiring, IO) {'use strict';
+define(["common", "./pathPoint", "./wiring", "io"], function(common, PathPoint, Wiring, IO) {'use strict';
     var chassisCount = 0;
     // Points MUST be coplanar
 
@@ -67,7 +67,6 @@ define(["common", "evo", "./pathPoint", "./wiring", "io"], function(common, Evo,
             else
                 this.bot = this.parent.bot;
 
-            var genome = new Evo.Genome(10);
             this.idNumber = chassisCount;
             chassisCount++;
             this.idColor = new common.KColor((.2813 * this.idNumber + .23) % 1, 1, 1);
@@ -77,7 +76,7 @@ define(["common", "evo", "./pathPoint", "./wiring", "io"], function(common, Evo,
             var last = undefined;
             for (var i = 0; i < pointCount; i++) {
                 var theta = i * Math.PI * 2 / pointCount;
-                var r = 250 * utilities.unitNoise(.7 * theta + 50 * this.idNumber);
+                var r = 100 * utilities.unitNoise(.7 * theta + 50 * this.idNumber);
                 var pt = new PathPoint(0, 0, 30, 30, theta - Math.PI / 2);
                 pt.addPolar(r, theta);
 
@@ -202,16 +201,18 @@ define(["common", "evo", "./pathPoint", "./wiring", "io"], function(common, Evo,
             if (this.bot.selected) {
                 g.strokeWeight(5);
                 this.idColor.stroke(g, -.7, 1);
-             this.idColor.fill(g, .5, 1);
- }
+                this.idColor.fill(g, .5, 1);
+            }
 
             g.beginShape();
             this.points[0].vertex(g);
             $.each(this.points, function(index, point) {
-
-                point.makeCurveVertex(g);
+                if (context.useChassisCurves)
+                    point.makeCurveVertex(g);
+                else
+                    point.vertex(g);
             })
-            g.endShape();
+            g.endShape(g.CLOSE);
 
             if (!context.simplifiedBots) {
 

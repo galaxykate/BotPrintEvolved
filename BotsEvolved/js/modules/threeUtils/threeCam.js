@@ -81,9 +81,37 @@ define(["common", "three"], function(common, THREE) {'use strict';
             planarPos.addMultiple(ray, m);
         },
 
+        cloneOrbit : function(orbit) {
+            return {
+                position : new Vector(orbit.position),
+                distance : orbit.distance,
+                phi : orbit.phi,
+                theta : orbit.theta,
+            }
+        },
+
+        copyInto : function(original, orbit) {
+            orbit.position.setTo(original.position);
+            orbit.distance = original.distance;
+
+            orbit.phi = original.phi;
+            orbit.theta = original.theta;
+        },
+
+        bookmark : function() {
+            this.bookmark = this.cloneOrbit(this.orbit);
+        },
+
+        offsetFromBookmark : function(dTheta, dPhi) {
+            this.copyInto(this.bookmark, this.orbit);
+            this.orbit.theta += dTheta;
+            this.orbit.phi += dPhi;
+            this.updateOrbit();
+        },
+
         updateOrbit : function() {
             var camera = this.camera;
-            
+
             this.orbit.position.setTo(this.center);
             this.orbit.position.addSpherical(this.orbit.distance, this.orbit.theta, this.orbit.phi);
 

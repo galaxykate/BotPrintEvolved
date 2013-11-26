@@ -78,37 +78,6 @@ define(["ui", "common"], function(UI, common) {
 
         },
 
-        setTouchableDivs : function(ids) {
-            var touch = this.controls.touch;
-            $.each(ids, function(index, id) {
-                var div = $("#" + id);
-                 div.lastLocalPosition = new Vector();
-                console.log("Set touchable " + id);
-
-                // Record which div is being activated in the touch,
-                div.on('mousedown', function(event) {
-                    event.preventDefault();
-                    console.log("Mouse down on " + id);
-                    touch.lastDown.divID = id;
-                    app.getPositionRelativeTo(div, pos);
-                    div.lastLocalPosition.setTo()
-                    
-                });
-
-                div.on('mouseup', function(event) {
-                    event.preventDefault();
-                    touch.lastUp.divID = id;
-
-                });
-
-                div.on('mousemove', function(event) {
-                    event.preventDefault();
-                    touch.lastMove.divID = id;
-
-                });
-            });
-        },
-
         getPositionRelativeTo : function(div, pos) {
             var v = new Vector(pos.x - div.offset().left, pos.y - div.offset().top);
             return v;
@@ -143,9 +112,9 @@ define(["ui", "common"], function(UI, common) {
         // time
 
         updateWorld : function(t) {
+
             this.time.ellapsed = t - this.time.worldTime;
             this.time.worldTime = t;
-
             app.log("Time: ");
             app.log("  world: " + this.time.worldTime.toFixed(2));
             app.log("  ellapsed: " + this.time.ellapsed.toFixed(2));

@@ -7,6 +7,8 @@ html, body {
 	height: 100%;
 	overflow: hidden;
 }
+
+
 .app_size {
 	width: 800px;
 	height: 600px;
@@ -28,6 +30,7 @@ html, body {
 	top: 0px;
 	left: 0px;
 	border: 2px solid white;
+	overflow: hidden;
 	background: rgba(200, 210, 210, .2);
 }
 .tuning_slider {

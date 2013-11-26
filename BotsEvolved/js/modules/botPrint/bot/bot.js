@@ -3,9 +3,11 @@
  */
 
 define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use strict';
-
+    var botCount = 0;
     var Bot = Class.extend({
         init : function() {
+            this.idNumber = botCount;
+            botCount++;
             this.mainChassis = new Chassis(this);
             this.transform = new common.Transform();
 
@@ -15,12 +17,26 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
         // View stuff - will probably end up in it's own file
         // render this bot in a 2D frame
 
+        getHull : function() {
+            return this.mainChassis.points;
+        },
+
         update : function(time) {
+            console.log("Update bot");
             this.mainChassis.update(time);
         },
 
         render : function(context) {
             this.mainChassis.render(context);
+        },
+
+        getForces : function() {
+            return [{
+                power : Math.max(200000 * Math.sin(app.time.worldTime + this.idNumber), 0),
+                direction : 20 * Math.sin(.2 * app.time.worldTime + this.idNumber), // global direction
+
+                p : this.transform.translation // global position
+            }];
         },
 
         hover : function(pos) {
@@ -33,7 +49,6 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
                 pt.excite();
 
         },
-
         selectPoint : function(pos) {
             var pt = this.getAt({
                 pos : pos,
@@ -44,7 +59,6 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
                 this.selectedPoint.select();
             }
         },
-
         dragPoint : function(pos) {
             app.moveLog("Dragging " + this.selectedPoint);
             if (this.selectedPoint !== undefined) {
@@ -52,7 +66,6 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
             }
 
         },
-
         releasePoint : function() {
             if (this.selectedPoint !== undefined) {
                 this.selectedPoint.deselect();
@@ -61,10 +74,9 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
         },
 
         getAt : function(query) {
-
             return this.mainChassis.getAt(query);
-
         },
+
         createThreeMesh : function() {
             this.mainChassis.createThreeMesh();
             // set up the sphere vars
@@ -78,6 +90,9 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
 
             return this.mesh;
 
+        },
+        toString : function() {
+            return "Bot" + this.idNumber;
         }
     });
 

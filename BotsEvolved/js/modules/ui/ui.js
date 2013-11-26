@@ -5,7 +5,7 @@
  * @author Kate Compton
  */
 
-define(["common", "processing", "modules/ui/panel", "modules/ui/controls", "modules/ui/popup", "modules/ui/mode", "modules/ui/output"], function(COMMON, Processing, Panel, Controls, Popup, Mode, Output) {'use strict';
+define(["common", "processing", "modules/ui/panel", "modules/ui/controls", "modules/ui/popup", "modules/ui/mode", "modules/ui/output", "modules/ui/window"], function(COMMON, Processing, Panel, Controls, Popup, Mode, Output, DrawingWindow) {'use strict';
 
     //==============================================================
     //==============================================================
@@ -234,6 +234,7 @@ define(["common", "processing", "modules/ui/panel", "modules/ui/controls", "modu
     });
 
     UI.Controls = Controls;
+    UI.DrawingWindow = DrawingWindow;
     UI.Panel = Panel;
     UI.Popup = Popup;
     UI.Mode = Mode;
