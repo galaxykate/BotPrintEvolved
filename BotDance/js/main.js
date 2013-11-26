@@ -48,6 +48,14 @@ var utilities = {
         return array[Math.floor(Math.random() * array.length)];
     },
 
+    getRandomIndex: function(array) {
+      return Math.floor(Math.random() * Math.round(array.length - 1));
+    },
+
+    getRandomKey: function(obj) {
+      return getRandom(Object.keys(obj));
+    },
+
     constrain : function(val, lowerBound, upperBound) {
         if (Math.max(val, upperBound) === val)
             return upperBound;
@@ -139,6 +147,7 @@ require.config({
 
         'common' : 'modules/common/common',
         'evo' : 'modules/evoSim/evoPopulation',
+        'dTree': 'modules/dtree/dtree'
 
     },
     shim : {
@@ -194,12 +203,76 @@ require.config({
         'box2D' : {
             exports : 'Box2D'
         },
+        'dTree' : {
+            exports : 'DTree'
+        }
 
     }
 });
 
+require(["dTree"], function(dTree) {
+
+	var actuate = function(val) { console.log("Actuating at ", val); };
+	var actuators = [
+		{ actuate: actuate },
+		{ actuate: actuate }
+	];
+	var sensor1Val = 0;
+	var sensor2Val = 0;
+	var sensors = [
+		{ sense: function() { console.log("Sensing " + sensor1Val); return sensor1Val; } },
+		{ sense: function() { console.log("Sensing " + sensor2Val); return sensor2Val; } }
+	];
+
+	var topLevel = new dTree.DTree(actuators, sensors);
+
+	var firstAction = new dTree.DTreeAction(actuators, sensors, {
+		0: 0.3
+	});
+
+	var secondAction = new dTree.DTreeAction(actuators, sensors, {
+		0: 1.0,
+		1: 1.0
+	});
+
+	/* Setup a tree such that:
+		if sensor 0 > .4 and sensor 1 < 0.25, fire actuator 0 at 0.3
+		else if sensor 0 > .4, fire actuators 1 and 2 at 1.0
+		else do nothing.
+	*/
+	var anotherTest = new dTree.DTree(sensors, actuators);
+	anotherTest.setCondition(1, "<", 0.25);
+	anotherTest.trueBranch = firstAction;
+	anotherTest.falseBranch = secondAction;
+
+	topLevel.setCondition(0, ">", 0.4);
+	topLevel.trueBranch = anotherTest;
+	topLevel.falseBranch = dTree.emptyAction;
+
+	sensor1Val = 0.5;
+	sensor2Val = 0.1;
+	//var result = topLevel.makeDecision();
+
+	sensor1Val = 0.99;
+	sensor2Val = 0.5;
+	//var result = topLevel.makeDecision();
+
+	sensor1Val = 0.1;
+	sensor2Val = 0.9;
+	//var result = topLevel.makeDecision();
+	//console.log("Result should be to fire nothing: ", result);
+
+  console.log("old", topLevel);
+  var newTree = topLevel.clone();
+  console.log("new", newTree);
+  console.log(newTree.mutate());
+});
+
+//Commented to test dTree
+/*
 require(["botApp"], function(BotApp) {
 
     console.log("Start");
 
 });
+*/
