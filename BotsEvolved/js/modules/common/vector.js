@@ -329,6 +329,15 @@ define(["three", "inheritance", "box2D"], function(THREE, Inheritance, Box2D) {
     Vector.angleBetween = function(a, b) {
         return Vector.dot(a, b) / (a.magnitude() * b.magnitude());
     };
+
+    Vector.average = function(array) { Vector
+        avg = new Vector();
+        $.each(array, function(index, v) {
+            avg.add(v);
+        });
+        avg.div(array.length);
+        return avg;
+    };
     return Vector;
 
 });
