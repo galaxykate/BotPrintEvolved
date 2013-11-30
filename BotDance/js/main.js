@@ -53,7 +53,7 @@ var utilities = {
     },
 
     getRandomKey: function(obj) {
-      return getRandom(Object.keys(obj));
+      return this.getRandom(Object.keys(obj));
     },
 
     constrain : function(val, lowerBound, upperBound) {

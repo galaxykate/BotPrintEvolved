@@ -73,68 +73,60 @@ define(["inheritance"], function(inher) {
 
       //get random number
       var seed = Math.random();
-      var PROB, STEP = .01;
+      var PROB = STEP = .2;
 
       if(!currTree) { console.log("No sub-trees"); return;} //If we have no children, don't mutate
       console.log("seed", seed);
       console.log("currTree", currTree);
       if(currTree.condition != undefined) {
         console.log("decision node");
-
-        if(seed > PROB) {
-          console.log("switch comparator");
-
-          currTree.condition.comparator = this.condition.comparator === '>' ? '<' : '>';
-        } else if(seed > PROB + STEP) {
+        if(seed < PROB) {
+          console.log("replace condition with action");
+        } else if(seed < PROB + STEP) {
           console.log("switch sensor");
-
-          currTree.condition.sensor = getRandomIndex(this.sensors);
-        } else if(seed > PROB + STEP) {
+          currTree.condition.sensor = utilities.getRandomIndex(currTree.sensors);
+        } else if(seed < PROB + 2 * STEP) {
           console.log("adjust targetValue");
-
           currTree.condition.targetValue = Math.random();
-        } else if(seed > PROB + STEP) {
+        } else if(seed < PROB + 3 * STEP) {
           console.log("swap true/false branches");
-
           var tmp = currTree.falseBranch;
           currTree.falseBranch = currTree.trueBranch;
           currTree.trueBranch = tmp;
-        } else if(seed > PROB + STEP) {
-          console.log("replace condition with action");
+        } else if(seed < PROB + 4 * STEP) {
+          console.log("switch comparator");
+          currTree.condition.comparator = (currTree.condition.comparator === '>' ? '<' : '>');
         }
       } else {
         console.log("action node");
-        if(seed > PROB) {
+        if(seed < PROB) {
           if(currTree.actionDict != {}) {
             console.log("switch actuator values");
 
-            actionDict[getRandomKey(actionDict)] = this.actionDict[getRandomKey(actionDict)];
+            //Not quite right..
+            //currTree.actionDict[utilities.getRandomKey(currTree.actionDict)] = currTree.actionDict[utilities.getRandomKey(actionDict)];
           }
-        } else if(seed > PROB + STEP) {
-          console.log("switch actuators");
-
-          if(Object.keys(actionDict).length >= 2) {
-            var key1 = getRandomKey(actionDict);
-            var key2 = getRandomKey(actionDict);
-            var tmp = actionDict[key1];
-            actionDict[key1] = actionDict[key2];
-            actionDict[key2] = tmp;
-          }
-        } else if(seed > PROB + STEP) {
-          console.log("modify action");
-
-          actionDict[getRandomKey(actionDict)] = Math.random();
-        } else if(seed > PROB + STEP) {
-          console.log("remove action");
-
-          delete actionDict[getRandomKey(actionDict)]
         } else if(seed < PROB + STEP) {
-          console.log("add action");
-
-          var key = getRandomKey(this.actuators);
-          actionDict[key] = Math.random();
-        } else if(seed > PROB + STEP) {
           console.log("replace action with condition");
+        } else if(seed < PROB + 2 * STEP) {
+          console.log("modify action");
+          currTree.actionDict[utilities.getRandomKey(currTree.actionDict)] = Math.random();
+        } else if(seed < PROB + 3 * STEP) {
+          console.log("remove action");
+          delete currTree.actionDict[utilities.getRandomKey(currTree.actionDict)]
+        } else if(seed < PROB + 4 * STEP) {
+          console.log("add action");
+          var key = utilities.getRandomKey(currTree.actuators);
+          currTree.actionDict[key] = Math.random();
+        } else if(seed < PROB + 5 * STEP) {
+          console.log("switch actuators");
+          if(Object.keys(actionDict).length >= 2) {
+            var key1 = utilities.getRandomKey(currTree.actionDict);
+            var key2 = utilities.getRandomKey(currTree.actionDict);
+            var tmp = currTree.actionDict[key1];
+            currTree.actionDict[key1] = currtree.actionDict[key2];
+            currTree.actionDict[key2] = tmp;
+          }
         }
       }
       return this;

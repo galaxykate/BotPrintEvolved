@@ -7,7 +7,7 @@
 require.config({
     paths : {
 		'dTree' : 'modules/dtree/dtree',
-		// 'common' : 'modules/common/common',
+		'common' : 'modules/common/common',
 		'inheritance' : 'libs/inheritance',
     },
     shim : {
