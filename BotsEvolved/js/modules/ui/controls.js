@@ -78,8 +78,6 @@ define(["common", "mousewheel"], function(COMMON, MOUSEWHEEL) {'use strict';
             $.extend(this.activeControls, this.defaultControls);
             $.extend(this.activeControls, customControls);
 
-            console.log("SET ACTIVE CONTROLS");
-
         },
 
         //=================
@@ -135,7 +133,6 @@ define(["common", "mousewheel"], function(COMMON, MOUSEWHEEL) {'use strict';
         },
 
         lock : function(lockWindow) {
-            console.log("lock to " + lockWindow);
             this.locked = lockWindow;
             this.setActiveWindow(lockWindow);
 
@@ -166,7 +163,6 @@ define(["common", "mousewheel"], function(COMMON, MOUSEWHEEL) {'use strict';
             touch.dragging = false;
 
             var timeDown = touch.lastUp.time - touch.lastDown.time;
-            console.log("Time down: " + touch.lastUp.time + " " + touch.lastDown.time);
 
             if (timeDown < 200 && touch.draggedDistance < 10) {
                 console.log("Tap");

@@ -2,65 +2,19 @@
  * @author Kate Compton
  */
 
-define(["common", "./pathPoint", "./wiring", "io"], function(common, PathPoint, Wiring, IO) {'use strict';
+define(["common", "./pathPoint", "./wiring", "io", "modules/threeUtils/modGeo"], function(common, PathPoint, Wiring, IO, ModGeo) {'use strict';
     var chassisCount = 0;
     // Points MUST be coplanar
 
     // var CylinderGeometry = new
     //  IO.saveFile("test", "txt", "M 100 100 L 300 100 L 200 300 z");
 
-    var geomFromPointLoop = function(center, points, material) {
-        var geom = new THREE.Geometry();
-        $.each(points, function(index, vertex) {
-            var v = vertex.toThreeVector();
-            geom.vertices.push(v);
-        });
-
-        geom.vertices.push(center.toThreeVector());
-
-        for (var i = 0; i < points.length; i++) {
-            var f = new THREE.Face3(i, (i + 1) % points.length, points.length);
-
-            geom.faces.push(f);
-        }
-
-        addSideStrip(geom, points, 0, 10);
-        geom.computeFaceNormals();
-        return geom;
-    };
-
-    var addSideStrip = function(geom, points, z0, z1) {
-        var startIndex = geom.vertices.length;
-
-        $.each(points, function(index, vertex) {
-            var v0 = vertex.toThreeVector();
-            v0.z = z0;
-            var v1 = vertex.toThreeVector();
-            v1.z = z1;
-            geom.vertices.push(v0);
-            geom.vertices.push(v1);
-        });
-
-        for (var i = 0; i < points.length; i++) {
-            var i0 = (i % points.length);
-            var i1 = ((i + 1) % points.length);
-
-            var p0 = i0 * 2 + startIndex;
-            var p1 = i0 * 2 + 1 + startIndex;
-            var p2 = i1 * 2 + startIndex;
-            var p3 = i1 * 2 + 1 + startIndex;
-
-            var f0 = new THREE.Face3(p0, p1, p3);
-            var f1 = new THREE.Face3(p3, p2, p0);
-            geom.faces.push(f0);
-            geom.faces.push(f1);
-        }
-    };
-
     var Chassis = Class.extend({
         init : function(parent) {
 
             var chassis = this;
+            this.curveSubdivisions = 3;
+
             this.parent = parent;
             if (parent.bot === undefined)
                 this.bot = parent;
@@ -139,9 +93,23 @@ define(["common", "./pathPoint", "./wiring", "io"], function(common, PathPoint, 
         },
 
         update : function(time) {
+            var chassis = this;
+
             $.each(this.points, function(index, point) {
                 point.update(time);
             });
+            // Is any point dirty?  Update the geomety
+            var isDirty = false;
+            $.each(this.points, function(index, point) {
+                if (point.isDirty) {
+                    console.log("Dirty point!");
+                    point.isDirty = false;
+                    isDirty = true;
+                }
+            });
+            if (isDirty) {
+                chassis.setMeshFromPoints();
+            }
         },
 
         getAt : function(query) {
@@ -194,9 +162,10 @@ define(["common", "./pathPoint", "./wiring", "io"], function(common, PathPoint, 
 
         render : function(context) {
             var g = context.g;
+         
+            g.strokeWeight(1);
             this.idColor.fill(g, .2, 1);
 
-            g.strokeWeight(1);
             this.idColor.stroke(g, -.4, 1);
             if (this.bot.selected) {
                 g.strokeWeight(5);
@@ -204,8 +173,10 @@ define(["common", "./pathPoint", "./wiring", "io"], function(common, PathPoint, 
                 this.idColor.fill(g, .5, 1);
             }
 
+            // Draw the region
             g.beginShape();
             this.points[0].vertex(g);
+
             $.each(this.points, function(index, point) {
                 if (context.useChassisCurves)
                     point.makeCurveVertex(g);
@@ -214,18 +185,36 @@ define(["common", "./pathPoint", "./wiring", "io"], function(common, PathPoint, 
             })
             g.endShape(g.CLOSE);
 
+            var pct = (app.time.worldTime % 1);
+            $.each(this.points, function(index, point) {
+                g.noStroke();
+
+                var p = point.getSubdivisionPoint(pct);
+                g.fill(.7, .9, 1);
+                point.drawCircle(g, 15);
+                g.fill(.7, 1, 1);
+                p.drawCircle(g, 5);
+                app.log(p);
+            });
+
             if (!context.simplifiedBots) {
+                g.strokeWeight(1);
 
                 $.each(this.points, function(index, point) {
                     point.render(context);
                 });
-                $.each(this.components, function(index, component) {
-                    component.render(context);
-                })
 
-                $.each(this.wires, function(index, wire) {
-                    wire.render(context);
-                })
+                if (app.getOption("drawComponents")) {
+                    $.each(this.components, function(index, component) {
+                        component.render(context);
+                    })
+                }
+
+                if (app.getOption("drawWiring")) {
+                    $.each(this.wires, function(index, wire) {
+                        wire.render(context);
+                    })
+                }
             }
         },
         hover : function(pos) {
@@ -233,11 +222,33 @@ define(["common", "./pathPoint", "./wiring", "io"], function(common, PathPoint, 
         },
         createThreeMesh : function() {
 
-            var material = new THREE.MeshNormalMaterial();
-            material.side = THREE.DoubleSide;
-            var geom = geomFromPointLoop(this.center, this.points, 15);
-            this.mesh = new THREE.Mesh(geom, material);
+            this.geometry = new ModGeo.Cylinder(this.points.length * this.curveSubdivisions, 20, 1);
+
+            this.mesh = this.geometry.createMesh();
+            this.setMeshFromPoints();
             return this.mesh;
+
+        },
+
+        setMeshFromPoints : function() {
+            var chassis = this;
+
+            this.geometry.modSideVertices(function(v, context) {
+                var index = context.side;
+
+                var ptIndex = Math.floor(index / chassis.curveSubdivisions);
+                var pct = (index - ptIndex * chassis.curveSubdivisions) / chassis.curveSubdivisions;
+
+                var pt = chassis.points[ptIndex].getSubdivisionPoint(pct);
+
+                var theta = context.thetaPct * Math.PI * 2;
+                var r = 20 * (Math.sin(3 * theta) + 2) + 10 * Math.cos(6 * context.lengthPct);
+
+                var z = -30 + 70 * context.lengthPct;
+                //  v.setToCylindrical(r, theta, z);
+                v.setTo(pt.x, pt.y, z);
+
+            });
         }
     });
 

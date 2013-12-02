@@ -75,17 +75,17 @@ define(["common", "processing", "modules/ui/panel", "modules/ui/controls", "modu
             if (parentDiv !== undefined) {
                 var slidersDiv = $("<div/>", {
                     id : "dev_sliders",
-                    "class" : "panel"
+                    "class" : "panel text_panel"
                 });
 
                 var optionsDiv = $("<div/>", {
                     id : "dev_options",
-                    "class" : "panel"
+                    "class" : "panel text_panel"
                 });
 
                 var outputDiv = $("<div/>", {
                     id : "dev_output",
-                    "class" : "panel"
+                    "class" : "panel text_panel"
                 });
 
                 parentDiv.append(slidersDiv);

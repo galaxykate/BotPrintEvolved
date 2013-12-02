@@ -20,8 +20,7 @@ define(["common"], function(COMMON) {'use strict';
             // Overlay with custom context
             $.extend(this, context);
 
-            console.log("Created " + this.title + " " + this.panels);
-
+   
         },
 
         toggle : function() {
@@ -34,9 +33,8 @@ define(["common"], function(COMMON) {'use strict';
 
         activate : function() {
             this.active = true;
-            console.log("Activate Mode " + this.title);
-            console.log(this.panels);
-
+            console.log("Activate Mode: " + this.title);
+        
             // Activate all of the panels
             $.each(this.panels, function(index, panel) {
                 panel.open();

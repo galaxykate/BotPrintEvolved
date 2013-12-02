@@ -2,7 +2,7 @@
  * @author Kate Compton
  */
 
-define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", "modules/evo/evoSim", "app", "common"], function(UI, Bot, Arena, ThreeView, EvoSim, App, common) {
+define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", "./botEvo", "app", "common"], function(UI, Bot, Arena, ThreeView, BotEvo, App, common) {
 
     var BotApp = App.extend({
         init : function() {
@@ -17,45 +17,25 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", "m
             app.controls.addListeners(app.arenaWindow);
             app.controls.addListeners(app.threeWindow);
 
-            app.changeMode("arena");
-
+            // app.changeMode("inspector");
+            app.editBot();
             app.arena = new Arena();
-            this.initEvoSims();
-            this.testArena();
-        },
 
-        // Set up all the info about the evolutionary algorithm
-        initEvoSims : function() {
-            // Create the bot evosim
-            app.evoSim = new EvoSim();
+            app.changeMode("arena");
+            var task = "doThing";
+            app.evoSim = new BotEvo.BrainEvo(app.currentBot, task, app.arena);
+            app.evoSim.runGenerations(1);
 
-            app.evoSim.createGenome = function() {
-                var count = 20;
-                var genome = [];
-                for (var i = 0; i < count; i++) {
-                    genome[i] = Math.random();
-                }
-                return genome;
-            };
-
-            app.evoSim.createIndividualFromGenome = function(genome) {
-                return new Bot();
-            };
-
-        },
-
-        testArena : function() {
-            console.log("Reset arena");
-            // reset the arena
-            app.arena.reset();
-
-            var population = app.evoSim.createPopulation(5);
-            app.arena.runTest(population);
         },
 
         initModes : function() {
 
             var ui = app.ui;
+
+            app.ui.addOption("drawWiring", false);
+            app.ui.addOption("drawComponents", false);
+            app.ui.addOption("logConditionTests", false);
+            app.ui.addOption("logMutations", false);
 
             ui.addPanel({
                 id : "arena",
@@ -84,9 +64,20 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", "m
                 div : $("#render_panel"),
                 title : "Render Panel",
                 description : "3D preview",
-                side : "left",
+                side : "top",
                 sidePos : 5,
                 dimensions : new Vector(200, 200),
+
+            });
+
+            ui.addPanel({
+                id : "scores",
+                div : $("#scores_panel"),
+                title : "Scores Panel",
+                description : "Current scores",
+                side : "top",
+                sidePos : 5,
+                dimensions : new Vector(400, 200),
 
             });
 
@@ -97,7 +88,7 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", "m
             this.modes = {
                 arena : new UI.Mode({
                     title : "arena",
-                    panels : app.ui.getPanels(["arena"]),
+                    panels : app.ui.getPanels(["arena", "scores"]),
 
                     // Custom controls for the arena mode
                     controls : {
@@ -126,7 +117,7 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", "m
                         onDrag : function(touch) {
                             if (app.threeWindow.active) {
                                 var p = app.threeWindow.localPos;
-                                app.threeRender.camera.offsetFromBookmark(p.x * .01, p.y * .01);
+                                app.threeRender.camera.offsetFromBookmark(p.x * .01, -p.y * .01);
 
                             } else {
                                 var p = app.inspectorWindow.localPos;
@@ -203,6 +194,7 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", "m
 
             app.inspectorWindow = new UI.DrawingWindow("inspector", $("#inspector_canvas"));
             app.arenaWindow = new UI.DrawingWindow("arena", $("#arena_canvas"));
+            app.scoreWindow = new UI.DrawingWindow("score", $("#score_canvas"));
 
             app.inspectorProcessing = ui.addProcessingWindow(app.inspectorWindow.element, function(g) {
                 app.inspectorWindow.setProcessing(g);
@@ -217,6 +209,7 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", "m
                     app.currentBot.update(app.time);
 
                     app.inspectorWindow.render(function(context) {
+                        context.useChassisCurves = true;
                         app.currentBot.render(context);
                     });
                 }
@@ -235,6 +228,19 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", "m
                     app.arenaWindow.render(function(context) {
                         app.arena.render(context);
                     });
+                }
+
+            });
+
+            // Create the arena
+            app.scoreProcessing = ui.addProcessingWindow(app.scoreWindow.element, function(g) {
+                app.scoreWindow.setProcessing(g);
+            }, function(g) {
+
+                // only do if its the arena mode
+                if (app.mode === app.modes.arena) {
+                    g.background(.8, 1, .3);
+                    app.evoSim.renderScores(g);
                 }
 
             });

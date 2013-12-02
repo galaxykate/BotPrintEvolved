@@ -71,6 +71,11 @@ define(["three", "inheritance", "box2D"], function(THREE, Inheritance, Box2D) {
             this.x = r * Math.cos(theta);
             this.y = r * Math.sin(theta);
         },
+        setToCylindrical : function(r, theta, z) {
+            this.x = r * Math.cos(theta);
+            this.y = r * Math.sin(theta);
+            this.z = z;
+        },
         setToPolarOffset : function(v, r, theta) {
             this.x = v.x + r * Math.cos(theta);
             this.y = v.y + r * Math.sin(theta);

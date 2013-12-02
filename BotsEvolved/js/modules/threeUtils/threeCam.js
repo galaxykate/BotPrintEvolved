@@ -99,11 +99,11 @@ define(["common", "three"], function(common, THREE) {'use strict';
         },
 
         bookmark : function() {
-            this.bookmark = this.cloneOrbit(this.orbit);
+            this.bookmarkOrbit = this.cloneOrbit(this.orbit);
         },
 
         offsetFromBookmark : function(dTheta, dPhi) {
-            this.copyInto(this.bookmark, this.orbit);
+            this.copyInto(this.bookmarkOrbit, this.orbit);
             this.orbit.theta += dTheta;
             this.orbit.phi += dPhi;
             this.updateOrbit();

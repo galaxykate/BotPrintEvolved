@@ -23,6 +23,16 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
         },
 
+        removeBodies : function() {
+            var world = this.world;
+            $.each(this.bodies, function(index, body) {
+                if (!body.isTerrain) {
+                    world.DestroyBody(body);
+                }
+            });
+            this.bodies = [];
+        },
+
         makeEdgeRing : function(points) {
             var ground = this.world.CreateBody(new Box2D.b2BodyDef());
 
@@ -35,31 +45,27 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                 edge.Set(this.toB2Vec(p0), this.toB2Vec(p1));
                 ground.CreateFixture(edge, 0.0);
             }
+            return ground;
         },
-
         setTo : function(b2D, x, y) {
             b2D.set_x(x / this.scale);
             b2D.set_y(y / this.scale);
 
         },
-
         readIntoTransform : function(body, transform) {
             var bpos = body.GetPosition();
             transform.rotation = body.GetAngle();
             transform.translation.setTo(bpos.get_x() * this.scale, bpos.get_y() * this.scale);
         },
-
         toB2Vec : function(p) {
             if (arguments.length === 1)
                 return new b2Vec2(arguments[0].x / this.scale, arguments[0].y / this.scale);
             if (arguments.length === 2)
                 return new b2Vec2(arguments[0] / this.scale, arguments[1] / this.scale);
         },
-
         setBodyPosition : function(bodyDef, p) {
             bodyDef.set_position(this.toB2Vec(p));
         },
-
         setBodyToTransform : function(bodyDef, transform) {
 
             bodyDef.set_position(this.toB2Vec(transform.translation));
@@ -94,7 +100,6 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
             });
         },
-
         addSquares : function() {
             var a = 7.5;
             var shape = new Box2D.b2PolygonShape();
@@ -114,7 +119,6 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             }
 
         },
-
         render : function(g) {
             var boxWorld = this;
             var w = 15;
@@ -135,21 +139,10 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             });
 
         },
-
         addObject : function(regionPath, density) {
 
         },
-        removeShape : function(obj) {
-            world.DestroyBody(obj);
-        },
-        removeAll : function() {
-            for (var i = 0; i < bodies.length; i++) {
-                world.DestroyBody(bodies[i]);
-            }
 
-            bodies = [];
-
-        },
         createEdgeShape : function(points) {
             var shape0 = new Box2D.b2EdgeShape();
 
@@ -157,10 +150,12 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                 shape0.Set(points[i], points[(count + i + 1) % count]);
             }
         },
+
         setBuffer : function(v, buffer, offset) {
             Box2D.setValue(buffer + (offset), v.x / this.scale, 'float');
             Box2D.setValue(buffer + (offset + 4), v.y / this.scale, 'float');
         },
+
         createPolygonShapes : function(vertices) {
             var boxWorld = this;
             var shape = new Box2D.b2PolygonShape();
@@ -174,11 +169,11 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             shape.Set(ptr_wrapped, vertices.length);
             return [shape];
         },
+
         createTriFanShapes : function(vertices) {
             var boxWorld = this;
 
             var center = Vector.average(vertices);
-            console.log("Create trifan shape for " + vertices.length);
             var shapes = [];
             for (var j = 0; j < vertices.length; j++) {
 
@@ -201,6 +196,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
             return shapes;
         },
+
         simulate : function(dt) {
             var boxWorld = this;
             //  applyForce();

@@ -60,7 +60,6 @@ define(["ui", "common"], function(UI, common) {
                 this.mode.activate();
 
                 if (this.mode.controls !== undefined) {
-                    console.log("CHANGING CONTROLS TO " + modeName);
                     this.controls.setActiveControls(this.mode.controls);
                 }
             }

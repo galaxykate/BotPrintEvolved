@@ -8,7 +8,6 @@ define(["common"], function(COMMON) {'use strict';
     var Output = Class.extend({
         init : function(div) {
             this.div = div;
-            console.log(this.div);
             this.div.html("DEBUG");
         },
 

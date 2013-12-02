@@ -22,7 +22,6 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
         },
 
         update : function(time) {
-            console.log("Update bot");
             this.mainChassis.update(time);
         },
 
@@ -30,15 +29,20 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
             this.mainChassis.render(context);
         },
 
+        getForceAmt : function() {
+            if (this.decisionTree === undefined)
+                return Math.max(100000 * Math.sin(this.arena.time + this.idNumber), 0);
+            else
+                return this.decisionTree.makeDecision();
+        },
+
         getForces : function() {
             return [{
-                power : Math.max(200000 * Math.sin(app.time.worldTime + this.idNumber), 0),
-                direction : 20 * Math.sin(.2 * app.time.worldTime + this.idNumber), // global direction
-
+                power : this.getForceAmt(),
+                direction : 20 * Math.sin(.2 * this.arena.time + this.idNumber), // global direction
                 p : this.transform.translation // global position
             }];
         },
-
         hover : function(pos) {
             app.moveLog("Hovered " + pos);
             var pt = this.getAt({
@@ -72,11 +76,9 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
             }
             this.selectedPoint = undefined;
         },
-
         getAt : function(query) {
             return this.mainChassis.getAt(query);
         },
-
         createThreeMesh : function() {
             this.mainChassis.createThreeMesh();
             // set up the sphere vars
