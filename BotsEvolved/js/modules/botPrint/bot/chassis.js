@@ -141,7 +141,10 @@ define(["common", "./pathPoint", "./wiring", "io", "modules/threeUtils/modGeo", 
 
         compileAttachments : function(attachments, query) {
             $.each(this.attachments, function(index, attachment) {
-                attachments.push(attachment);
+                if (query(attachment)) {
+                    attachments.push(attachment);
+                }
+
             });
         },
 
