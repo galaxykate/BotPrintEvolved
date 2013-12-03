@@ -63,6 +63,10 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
             this.targetValue = targetValue;
         },
 
+        test : function() {
+            return this.comparator.evaluate(this.sensor.sense(), this.targetValue);
+        },
+
         toString : function() {
             return this.sensor + " " + this.comparator.symbol + " " + this.targetValue.toFixed(2);
         }
@@ -73,6 +77,10 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
         init : function(actuator, value) {
             this.actuator = actuator;
             this.value = value;
+        },
+
+        activate : function() {
+            this.actuator.actuate(this.value);
         },
 
         toString : function() {
@@ -96,15 +104,25 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
             return "sensor " + this.condition.sensor + " " + this.condition.comparator + " " + this.condition.targetValue;
         },
 
-        trueBranch : emptyAction,
-        falseBranch : emptyAction,
-        actuators : undefined,
-        sensors : undefined,
-
         init : function(parent, actuators, sensors) {
             this._super(parent);
             this.actuators = actuators;
             this.sensors = sensors;
+
+            this.type = "tree";
+            console.log(this);
+        },
+
+        resetActive : function() {
+            this.active = false;
+            console.log(this);
+
+            var children = this.getChildren();
+            if (this.children !== undefined) {
+                $.each(children, function(index, child) {
+                    child.resetActive();
+                });
+            }
         },
 
         // Return the node that is taken
@@ -119,12 +137,17 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
         },
 
         makeDecision : function() {
-            if (this.condition) {
-                if (this.testCondition(this.sensors)) {
+            this.active = true;
+            if (this.condition !== undefined) {
+                if (this.condition.test()) {
                     return this.trueBranch.makeDecision();
                 } else {
                     return this.falseBranch.makeDecision();
                 }
+            }
+
+            if (this.action !== undefined) {
+                this.action.activate();
             }
         },
 
@@ -149,22 +172,7 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
 
         setAction : function(actuator, value) {
             this.action = new Action(actuator, value);
-        },
 
-        testCondition : function(sensors) {
-            if (this.condition.comparator === ">") {
-                if (sensors[this.condition.sensor].sense() > this.condition.targetValue) {
-                    testLog("condition true: ", this.printCondition());
-                    return true;
-                }
-            } else if (this.condition.comparator === "<") {
-                testLog("condition true: ", this.printCondition());
-                if (sensors[this.condition.sensor].sense() < this.condition.targetValue) {
-                    return true;
-                }
-            }
-            testLog("condition false: ", this.printCondition());
-            return false;
         },
 
         mutate : function(mutationIntensity) {
@@ -263,34 +271,6 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
         },
     });
 
-    // Terminal nodes for the decision tree
-
-    var DTreeAction = DTree.extend({
-
-        init : function(actuators, sensors, actionDict) {
-            this._super(actuators, sensors);
-            this.actionDict = {};
-            this.actionDict = actionDict;
-        },
-
-        makeDecision : function() {
-            // Take action
-            for (key in this.actionDict) {
-                if (this.actionDict.hasOwnProperty(key)) {
-                    this.actuators[key].actuate(this.actionDict[key]);
-                }
-            }
-            // return result object for debug purposes
-            return this.actionDict;
-        },
-
-        clone : function() {
-            return new DTreeAction(this.actuators, this.sensors, this.actionDict);
-        },
-    });
-
-    var emptyAction = new DTreeAction({}, {}, {});
-
     var getNodes = function(tree, condition) {
         if (tree === undefined) {
             return [];
@@ -306,9 +286,8 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
     return {
         DTreeViz : DTreeViz,
         DTree : DTree,
-        DTreeAction : DTreeAction,
+
         DTreeIterator : DTreeIterator,
-        emptyAction : emptyAction,
         comparators : comparators,
     };
 })

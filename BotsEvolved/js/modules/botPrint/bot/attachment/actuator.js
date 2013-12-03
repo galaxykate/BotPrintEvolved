@@ -19,7 +19,6 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
         update : function(time) {
             this.actuation *= Math.pow(this.decay, time.ellapsed) - .1 * this.decay * time.ellapsed;
             this.actuation = utilities.constrain(this.actuation, 0, 1);
-            app.log(this.actuation);
         },
 
         getForce : function() {
@@ -30,7 +29,7 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
             return {
                 position : p,
                 //power : 1000 * Math.max(0, Math.sin(app.arena.time + this.idNumber)) + 100,
-                power : 1000 * this.actuation,
+                power : 2000 * this.actuation,
                 direction : p.rotation,
             }
         },
@@ -48,14 +47,17 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
             g.ellipse(-r * 1.5, 0, r * .5, r * .9);
 
             var r2 = r + .3 * r * this.actuation;
-            var rlength = r * this.actuation + r * .1;
+            var rlength = 2 * r * this.actuation + r * .1;
             g.fill(.12, 1, 1);
             g.ellipse(-r * 1.5 - rlength, 0, rlength, r2 * .5);
+
+            g.fill(1, 0, 1, .7);
+            g.text(this.idNumber, -3, 5);
 
         },
 
         toString : function() {
-            return this.id + "(" + this.actuation.toFixed(2) + ")";
+            return this.id;
         }
     });
 
