@@ -64,7 +64,7 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
         },
 
         toString : function() {
-            return "Sensor" + this.sensor + " " + this.comparator.symbol + " " + this.targetValue.toFixed(2);
+            return this.sensor + " " + this.comparator.symbol + " " + this.targetValue.toFixed(2);
         }
     });
 
@@ -76,7 +76,7 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
         },
 
         toString : function() {
-            return "Set Actuator" + this.actuator + " to " + this.value.toFixed(2);
+            return "Set " + this.actuator + " to " + this.value.toFixed(2);
 
         }
     });
@@ -119,14 +119,16 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
         },
 
         makeDecision : function() {
-            if (this.testCondition(this.sensors)) {
-                return this.trueBranch.makeDecision();
-            } else {
-                return this.falseBranch.makeDecision();
+            if (this.condition) {
+                if (this.testCondition(this.sensors)) {
+                    return this.trueBranch.makeDecision();
+                } else {
+                    return this.falseBranch.makeDecision();
+                }
             }
         },
 
-// Set true and false branches (some bookkeeping needs to happen, so its better in a function)
+        // Set true and false branches (some bookkeeping needs to happen, so its better in a function)
         setFalseBranch : function(node) {
             this.falseBranch = node;
             node.choice = false;

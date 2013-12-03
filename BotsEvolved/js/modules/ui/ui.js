@@ -66,10 +66,10 @@ define(["common", "processing", "modules/ui/panel", "modules/ui/controls", "modu
         addDevUI : function(parentDiv) {
             console.log("Add Dev UI");
             var ui = this;
-            var w = 150;
+            var w = 170;
             var h = 300;
             var offset = 250;
-            var spacing = 34;
+            var spacing = 24;
 
             // Create divs for the panels
             if (parentDiv !== undefined) {

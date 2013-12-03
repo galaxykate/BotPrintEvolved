@@ -23,9 +23,14 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", ".
 
             app.changeMode("arena");
             var task = "doThing";
-            app.evoSim = new BotEvo.BrainEvo(app.currentBot, task, app.arena);
-            app.evoSim.runGenerations(1);
 
+            app.currentBot = new Bot();
+            app.evoSim = new BotEvo.BrainEvo(app.currentBot, task, app.arena);
+            var testBrain = app.evoSim.createIndividual(app.evoSim.createGenome());
+            app.currentBot.setBrain(testBrain);
+            app.arena.addPopulation([app.currentBot]);
+
+            app.evoSim.treeViz.setTree(testBrain);
         },
 
         initModes : function() {

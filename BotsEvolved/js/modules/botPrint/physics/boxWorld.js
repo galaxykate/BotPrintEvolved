@@ -55,7 +55,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
         readIntoTransform : function(body, transform) {
             var bpos = body.GetPosition();
             transform.rotation = body.GetAngle();
-            transform.translation.setTo(bpos.get_x() * this.scale, bpos.get_y() * this.scale);
+            transform.setTo(bpos.get_x() * this.scale, bpos.get_y() * this.scale);
         },
         toB2Vec : function(p) {
             if (arguments.length === 1)
@@ -68,7 +68,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
         },
         setBodyToTransform : function(bodyDef, transform) {
 
-            bodyDef.set_position(this.toB2Vec(transform.translation));
+            bodyDef.set_position(this.toB2Vec(transform));
             bodyDef.set_angle(transform.rotation);
         },
 
@@ -111,7 +111,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             for (var i = 0; i < 30; i++) {
 
                 bodyDef.set_position(new b2Vec2(Math.random() * 40 - 20, Math.random() * 40 - 20));
-
+                bodyDef.angularDamping = 2.01;
                 var body = this.world.CreateBody(bd);
                 body.CreateFixture(shape, 5.0);
                 this.bodies[i] = body;
@@ -119,10 +119,21 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             }
 
         },
+
         render : function(g) {
             var boxWorld = this;
             var w = 15;
             $.each(this.bodies, function(index, body) {
+                var forces = body.parentObject.getForces();
+
+                g.fill(1, 1, 1);
+                $.each(forces, function(index, force) {
+                    //  force.position.drawCircle(g, 10);
+                    g.strokeWeight(3);
+                    g.stroke(1, 1, 1);
+//                    force.position.drawArrow(g, Vector.polar(1, force.direction), Math.sqrt(force.power));
+
+                });
 
                 var bpos = body.GetPosition();
                 var x = bpos.get_x() * boxWorld.scale;
@@ -199,8 +210,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
         simulate : function(dt) {
             var boxWorld = this;
-            //  applyForce();
-            // console.log("Step: " + dt);
+
             this.applyForce();
             this.world.Step(dt, 2, 2);
 
@@ -234,14 +244,15 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                 $.each(forces, function(index, force) {
                     var r = force.power;
                     var theta = force.direction;
-                    force.p.angle = theta;
 
                     // forceDir is the direction/strength of the force
                     // forceOffset is the world-relative point at which it is applied
                     boxWorld.setTo(forceDir, r * Math.cos(theta), r * Math.sin(theta));
-                    boxWorld.setTo(forceOffset, force.p.x, force.p.y);
+                    boxWorld.setTo(forceOffset, force.position.x, force.position.y);
 
-                    app.log(B2DtoString(forceDir) + " " + B2DtoString(forceOffset));
+                    app.log("f0: " + force.direction + r);
+                    app.log("f1: " + force.position);
+                    app.log("f2: " + B2DtoString(forceDir) + " " + B2DtoString(forceOffset));
 
                     body.ApplyForce(forceDir, forceOffset);
                 });

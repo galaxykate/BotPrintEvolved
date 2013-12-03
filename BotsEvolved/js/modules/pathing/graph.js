@@ -91,25 +91,15 @@ define(["common"], function(common) {
         render : function(context) {
             var g = context.g;
             g.strokeWeight(2);
-               $.each(this.nodes, function(index, node) {
+            g.stroke(1, 0, 1, .3);
+            $.each(this.nodes, function(index, node) {
                 node.render(context);
             });
-            
-            /*
-            $.each(this.edges, function(index, edge) {
-                if (edge.active)
-                    g.stroke(0);
-                else
-                    g.stroke(0, 0, 0, .03);
-                edge.render(context);
-            });
-            */
 
             $.each(this.nodes, function(index, node) {
                 node.renderAsPoint(context, 20);
             });
 
-         
         },
     });
 

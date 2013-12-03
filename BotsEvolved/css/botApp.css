@@ -12,10 +12,10 @@
 #ai_overlay {
 	position: absolute;
 	top: 10px;
-	left: 10px;
+	left: 810px;
 	z-index: 100;
 	width: 600px;
-	height: 400px;
+	height: 600px;
 	background: rgba(110, 120, 140,.9);
 }
 

@@ -51,10 +51,10 @@ define(["common", "modules/threeUtils/threeView"], function(common, ThreeView) {
 
             this.lods = {
                 region : new LayerOpacity("region outlines", 20, 200, 4),
-                large : new LayerOpacity("large objects", 5, 60, 4),
-                medium : new LayerOpacity("medium objects", 5, 50, 4),
-                small : new LayerOpacity("small objects", 5, 30, 4),
-                dust : new LayerOpacity("dust objects", 5, 20, 4),
+                large : new LayerOpacity("large objects", 8, 60, 4),
+                medium : new LayerOpacity("medium objects", 8, 50, 4),
+                small : new LayerOpacity("small objects", 8, 30, 4),
+                dust : new LayerOpacity("dust objects", 8, 20, 4),
                 inspected : new LayerOpacity("inspection stuff", -5, 12, 3),
             }
 
@@ -327,6 +327,7 @@ define(["common", "modules/threeUtils/threeView"], function(common, ThreeView) {
 
             });
 
+            app.log("opacity " + context.lod.inspected.opacity);
             if (context.lod.inspected.opacity > 0) {
                 context.opacity = context.lod.inspected.opacity;
                 app.inspectorView.render(context);

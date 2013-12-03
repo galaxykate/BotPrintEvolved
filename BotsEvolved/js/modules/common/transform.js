@@ -4,48 +4,54 @@
 // Reusable Vector class
 
 define(["modules/common/vector"], function(Vector) {
-    var Transform = Class.extend({
+    var Transform = Vector.extend({
         init : function() {
+            this._super();
             this.rotation = 0;
             this.scale = 1;
-            this.translation = new Vector();
+
         },
 
         cloneFrom : function(t) {
             this.rotation = t.rotation;
             this.scale = t.scale;
-            this.translation.setTo(t.translation)
+            this.setTo(t)
         },
 
         reset : function() {
             this.rotation = 0;
             this.scale = 1;
-            this.translation.setTo(0, 0, 0);
+            this.setTo(0, 0, 0);
         },
 
         applyTransform : function(g) {
-            this.translation.translateTo(g);
+            this.translateTo(g);
             g.rotate(this.rotation);
             g.scale(this.scale);
         },
 
         toWorld : function(localPos, worldPos) {
             worldPos.setTo(localPos);
-            worldPos.add(this.translation);
-            worldPos.mult(this.scale);
             worldPos.rotate(this.rotation);
+            worldPos.add(this);
+
+            worldPos.mult(this.scale);
+            if (localPos.rotation !== undefined)
+                worldPos.rotation += this.rotation;
         },
 
         toLocal : function(worldPos, localPos) {
             localPos.setTo(worldPos);
-            localPos.rotate(-this.rotation);
             localPos.div(this.scale);
-            localPos.sub(this.translation);
+            localPos.sub(this);
+            localPos.rotate(-this.rotation);
 
+            if (worldPos.rotation !== undefined)
+                localPos.rotation -= this.rotation;
         },
 
         toString : function() {
-            return "[" + this.translation + " " + this.rotation + "rad " + this.scale + "X]";
+            return "[" + this._super() + " " + this.rotation + "rad " + this.scale + "X]";
         }
     });
 

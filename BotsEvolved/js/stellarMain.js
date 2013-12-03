@@ -10,6 +10,7 @@ require.config({
         'jQueryUITouchPunch' : 'vendor/jquery.ui.touch-punch',
         'jQueryHammer' : 'vendor/jquery.hammer',
         'jQueryMigrate' : 'vendor/jquery-migrate-1.2.1',
+        'jQueryTransit' : 'vendor/jquery.transit.min',
         'jQueryGridster' : 'vendor/jquery.gridster',
         'mousewheel' : 'vendor/jquery.mousewheel',
         'voronoi' : 'vendor/rhill-voronoi-core',
@@ -40,6 +41,11 @@ require.config({
         'jQueryMigrate' : {
             exports : '$',
             deps : ['jQueryUI']
+        },
+
+        'jQueryTransit' : {
+            exports : '$',
+            deps : ['jQuery']
         },
 
         'jQueryGridster' : {

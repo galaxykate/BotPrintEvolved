@@ -17,7 +17,7 @@ define(["common"], function(common) {'use strict';
 
         setProcessing : function(processing) {
             this.processing = processing;
-            this.transform.translation.setTo(processing.width / 2, processing.height / 2);
+            this.transform.setTo(processing.width / 2, processing.height / 2);
 
         },
 
@@ -33,6 +33,7 @@ define(["common"], function(common) {'use strict';
 
         render : function(toRender) {
             var g = this.processing;
+            g.ellipseMode(g.CENTER_RADIUS);
             var context = {
                 g : g
             };
@@ -44,8 +45,6 @@ define(["common"], function(common) {'use strict';
             this.transform.applyTransform(g);
             toRender(context);
 
-            g.fill(0);
-            g.ellipse(this.localPos.x, this.localPos.y, 20, 20);
             g.popMatrix();
         },
 
