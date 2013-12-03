@@ -11,6 +11,18 @@ define(["modules/common/vector"], function(Vector) {
             this.translation = new Vector();
         },
 
+        cloneFrom : function(t) {
+            this.rotation = t.rotation;
+            this.scale = t.scale;
+            this.translation.setTo(t.translation)
+        },
+
+        reset : function() {
+            this.rotation = 0;
+            this.scale = 1;
+            this.translation.setTo(0, 0, 0);
+        },
+
         applyTransform : function(g) {
             this.translation.translateTo(g);
             g.rotate(this.rotation);

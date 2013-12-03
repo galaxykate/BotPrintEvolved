@@ -31,10 +31,12 @@ define(["common"], function(common) {'use strict';
         },
 
         moveTo : function(pos) {
+
             var offset = this.parent.getOffsetTo(pos);
             this.parent.theta = offset.getAngle() + this.index * Math.PI;
             this.controlRadius = offset.magnitude();
             this.parent.updateControlHandles();
+            this.parent.setAsDirty();
 
         },
 
@@ -59,9 +61,28 @@ define(["common"], function(common) {'use strict';
 
         },
 
+        setAsDirty : function() {
+            this.isDirty = true;
+        },
+
         setNext : function(p) {
             this.next = p;
             p.previous = this;
+        },
+
+        getSubdivisionPoint : function(t) {
+            var t0 = 1 - t;
+            var start = this;
+            var end = this.next;
+            var p = new Vector();
+            var c0 = this.handles[1];
+            var c1 = this.next.handles[0];
+
+            p.addMultiple(start, t0 * t0 * t0);
+            p.addMultiple(c0, 3*t0 * t0 * t);
+            p.addMultiple(c1, 3*t * t * t0);
+            p.addMultiple(end, t * t * t);
+            return p;
         },
 
         update : function(time) {
@@ -70,7 +91,8 @@ define(["common"], function(common) {'use strict';
 
         moveTo : function(pos) {
             this.setTo(pos);
-           this.updateControlHandles();
+            this.updateControlHandles();
+            this.setAsDirty();
         },
 
         makeCurveVertex : function(g) {
@@ -104,7 +126,7 @@ define(["common"], function(common) {'use strict';
             if (this.excitement > 0) {
                 var r2 = 10 + 20 * this.excitement;
                 g.fill(1, 0, 1, .9)
-                g.ellipse(this.x, this.y, r2, r2);
+                this.drawCircle(g, r2);
             }
 
             g.fill(0);
@@ -114,7 +136,7 @@ define(["common"], function(common) {'use strict';
             }
 
             var r = 10;
-            g.ellipse(this.x, this.y, r, r);
+            this.drawCircle(g, r);
 
         },
     });

@@ -18,10 +18,13 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
                 var p = common.Vector.polar(r, theta);
                 this.border.addPoint(p);
             }
-            this.boxWorld.makeEdgeRing(this.border.points);
+            var ground = this.boxWorld.makeEdgeRing(this.border.points);
+            ground.isTerrain = true;
         },
 
         reset : function() {
+            this.time = 0;
+            this.boxWorld.removeBodies();
         },
 
         //-------------------------------------------
@@ -102,8 +105,9 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
         //-------------------------------------------
         // Run a test
 
-        runTest : function(population) {
+        startTest : function(population) {
             var arena = this;
+            arena.reset();
             // Give each bot an arena position
             $.each(population, function(index, bot) {
                 arena.bots.push(bot);
@@ -115,6 +119,16 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
             });
 
             arena.boxWorld.addObjects(population);
+
+        },
+
+        runFor : function(seconds, timestep, postUpdate) {
+
+            while (this.time < seconds) {
+                this.time += timestep;
+                this.boxWorld.simulate(timestep);
+                postUpdate();
+            }
 
         },
 

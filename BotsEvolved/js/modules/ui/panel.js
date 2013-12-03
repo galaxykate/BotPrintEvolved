@@ -5,7 +5,7 @@
 define(["common"], function(common) {'use strict';
 
     var closedShowing = -30;
-    var openHidden = 15;
+    var openHidden = 8;
 
     var Panel = Class.extend({
 

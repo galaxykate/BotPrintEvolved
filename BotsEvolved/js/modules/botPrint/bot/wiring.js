@@ -16,6 +16,7 @@ define(["common"], function(common) {'use strict';
 
         render : function(context) {
             var g = context.g;
+            g.strokeWeight(1);
             this.idColor.stroke(g);
             var p0 = this.start.edgePos;
             var p1 = this.end.edgePos;

@@ -4,12 +4,16 @@
 
 define(["common", "three", "./threeCam"], function(common, THREE, ThreeCam) {'use strict';
 
+    THREE.Vector3.prototype.toString = function() {
+        return "(" + this.x.toFixed(2) + ", " + this.y.toFixed(2) + ", " + this.z.toFixed(2) + ")";
+    };
+
     var ThreeView = Class.extend({
         init : function(div, prerender) {
-            
+
             var view = this;
             this.prerender = prerender;
-            
+
             this.w = div.width();
             this.h = div.height();
 
@@ -27,11 +31,11 @@ define(["common", "three", "./threeCam"], function(common, THREE, ThreeCam) {'us
 
             view.scene = new THREE.Scene();
             var sphere = new THREE.Mesh(new THREE.SphereGeometry(40, 5, 5), new THREE.MeshNormalMaterial());
-          //  view.scene.add(sphere);
+            //  view.scene.add(sphere);
 
             this.marker = new THREE.Mesh(new THREE.SphereGeometry(10, 5, 5), new THREE.MeshNormalMaterial());
             this.marker.position.x += 80;
-          //  view.scene.add(this.marker);
+            //  view.scene.add(this.marker);
 
             // add the camera to the scene
             view.scene.add(camera);
@@ -40,11 +44,11 @@ define(["common", "three", "./threeCam"], function(common, THREE, ThreeCam) {'us
 
             this.frameCount = 0;
             function render() {
-               
+
                 if (view.rendering) {
                     view.frameCount++;
                     if (view.prerender !== undefined)
-                       view.prerender();
+                        view.prerender();
 
                     view.renderer.render(view.scene, camera);
                 }

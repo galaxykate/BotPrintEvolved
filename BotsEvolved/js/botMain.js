@@ -5,6 +5,7 @@
 require.config({
     paths : {
         'three' : 'vendor/three',
+        'd3' : 'vendor/d3.v3',
         'jQuery' : 'vendor/jquery-1.10.1',
         'jQueryUI' : 'vendor/jquery-ui',
         'jQueryUITouchPunch' : 'vendor/jquery.ui.touch-punch',
