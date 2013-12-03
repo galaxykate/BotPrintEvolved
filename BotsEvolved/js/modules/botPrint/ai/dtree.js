@@ -78,6 +78,10 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
         toString : function() {
             return "Set " + this.actuator + " to " + this.value.toFixed(2);
 
+        },
+
+        clone : function() {
+            return new Action(this.actuator, this.value);
         }
     });
 
@@ -168,7 +172,7 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
         },
 
         mutate : function(mutationIntensity) {
-            mutationIntensity ? mutationIntensity : 1;
+            mutationIntensity = mutationIntensity ? mutationIntensity : 1;
             //Get lookup tables for nodes in the tree
             var decisions = getNodes(this, function(tree) {
                 return tree.condition !== undefined
@@ -245,11 +249,20 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
             return this;
         },
 
-        clone : function() {
-            var newTree = new DTree(this.actuators, this.sensors);
-            newTree.setCondition(this.condition.sensor, this.condition.comparator, this.condition.targetValue);
-            newTree.trueBranch = this.trueBranch !== undefined ? this.trueBranch.clone() : undefined;
-            newTree.falseBranch = this.falseBranch !== undefined ? this.falseBranch.clone() : undefined;
+        clone : function(parent) {
+            var newTree = new DTree(parent, this.actuators, this.sensors);
+            if (this.condition !== undefined) {
+                newTree.setCondition(this.condition.sensor, this.condition.comparator, this.condition.targetValue);
+            }
+            if (this.action !== undefined) {
+                newTree.setAction(this.action.clone());
+            }
+            if (this.trueBranch !== undefined) {
+                newTree.setTrueBranch(this.trueBranch.clone(this));
+            }
+            if (this.falseBranch  !== undefined) {
+                newTree.setFalseBranch(this.falseBranch.clone(this));
+            }
             return newTree;
         },
 

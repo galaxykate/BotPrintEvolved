@@ -70,7 +70,6 @@ define(["ui", "common"], function(UI, common) {
         },
 
         initControls : function() {
-
         },
 
         initUI : function() {

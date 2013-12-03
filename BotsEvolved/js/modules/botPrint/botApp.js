@@ -190,6 +190,11 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", ".
                 app.testArena();
             });
 
+            $("mutate").click(function() {
+                app.currentBot.mutateGenome();
+                app.evoSim.treeViz.setTree(app.currentBot.brain);
+            });
+
             var ui = this.ui;
 
             $(".full_canvas").css({

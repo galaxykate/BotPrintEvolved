@@ -21,14 +21,6 @@ define(["common", "modules/evo/evoSim", "./ai/dtree"], function(common, EvoSim, 
         },
 
         createGenome : function() {
-            var genome = [];
-            for (var i = 0; i < this.genomeLength; i++) {
-                genome[i] = Math.random();
-            }
-            return genome;
-        },
-
-        createIndividual : function(genome) {
             var sensors = this.bot.sensors;
             var actuators = this.bot.actuators;
             console.log(sensors);
@@ -56,10 +48,22 @@ define(["common", "modules/evo/evoSim", "./ai/dtree"], function(common, EvoSim, 
             console.log(dtree);
             return dtree;
 
+            /*
+            var genome = [];
+            for (var i = 0; i < this.genomeLength; i++) {
+                genome[i] = Math.random();
+            }
+            return genome;
+            */
+        },
+
+        createIndividual : function(genome) {
+            console.log("genome", genome);
+            return genome.clone();
         },
 
         mutateGenome : function(genome, amt) {
-
+            return genome.mutate(amt);
         },
         crossoverGenomes : function(g0, g1) {
 

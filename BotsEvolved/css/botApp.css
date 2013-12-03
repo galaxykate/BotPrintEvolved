@@ -8,6 +8,11 @@
 	left: 0px;
 	top: 310px;
 }
+#mutate {
+	position: absolute;
+	left: 0px;
+	top: 340px;
+}
 
 #ai_overlay {
 	position: absolute;
