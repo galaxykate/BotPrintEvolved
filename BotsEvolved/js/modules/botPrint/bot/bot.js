@@ -21,7 +21,6 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
 
         // Transform this bot-local position to a global one
         transformToGlobal : function(local, global) {
-            //   app.log("" + this.transform);
             this.transform.toWorld(local, global);
 
         },
@@ -30,6 +29,7 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
             this.attachments = [];
             this.sensors = [];
             this.actuators = [];
+
             this.mainChassis.compileAttachments(this.sensors, function(attachment) {
                 return attachment.sense !== undefined;
             });
@@ -58,6 +58,7 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
                     dtree = this.brain[this.intention];
                 }
 
+                dtree.resetActive();
                 dtree.makeDecision();
             }
         },

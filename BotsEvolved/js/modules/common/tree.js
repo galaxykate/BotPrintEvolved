@@ -5,7 +5,6 @@
 define(["common"], function(common) {
     var nodeCount = 0;
 
-
     var Tree = Class.extend({
         init : function() {
             // Set the depth if there's a parent
@@ -27,6 +26,7 @@ define(["common"], function(common) {
         getChildren : function() {
             return this.children;
         },
+
         debugPrint : function() {
             var spacer = "";
             for (var i = 0; i < this.depth; i++) {

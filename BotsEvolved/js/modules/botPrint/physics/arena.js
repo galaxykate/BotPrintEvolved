@@ -129,7 +129,6 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
                 this.boxWorld.simulate(timestep);
                 postUpdate();
             }
-
         },
 
         update : function(time) {
@@ -137,7 +136,53 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
             $.each(this.bots, function(index, bot) {
                 bot.update(time);
             });
+
+            $.each(this.bots, function(index, bot) {
+                bot.act(time);
+            });
             this.boxWorld.simulate(time.ellapsed);
+        },
+
+        getLightMapAt : function(p) {
+            if (this.lightMap === undefined)
+                return 0;
+
+            var x = Math.round(p.x + this.lightMap.width / 2);
+            var y = Math.round(p.y + this.lightMap.height / 2);
+
+            var b = this.lightMap.brightness(this.lightMap.get(x, y));
+            return b;
+        },
+
+        createLightMap : function(processing) {
+            this.lightMap = processing.createGraphics(processing.width, processing.height);
+
+            var g = this.lightMap;
+            g.colorMode(g.HSB, 1);
+            g.background(0);
+            g.beginDraw();
+
+            var layers = 18;
+            for (var i = 0; i < 7; i++) {
+                var x = Math.random() * g.width;
+                var y = Math.random() * g.height;
+
+                for (var j = 0; j < layers; j++) {
+
+                    var pct = (j / (layers - 1));
+                    var r = 300 * Math.pow(pct, 2.6);
+
+                    g.noStroke();
+                    g.fill(1, .0, 1, .04 + .2 * (1 - pct));
+                    g.ellipse(x, y, r, r);
+                }
+            }
+
+            g.filter(g.BLUR, 2);
+            g.loadPixels();
+
+            g.updatePixels();
+            g.endDraw();
         },
 
         //-------------------------------------------
@@ -145,7 +190,13 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
         // render this bot in a 2D frame
         render : function(context) {
             var g = context.g;
+
             //   g.ellipse(0, 0, 400, 400);
+            if (this.lightMap === undefined) {
+                this.createLightMap(g);
+            }
+
+            g.image(this.lightMap, -g.width / 2, -g.height / 2);
 
             // Draw the edges
             var arenaColor = new common.KColor(.2, .6, .2);
@@ -163,6 +214,10 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
             });
 
             this.boxWorld.render(g);
+
+            // Update the tree viz
+            app.evoSim.treeViz.updateText();
+
         },
     });
 

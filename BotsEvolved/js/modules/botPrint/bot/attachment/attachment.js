@@ -35,14 +35,12 @@ define(["common"], function(common) {'use strict';
         },
 
         transformToGlobal : function(local, global) {
-            app.log("local to attachment: " + local);
             if (this.parent !== undefined)
                 this.parent.transformToGlobal(local, global);
 
             // Transform it relative to the attachment
             this.attachPoint.toWorld(global, global);
 
-            app.log("global: " + global);
         },
 
         //========================================================

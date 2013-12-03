@@ -111,7 +111,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             for (var i = 0; i < 30; i++) {
 
                 bodyDef.set_position(new b2Vec2(Math.random() * 40 - 20, Math.random() * 40 - 20));
-                bodyDef.angularDamping = 2.01;
+                bodyDef.angularDamping = 20.01;
                 var body = this.world.CreateBody(bd);
                 body.CreateFixture(shape, 5.0);
                 this.bodies[i] = body;
@@ -131,7 +131,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                     //  force.position.drawCircle(g, 10);
                     g.strokeWeight(3);
                     g.stroke(1, 1, 1);
-//                    force.position.drawArrow(g, Vector.polar(1, force.direction), Math.sqrt(force.power));
+                    //                    force.position.drawArrow(g, Vector.polar(1, force.direction), Math.sqrt(force.power));
 
                 });
 
@@ -249,11 +249,6 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                     // forceOffset is the world-relative point at which it is applied
                     boxWorld.setTo(forceDir, r * Math.cos(theta), r * Math.sin(theta));
                     boxWorld.setTo(forceOffset, force.position.x, force.position.y);
-
-                    app.log("f0: " + force.direction + r);
-                    app.log("f1: " + force.position);
-                    app.log("f2: " + B2DtoString(forceDir) + " " + B2DtoString(forceOffset));
-
                     body.ApplyForce(forceDir, forceOffset);
                 });
 
