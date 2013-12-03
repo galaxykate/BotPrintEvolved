@@ -60,6 +60,14 @@ define([], function() {
             return array[Math.floor(Math.random() * array.length)];
         },
 
+	    getRandomIndex: function(array) {
+	      return Math.floor(Math.random() * Math.round(array.length - 1));
+	    },
+
+	    getRandomKey: function(obj) {
+	      return this.getRandom(Object.keys(obj));
+	    },
+
         constrain : function(val, lowerBound, upperBound) {
             if (Math.max(val, upperBound) === val)
                 return upperBound;

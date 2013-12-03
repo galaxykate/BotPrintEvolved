@@ -5,7 +5,7 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
 
     };
 
-    function mutateLog(s) {
+    function mutationLog(s) {
         if (app.getOption("logMutations"))
             console.log(s);
     };
@@ -73,16 +73,25 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
         init : function(actuator, value) {
             this.actuator = actuator;
             this.value = value;
+			if (value === undefined) {
+				console.log("action.init() called with undefined value");
+			}
         },
 
         toString : function() {
-            return "Set " + this.actuator + " to " + this.value.toFixed(2);
+			console.log("toString this.value: ", this.value);
+			// console.log("toString this.value.toFixed(2): ", this.value.toFixed(2));
+			// var v = this.value;
+			// console.log("v", v);
+			// console.log("v.toFixed(2)", v.toFixed(2));
+            return "Set " + this.actuator + " to " + (this.value).toFixed(2);
 
         },
 
-        clone : function() {
-            return new Action(this.actuator, this.value);
-        }
+			//         clone : function() {
+			// console.log("Action.clone() called, value is ", this.value);
+			//             return new Action(this.actuator, this.value);
+			//         }
     });
 
     var DTree = common.Tree.extend({
@@ -112,6 +121,7 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
         },
 
         // Return the node that is taken
+		// This is used for visualization to just navigate the tree without taking any actions.
         getNextNode : function() {
             if (this.condition !== undefined) {
                 if (this.testCondition(this.sensors)) {
@@ -178,72 +188,68 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
                 return tree.condition !== undefined
             });
             var actions = getNodes(this, function(tree) {
-                return tree.condition === undefined
+                return tree.action !== undefined
             });
 
             //Randomly select node to mutate
             var table = Math.random() > .5 ? decisions : actions;
-            var currTree = utilities.getRandom(table);
+            var selectedNode = utilities.getRandom(table);
 
             //get random number
             var seed = Math.random();
             var PROB = STEP = .2;
 
-            if (!currTree) {
+            if (!selectedNode) {
                 mutationLog("No sub-trees");
                 return;
             }//If we have no children, don't mutate
             mutationLog("seed", seed);
-            mutationLog("currTree", currTree);
-            if (currTree.condition != undefined) {
+            mutationLog("selectedNode", selectedNode);
+            if (selectedNode.condition != undefined) {
                 mutationLog("decision node");
                 if (seed < PROB) {
-                    mutationLog("replace condition with action");
+                    mutationLog("(TODO) replace condition with action");
                 } else if (seed < PROB + STEP) {
                     mutationLog("switch sensor");
-                    currTree.condition.sensor = utilities.getRandomIndex(currTree.sensors);
+                    selectedNode.condition.sensor = utilities.getRandomIndex(selectedNode.sensors);
                 } else if (seed < PROB + 2 * STEP) {
                     mutationLog("adjust targetValue");
-                    currTree.condition.targetValue = Math.random();
+                    selectedNode.condition.targetValue = Math.random();
                 } else if (seed < PROB + 3 * STEP) {
                     mutationLog("swap true/false branches");
-                    var tmp = currTree.falseBranch;
-                    currTree.falseBranch = currTree.trueBranch;
-                    currTree.trueBranch = tmp;
-                } else if (seed < PROB + 4 * STEP) {
+                    var tmp = selectedNode.falseBranch;
+                    selectedNode.setFalseBranch(selectedNode.trueBranch);
+                    selectedNode.setTrueBranch(tmp);
+                } else  {
                     mutationLog("switch comparator");
-                    currTree.condition.comparator = (currTree.condition.comparator === '>' ? '<' : '>');
+                    selectedNode.condition.comparator = (selectedNode.condition.comparator === '>' ? '<' : '>');
                 }
             } else {
                 mutationLog("action node");
-                if (seed < PROB) {
-                    if (currTree.actionDict != {}) {
-                        mutationLog("switch actuator values");
-
-                        //Not quite right..
-                        //currTree.actionDict[utilities.getRandomKey(currTree.actionDict)] = currTree.actionDict[utilities.getRandomKey(actionDict)];
-                    }
-                } else if (seed < PROB + STEP) {
+                if (seed) { // < PROB + STEP) {
                     mutationLog("replace action with condition");
+					selectedNode.action = undefined;
+					
+					var newSensor = utilities.getRandom(this.sensors);
+					selectedNode.setCondition(newSensor, utilities.getRandom(comparators), Math.random());
+					console.log("selectedNode: ", selectedNode);
+					
+					var newTrueNode = new DTree(selectedNode, this.sensors, this.actuators);
+					newTrueNode.setAction(utilities.getRandom(this.actuators), Math.random());
+					selectedNode.setTrueBranch(newTrueNode);
+					
+					var newFalseNode = new DTree(selectedNode, this.sensors, this.actuators);
+					newFalseNode.setAction(utilities.getRandom(this.actuators), Math.random());
+					selectedNode.setFalseBranch(newFalseNode);
+										
+					
+					
                 } else if (seed < PROB + 2 * STEP) {
-                    mutationLog("modify action");
-                    currTree.actionDict[utilities.getRandomKey(currTree.actionDict)] = Math.random();
-                } else if (seed < PROB + 3 * STEP) {
-                    mutationLog("remove action");
-                    delete currTree.actionDict[utilities.getRandomKey(currTree.actionDict)]
-                } else if (seed < PROB + 4 * STEP) {
-                    mutationLog("add action");
-                    var key = utilities.getRandomKey(currTree.actuators);
-                    currTree.actionDict[key] = Math.random();
-                } else if (seed < PROB + 5 * STEP) {
-                    mutationLog("switch actuators");
-                    if (Object.keys(actionDict).length >= 2) {
-                        var key1 = utilities.getRandomKey(currTree.actionDict);
-                        var key2 = utilities.getRandomKey(currTree.actionDict);
-                        var tmp = currTree.actionDict[key1];
-                        currTree.actionDict[key1] = currtree.actionDict[key2];
-                        currTree.actionDict[key2] = tmp;
-                    }
+                    mutationLog("randomize actuator value");
+					selectedNode.action.value = Math.random();
+                } else  {
+                    mutationLog("randomize actuator");					
+					selectedNode.action.actuator = utilities.getRandom(this.actuators);
                 }
             }
             return this;
@@ -255,7 +261,7 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
                 newTree.setCondition(this.condition.sensor, this.condition.comparator, this.condition.targetValue);
             }
             if (this.action !== undefined) {
-                newTree.setAction(this.action.clone());
+                newTree.setAction(this.action.actuator, this.action.value);
             }
             if (this.trueBranch !== undefined) {
                 newTree.setTrueBranch(this.trueBranch.clone(this));
