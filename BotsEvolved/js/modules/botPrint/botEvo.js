@@ -65,6 +65,7 @@ define(["common", "modules/evo/evoSim", "./ai/dtree"], function(common, EvoSim, 
         mutateGenome : function(genome, amt) {
             return genome.mutate(amt);
         },
+
         crossoverGenomes : function(g0, g1) {
 
         },
