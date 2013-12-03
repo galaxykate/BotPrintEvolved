@@ -10,7 +10,32 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
             botCount++;
             this.mainChassis = new Chassis(this);
             this.transform = new common.Transform();
+            this.compileAttachments();
+        },
 
+        setBrain : function(dtree) {
+            this.brain = {
+                defaultTree : dtree
+            };
+        },
+
+        // Transform this bot-local position to a global one
+        transformToGlobal : function(local, global) {
+            //   app.log("" + this.transform);
+            this.transform.toWorld(local, global);
+
+        },
+
+        compileAttachments : function() {
+            this.attachments = [];
+            this.sensors = [];
+            this.actuators = [];
+            this.mainChassis.compileAttachments(this.sensors, function(attachment) {
+                return attachment.sense !== undefined;
+            });
+            this.mainChassis.compileAttachments(this.actuators, function(attachment) {
+                return attachment.actuate !== undefined;
+            });
         },
 
         //-------------------------------------------
@@ -23,10 +48,46 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
 
         update : function(time) {
             this.mainChassis.update(time);
+
+        },
+
+        act : function(time) {
+            if (this.brain !== undefined) {
+                var dtree = this.brain.defaultTree;
+                if (this.intention !== undefined) {
+                    dtree = this.brain[this.intention];
+                }
+
+                dtree.makeDecision();
+            }
         },
 
         render : function(context) {
+            var g = context.g;
+            g.pushMatrix();
+            this.transform.applyTransform(g);
+
+            context.useChassisCurves = true;
             this.mainChassis.render(context);
+
+            /*
+             $.each(this.attachments, function(index, attachment) {
+             var p = attachment.getBotTransform();
+             g.fill(.4, 1, 1);
+             p.drawCircle(g, 20);
+             });
+             */
+
+            g.popMatrix();
+            /*
+             $.each(this.attachments, function(index, attachment) {
+             var p2 = attachment.getWorldTransform();
+             g.fill(.56, 1, 1);
+             p2.drawCircle(g, 10);
+
+             });
+             */
+
         },
 
         getForceAmt : function() {
@@ -37,11 +98,9 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
         },
 
         getForces : function() {
-            return [{
-                power : this.getForceAmt(),
-                direction : 20 * Math.sin(.2 * this.arena.time + this.idNumber), // global direction
-                p : this.transform.translation // global position
-            }];
+            var forces = [];
+            this.mainChassis.compileForces(forces);
+            return forces;
         },
         hover : function(pos) {
             app.moveLog("Hovered " + pos);

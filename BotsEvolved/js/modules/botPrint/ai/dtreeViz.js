@@ -3,56 +3,10 @@
  */
 
 define(["d3"], function(_d3) {
-    var root = {
-        "name" : "flare",
-        "children" : [{
-            "name" : "analytics",
-            "children" : [{
-                "name" : "cluster",
-                "children" : [{
-                    "name" : "AgglomerativeCluster",
-                    "size" : 3938
-                }, {
-                    "name" : "CommunityStructure",
-                    "size" : 3812
-                }, {
-                    "name" : "HierarchicalCluster",
-                    "size" : 6714
-                }, {
-                    "name" : "MergeEdge",
-                    "size" : 743
-                }]
-            }, {
-                "name" : "graph",
-                "children" : [{
-                    "name" : "BetweennessCentrality",
-                    "size" : 3534
-                }, {
-                    "name" : "LinkDistance",
-                    "size" : 5731
-                }, {
-                    "name" : "MaxFlowMinCut",
-                    "size" : 7840
-                }, {
-                    "name" : "ShortestPaths",
-                    "size" : 5914
-                }, {
-                    "name" : "SpanningTree",
-                    "size" : 3416
-                }]
-            }, {
-                "name" : "optimization",
-                "children" : [{
-                    "name" : "AspectRatioBanker",
-                    "size" : 7074
-                }]
-            }]
-        }]
-    };
 
     var DTreeViz = Class.extend({
         init : function() {
-            var width = 600, height = 400;
+            var width = 400, height = 400;
 
             this.cluster = d3.layout.cluster().size([height, width - 160]);
 
@@ -104,8 +58,6 @@ define(["d3"], function(_d3) {
                 return d.toString();
             });
 
-            d3.select(self.frameElement).style("height", 400 + "px");
-           
         }
     });
 

@@ -227,7 +227,7 @@ define(["common", "mousewheel"], function(COMMON, MOUSEWHEEL) {'use strict';
 
             var mousePos = new Vector();
             var touchDiv = this.touchDiv;
-
+        
             // Key handlers
             $(document).keypress(function(event) {
                 var c = String.fromCharCode(event.which);

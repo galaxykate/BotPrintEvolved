@@ -2,15 +2,16 @@
  * @author Kate Compton
  */
 
-define(["common", "./pathPoint", "./wiring", "io", "modules/threeUtils/modGeo"], function(common, PathPoint, Wiring, IO, ModGeo) {'use strict';
+define(["common", "./pathPoint", "./wiring", "io", "modules/threeUtils/modGeo", "./attachment/attachments"], function(common, Path, Wiring, IO, ModGeo, Attachment) {'use strict';
     var chassisCount = 0;
     // Points MUST be coplanar
 
     // var CylinderGeometry = new
     //  IO.saveFile("test", "txt", "M 100 100 L 300 100 L 200 300 z");
 
-    var Chassis = Class.extend({
+    var Chassis = Path.extend({
         init : function(parent) {
+            this._super();
 
             var chassis = this;
             this.curveSubdivisions = 3;
@@ -24,27 +25,39 @@ define(["common", "./pathPoint", "./wiring", "io", "modules/threeUtils/modGeo"],
             this.idNumber = chassisCount;
             chassisCount++;
             this.idColor = new common.KColor((.2813 * this.idNumber + .23) % 1, 1, 1);
-            this.points = [];
+
             this.center = new Vector(0, 0);
             var pointCount = 5;
-            var last = undefined;
+
             for (var i = 0; i < pointCount; i++) {
                 var theta = i * Math.PI * 2 / pointCount;
                 var r = 100 * utilities.unitNoise(.7 * theta + 50 * this.idNumber);
-                var pt = new PathPoint(0, 0, 30, 30, theta - Math.PI / 2);
+                var pt = new Path.PathPoint(0, 0, 30, 30, theta - Math.PI / 2);
                 pt.addPolar(r, theta);
-
-                this.points.push(pt);
-                if (last !== undefined) {
-                    last.setNext(pt);
-                }
-
                 pt.updateControlHandles();
-                last = pt;
+                this.addPoint(pt);
             }
+            this.generateWiring();
+            this.generateAttachments();
+        },
 
-            last.setNext(this.points[0]);
+        //======================================================================================
+        //======================================================================================
+        //======================================================================================
+        // Transformation
 
+        transformToGlobal : function(local, global) {
+
+            if (this.parent !== undefined)
+                this.parent.transformToGlobal(local, global);
+        },
+
+        //======================================================================================
+        //======================================================================================
+        //======================================================================================
+        // Wiring
+        generateWiring : function() {
+            var chassis = this;
             // Create components
             this.components = [];
             for (var i = 0; i < 5; i++) {
@@ -60,7 +73,6 @@ define(["common", "./pathPoint", "./wiring", "io", "modules/threeUtils/modGeo"],
 
                 this.components.push(component);
             }
-
             // Connect the components
 
             var inPins = [];
@@ -91,6 +103,50 @@ define(["common", "./pathPoint", "./wiring", "io", "modules/threeUtils/modGeo"],
             });
 
         },
+        //======================================================================================
+        //======================================================================================
+        //======================================================================================
+        // Attachments
+
+        generateAttachments : function() {
+            this.attachments = [];
+            this.attachPoints = [];
+            var count = 5;
+            for (var i = 0; i < count; i++) {
+                var index = Math.floor(Math.random() * this.points.length);
+                var pct = Math.random();
+                var attachPoint = new Path.PathTracer(this, index, pct);
+
+                var attachment = new Attachment();
+                if (Math.random() > .5) {
+                    attachment = new Attachment.Sensor();
+                } else {
+                    attachment = new Attachment.Actuator();
+
+                }
+
+                attachment.attachTo(this, attachPoint);
+                this.attachments.push(attachment);
+                this.attachPoints.push(attachPoint);
+            }
+        },
+
+        compileForces : function(forces) {
+            $.each(this.attachments, function(index, attachment) {
+                var f = attachment.getForce();
+                if (f !== undefined)
+                    forces.push(f);
+            });
+        },
+
+        compileAttachments : function(attachments, query) {
+            $.each(this.attachments, function(index, attachment) {
+                attachments.push(attachment);
+            });
+        },
+
+        //==========================================
+        // Updates
 
         update : function(time) {
             var chassis = this;
@@ -109,9 +165,18 @@ define(["common", "./pathPoint", "./wiring", "io", "modules/threeUtils/modGeo"],
             });
             if (isDirty) {
                 chassis.setMeshFromPoints();
+                $.each(this.attachPoints, function(index, point) {
+                    point.updatePosition();
+                });
             }
+
+            $.each(this.attachments, function(index, attachment) {
+                attachment.update(time);
+            });
+
         },
 
+        // Get something relative to this chassis
         getAt : function(query) {
             var closest = undefined;
             var closestDist = 99;
@@ -162,7 +227,7 @@ define(["common", "./pathPoint", "./wiring", "io", "modules/threeUtils/modGeo"],
 
         render : function(context) {
             var g = context.g;
-         
+
             g.strokeWeight(1);
             this.idColor.fill(g, .2, 1);
 
@@ -185,18 +250,6 @@ define(["common", "./pathPoint", "./wiring", "io", "modules/threeUtils/modGeo"],
             })
             g.endShape(g.CLOSE);
 
-            var pct = (app.time.worldTime % 1);
-            $.each(this.points, function(index, point) {
-                g.noStroke();
-
-                var p = point.getSubdivisionPoint(pct);
-                g.fill(.7, .9, 1);
-                point.drawCircle(g, 15);
-                g.fill(.7, 1, 1);
-                p.drawCircle(g, 5);
-                app.log(p);
-            });
-
             if (!context.simplifiedBots) {
                 g.strokeWeight(1);
 
@@ -216,6 +269,11 @@ define(["common", "./pathPoint", "./wiring", "io", "modules/threeUtils/modGeo"],
                     })
                 }
             }
+
+            $.each(this.attachments, function(index, attachment) {
+                attachment.render(context);
+            });
+
         },
         hover : function(pos) {
 
@@ -229,7 +287,6 @@ define(["common", "./pathPoint", "./wiring", "io", "modules/threeUtils/modGeo"],
             return this.mesh;
 
         },
-
         setMeshFromPoints : function() {
             var chassis = this;
 

@@ -31,6 +31,13 @@ define(["ui", "app", "modules/stellar/universeView", "modules/stellar/universe",
                 inspect : new UI.Mode({
                     title : "Inspect",
                     panels : this.ui.getPanels(["inspector_info"]),
+                    onActivate : function() {
+
+                        app.inspectorView.activate();
+                    },
+                    onDeactivate : function() {
+                        app.inspectorView.deactivate();
+                    }
                 }),
 
                 nav : new UI.Mode({
@@ -61,11 +68,8 @@ define(["ui", "app", "modules/stellar/universeView", "modules/stellar/universe",
                 }
             });
 
-            // Set all the ui controls
-            app.controls = new UI.Controls({
-                app : app,
-                touchDiv : $("#app"),
-
+            // Set all the default UI controls
+            app.controls = new UI.Controls($("body"), {
                 onKeyPress : {
                     d : function(event) {
                         app.ui.devMode.toggle()
@@ -136,6 +140,7 @@ define(["ui", "app", "modules/stellar/universeView", "modules/stellar/universe",
 
                 }
             });
+
         },
 
         updateWorld : function(t) {
@@ -170,7 +175,7 @@ define(["ui", "app", "modules/stellar/universeView", "modules/stellar/universe",
 
                 g.colorMode(g.HSB, 1);
 
-                g.background(.55, .3, .8);
+                g.background(.55, 1, .1);
 
                 app.universeView.renderMain(g);
             });

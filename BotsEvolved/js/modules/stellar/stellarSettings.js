@@ -10,7 +10,7 @@ define([], function() {
             up : 50,
             down : 50
         },
-        inspectionDistance : 1,
+        inspectionDistance : .5,
         minNavLevel : 15
     };
 

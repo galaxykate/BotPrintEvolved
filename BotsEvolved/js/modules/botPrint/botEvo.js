@@ -9,11 +9,15 @@ define(["common", "modules/evo/evoSim", "./ai/dtree"], function(common, EvoSim, 
         init : function(bot, task, arena) {
             this._super();
             this.genomeLength = 30;
-            this.cohortSize = 1;
+            this.cohortSize = 4;
 
             this.bot = bot;
             this.task = task;
             this.arena = arena;
+
+            this.treeViz = new DTree.DTreeViz();
+            this.scoredPopulation = [];
+
         },
 
         createGenome : function() {
@@ -24,17 +28,13 @@ define(["common", "modules/evo/evoSim", "./ai/dtree"], function(common, EvoSim, 
             return genome;
         },
 
-        createIndividual : function(bot, genome) {
+        createIndividual : function(genome) {
+            var sensors = this.bot.sensors;
+            var actuators = this.bot.actuators;
+            console.log(sensors);
+            console.log(actuators);
+
             var dtree = new DTree.DTree();
-            var sensors = [];
-            for (var i = 0; i < 10; i++) {
-                sensors[i] = {
-                    name : "Sensor" + i,
-                    toString : function() {
-                        return name;
-                    }
-                }
-            }
 
             dtree.generateTree(function(node) {
 
@@ -43,27 +43,19 @@ define(["common", "modules/evo/evoSim", "./ai/dtree"], function(common, EvoSim, 
                     isAction = true;
 
                 if (isAction) {
-                    node.setAction(Math.floor(Math.random() * 10), Math.random());
+                    node.setAction(utilities.getRandom(actuators), Math.random());
                 } else {
                     node.setFalseBranch(new DTree.DTree());
                     node.setTrueBranch(new DTree.DTree());
 
-                    node.setCondition(Math.floor(Math.random() * 10), utilities.getRandom(DTree.comparators), Math.random());
+                    node.setCondition(utilities.getRandom(sensors), utilities.getRandom(DTree.comparators), Math.random());
 
                 }
 
             });
-
-            //  d.debugPrint();
-
-            var viz = new DTree.DTreeViz();
-            viz.setTree(dtree);
-            var iter = new DTree.DTreeIterator(dtree, viz);
-iter.test(1000);
-            // Recursively create a tree to a certain depth
-
             console.log(dtree);
             return dtree;
+
         },
 
         mutateGenome : function(genome, amt) {
@@ -102,7 +94,7 @@ iter.test(1000);
 
                     // Clear the arena and reset the bot position
                     testBot.arena = arena;
-                    arena.startTest([testBot]);
+                    arena.addPopulation([testBot]);
                     testBot.transform.reset();
                     var lastPos = new common.Transform();
                     var currentPos = new common.Transform();
@@ -117,7 +109,7 @@ iter.test(1000);
                         currentPos.cloneFrom(testBot.transform);
                         // Get the difference in position
                         var dTheta = currentPos.rotation - lastPos.rotation;
-                        var d = lastPos.translation.getDistanceTo(currentPos.translation);
+                        var d = lastPos.getDistanceTo(currentPos);
                         scoredPopulation[index].avgScore += d;
                         lastPos.cloneFrom(currentPos);
                     }
@@ -146,6 +138,7 @@ iter.test(1000);
             evaluateIndividual();
 
         },
+
         renderScores : function(g) {
             g.colorMode(g.HSB, 1);
             var w = 30;

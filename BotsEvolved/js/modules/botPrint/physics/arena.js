@@ -81,7 +81,7 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
             $.each(this.bots, function(index, bot) {
                 // Transform
 
-                var d = bot.transform.translation.getDistanceTo(query.pos);
+                var d = bot.transform.getDistanceTo(query.pos);
                 app.moveLog(index + ": " + d);
                 if (d < closestDist) {
                     app.moveLog("  closest!");
@@ -105,7 +105,7 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
         //-------------------------------------------
         // Run a test
 
-        startTest : function(population) {
+        addPopulation : function(population) {
             var arena = this;
             arena.reset();
             // Give each bot an arena position
@@ -113,7 +113,7 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
                 arena.bots.push(bot);
                 var t = new common.Transform();
 
-                t.translation = Vector.polar(Math.random() * 400 - 200, Math.random() * 400 - 200);
+                t.setToPolar(Math.random() * 400 - 200, Math.random() * 400 - 200);
                 t.rotation = Math.random() * 200;
                 bot.transform = t;
             });
@@ -133,6 +133,10 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
         },
 
         update : function(time) {
+            this.time += time.ellapsed;
+            $.each(this.bots, function(index, bot) {
+                bot.update(time);
+            });
             this.boxWorld.simulate(time.ellapsed);
         },
 
@@ -144,20 +148,18 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
             //   g.ellipse(0, 0, 400, 400);
 
             // Draw the edges
-            g.fill(.68, 1, 1);
-            g.noStroke();
+            var arenaColor = new common.KColor(.2, .6, .2);
+            g.strokeWeight(3);
+            arenaColor.stroke(g, -.3, 1);
+            arenaColor.fill(g, -.3, -.5);
             this.border.render(context);
 
             context.simplifiedBots = true;
             $.each(this.bots, function(index, bot) {
-                g.pushMatrix();
-                bot.transform.applyTransform(g);
                 bot.render(context);
 
-                g.popMatrix();
-
                 g.fill(0);
-                g.text(bot.transform.translation, bot.transform.translation.x, bot.transform.translation.y);
+                //       g.text(bot.transform, bot.transform.x, bot.transform.y);
             });
 
             this.boxWorld.render(g);
