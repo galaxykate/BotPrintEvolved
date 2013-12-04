@@ -63,10 +63,6 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
             this.targetValue = targetValue;
         },
 
-        test : function() {
-            return this.comparator.evaluate(this.sensor.sense(), this.targetValue);
-        },
-
         toString : function() {
             return this.sensor + " " + this.comparator.symbol + " " + this.targetValue.toFixed(2);
         }
@@ -80,10 +76,6 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
 			if (value === undefined) {
 				console.log("action.init() called with undefined value");
 			}
-        },
-
-        activate : function() {
-            this.actuator.actuate(this.value);
         },
 
         toString : function() {
@@ -117,25 +109,15 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
             return "sensor " + this.condition.sensor + " " + this.condition.comparator + " " + this.condition.targetValue;
         },
 
+        trueBranch : emptyAction,
+        falseBranch : emptyAction,
+        actuators : undefined,
+        sensors : undefined,
+
         init : function(parent, actuators, sensors) {
             this._super(parent);
             this.actuators = actuators;
             this.sensors = sensors;
-
-            this.type = "tree";
-            console.log(this);
-        },
-
-        resetActive : function() {
-            this.active = false;
-            console.log(this);
-
-            var children = this.getChildren();
-            if (this.children !== undefined) {
-                $.each(children, function(index, child) {
-                    child.resetActive();
-                });
-            }
         },
 
         // Return the node that is taken
@@ -151,17 +133,12 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
         },
 
         makeDecision : function() {
-            this.active = true;
-            if (this.condition !== undefined) {
-                if (this.condition.test()) {
+            if (this.condition) {
+                if (this.testCondition(this.sensors)) {
                     return this.trueBranch.makeDecision();
                 } else {
                     return this.falseBranch.makeDecision();
                 }
-            }
-
-            if (this.action !== undefined) {
-                this.action.activate();
             }
         },
 
@@ -186,11 +163,38 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
 
         setAction : function(actuator, value) {
             this.action = new Action(actuator, value);
-
         },
 
+        testCondition : function(sensors) {
+            if (this.condition.comparator === ">") {
+                if (sensors[this.condition.sensor].sense() > this.condition.targetValue) {
+                    testLog("condition true: ", this.printCondition());
+                    return true;
+                }
+            } else if (this.condition.comparator === "<") {
+                testLog("condition true: ", this.printCondition());
+                if (sensors[this.condition.sensor].sense() < this.condition.targetValue) {
+                    return true;
+                }
+            }
+            testLog("condition false: ", this.printCondition());
+            return false;
+        },
+
+		// mutationIntensity should be between 1 (maximum mutation) and 0.
         mutate : function(mutationIntensity) {
             mutationIntensity = mutationIntensity ? mutationIntensity : 1;
+			
+			// Offsets a value up or down randomly, scaled by the intensity.
+			var getWeightedOffset = function(val, intensity) {
+				var scaledRandom = (Math.random() * intensity) - (0.5 * intensity);
+				val += scaledRandom;
+				// Normalize
+				if (val > 1) val = 1;
+				if (val < 0) val = 0;
+				return val;
+			}
+			
             //Get lookup tables for nodes in the tree
             var decisions = getNodes(this, function(tree) {
                 return tree.condition !== undefined
@@ -203,6 +207,9 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
             var table = Math.random() > .5 ? decisions : actions;
             var selectedNode = utilities.getRandom(table);
 
+			// We classify some mutations as major. Major changes are less likely the lower the mutationIntensity.
+			var majorChange = ( Math.random() < mutationIntensity*0.5 );
+
             //get random number
             var seed = Math.random();
             var PROB = STEP = .2;
@@ -213,28 +220,39 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
             }//If we have no children, don't mutate
             mutationLog("seed", seed);
             mutationLog("selectedNode", selectedNode);
+			
+			// If we selected a condition
             if (selectedNode.condition != undefined) {
                 mutationLog("decision node");
-                if (seed < PROB) {
-                    mutationLog("(TODO) replace condition with action");
-                } else if (seed < PROB + STEP) {
-                    mutationLog("switch sensor");
-                    selectedNode.condition.sensor = utilities.getRandomIndex(selectedNode.sensors);
-                } else if (seed < PROB + 2 * STEP) {
-                    mutationLog("adjust targetValue");
-                    selectedNode.condition.targetValue = Math.random();
-                } else if (seed < PROB + 3 * STEP) {
-                    mutationLog("swap true/false branches");
-                    var tmp = selectedNode.falseBranch;
-                    selectedNode.setFalseBranch(selectedNode.trueBranch);
-                    selectedNode.setTrueBranch(tmp);
-                } else  {
-                    mutationLog("switch comparator");
-                    selectedNode.condition.comparator = (selectedNode.condition.comparator === '>' ? '<' : '>');
-                }
+				if (majorChange) {
+	                if (seed < .33) {
+	                    mutationLog("replace condition with action");
+						selectedNode.condition = undefined;
+						selectedNode.setAction(utilities.getRandom(this.actuators), Math.random());
+	                } else if (seed < .66) {
+	                    mutationLog("swap true/false branches");
+	                    var tmp = selectedNode.falseBranch;
+	                    selectedNode.setFalseBranch(selectedNode.trueBranch);
+	                    selectedNode.setTrueBranch(tmp);
+	                } else {
+	                    mutationLog("switch sensor");
+	                    selectedNode.condition.sensor = utilities.getRandomIndex(selectedNode.sensors);
+					}
+				} else { // minor change
+	                if (seed < .5) {
+	                    mutationLog("adjust targetValue");
+						/* vary based on mutation strength */
+						var newVal = getWeightedOffset(selectedNode.condition.targetValue, mutationIntensity)
+	                    selectedNode.condition.targetValue = newVal;
+	                } else {
+	                    mutationLog("switch comparator");
+	                    selectedNode.condition.comparator = (selectedNode.condition.comparator === '>' ? '<' : '>');
+	                }
+				}
+			// If we selected an action
             } else {
                 mutationLog("action node");
-                if (seed) { // < PROB + STEP) {
+				if (majorChange) {
                     mutationLog("replace action with condition");
 					selectedNode.action = undefined;
 					
@@ -249,16 +267,17 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
 					var newFalseNode = new DTree(selectedNode, this.sensors, this.actuators);
 					newFalseNode.setAction(utilities.getRandom(this.actuators), Math.random());
 					selectedNode.setFalseBranch(newFalseNode);
-										
-					
-					
-                } else if (seed < PROB + 2 * STEP) {
-                    mutationLog("randomize actuator value");
-					selectedNode.action.value = Math.random();
-                } else  {
-                    mutationLog("randomize actuator");					
-					selectedNode.action.actuator = utilities.getRandom(this.actuators);
-                }
+				} else { // minor change
+					if (seed < .5) {
+	                    mutationLog("randomize actuator value");
+						/* vary based on mutation strength */
+						var newVal = getWeightedOffset(selectedNode.action.value, mutationIntensity)
+						selectedNode.action.value = newVal;
+	                } else  {
+	                    mutationLog("randomize actuator");					
+						selectedNode.action.actuator = utilities.getRandom(this.actuators);
+	                }
+				}
             }
             return this;
         },
@@ -290,6 +309,34 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
         },
     });
 
+    // Terminal nodes for the decision tree
+
+    var DTreeAction = DTree.extend({
+
+        init : function(actuators, sensors, actionDict) {
+            this._super(actuators, sensors);
+            this.actionDict = {};
+            this.actionDict = actionDict;
+        },
+
+        makeDecision : function() {
+            // Take action
+            for (key in this.actionDict) {
+                if (this.actionDict.hasOwnProperty(key)) {
+                    this.actuators[key].actuate(this.actionDict[key]);
+                }
+            }
+            // return result object for debug purposes
+            return this.actionDict;
+        },
+
+        clone : function() {
+            return new DTreeAction(this.actuators, this.sensors, this.actionDict);
+        },
+    });
+
+    var emptyAction = new DTreeAction({}, {}, {});
+
     var getNodes = function(tree, condition) {
         if (tree === undefined) {
             return [];
@@ -305,8 +352,9 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
     return {
         DTreeViz : DTreeViz,
         DTree : DTree,
-
+        DTreeAction : DTreeAction,
         DTreeIterator : DTreeIterator,
+        emptyAction : emptyAction,
         comparators : comparators,
     };
 })
