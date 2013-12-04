@@ -19,7 +19,7 @@ define(["common"], function(common) {
 
             this.parent = parent;
             this.depth = this.parent !== undefined ? this.parent.depth + 1 : 0;
-            if (this.parent)
+            if (this.parent && this.parent.children)
                 this.parent.children.push(this);
         },
 

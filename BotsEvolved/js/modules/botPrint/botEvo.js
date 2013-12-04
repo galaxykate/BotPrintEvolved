@@ -26,7 +26,7 @@ define(["common", "modules/evo/evoSim", "./ai/dtree"], function(common, EvoSim, 
             console.log(sensors);
             console.log(actuators);
 
-            var dtree = new DTree.DTree();
+            var dtree = new DTree.DTree(undefined, actuators, sensors);
 
             dtree.generateTree(function(node) {
 
@@ -37,8 +37,8 @@ define(["common", "modules/evo/evoSim", "./ai/dtree"], function(common, EvoSim, 
                 if (isAction) {
                     node.setAction(utilities.getRandom(actuators), Math.random());
                 } else {
-                    node.setFalseBranch(new DTree.DTree());
-                    node.setTrueBranch(new DTree.DTree());
+                    node.setFalseBranch(new DTree.DTree(this, actuators, sensors));
+                    node.setTrueBranch(new DTree.DTree(this, actuators, sensors));
 
                     node.setCondition(utilities.getRandom(sensors), utilities.getRandom(DTree.comparators), Math.random());
 
