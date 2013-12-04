@@ -15,12 +15,41 @@ define(["common"], function(common) {
             nodeCount++;
         },
 
+        compileNodes : function(list, query) {
+
+            if (query(this))
+                list.push(this);
+            if (this.children) {
+                $.each(this.children, function(index, child) {
+                    child.compileNodes(list, query);
+                });
+            }
+        },
+
+        removeChildren : function() {
+            $.each(this.children, function(index, child) {
+                child.removeParent();
+            });
+            this.children = [];
+        },
+
+        removeParent : function() {
+            this.parent = undefined;
+            this.depth = 0;
+        },
+
         setParent : function(parent) {
 
             this.parent = parent;
             this.depth = this.parent !== undefined ? this.parent.depth + 1 : 0;
-            if (this.parent && this.parent.children)
+
+            // this NEEDS TO HAVE CHILDREN DEFINED
+            if (this.parent) {
+                if (this.parent.children === undefined)
+                    this.parent.children = [];
+
                 this.parent.children.push(this);
+            }
         },
 
         getChildren : function() {
@@ -33,10 +62,13 @@ define(["common"], function(common) {
                 spacer += "   ";
             }
             console.log(spacer + this);
+
             var children = this.getChildren();
-            $.each(children, function(index, node) {
-                node.debugPrint();
-            })
+            if (children !== undefined) {
+                $.each(children, function(index, node) {
+                    node.debugPrint();
+                });
+            }
         },
         toString : function() {
             return "Node" + this.idNumber;

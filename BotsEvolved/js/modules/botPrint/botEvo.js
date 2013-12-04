@@ -3,7 +3,22 @@
  */
 
 define(["common", "modules/evo/evoSim", "./ai/dtree"], function(common, EvoSim, DTree) {'use strict';
+    var mutLog = "";
     //createGenome, createIndividual, mutateGenome, crossoverGenomes, evaluatePopulation
+    function mutationLog(s) {
+        if (app.getOption("logMutations"))
+            console.log(s);
+        mutLog += (s + " <br>");
+    };
+
+    // Offsets a value up or down randomly, scaled by the intensity.
+    var getWeightedOffset = function(val, intensity) {
+        var scaledRandom = (Math.random() * intensity) - (0.5 * intensity);
+        val += scaledRandom;
+        // Normalize
+        val = utilties.constrain(val, 0, 1);
+        return val;
+    };
 
     var BrainEvo = EvoSim.extend({
         init : function(bot, task, arena) {
@@ -11,59 +26,172 @@ define(["common", "modules/evo/evoSim", "./ai/dtree"], function(common, EvoSim, 
             this.genomeLength = 30;
             this.cohortSize = 4;
 
+            this.mutagen = 1;
             this.bot = bot;
             this.task = task;
             this.arena = arena;
 
             this.treeViz = new DTree.DTreeViz();
             this.scoredPopulation = [];
+            this.sensors = this.bot.sensors;
+            this.actuators = this.bot.actuators;
 
         },
 
         createGenome : function() {
-            var sensors = this.bot.sensors;
-            var actuators = this.bot.actuators;
-            console.log(sensors);
-            console.log(actuators);
+            var brainEvo = this;
 
-            var dtree = new DTree.DTree(undefined, actuators, sensors);
+            var dtree = new DTree.DTree();
 
             dtree.generateTree(function(node) {
 
+                // Generating the node
                 var isAction = Math.random() > .5 && node.depth > 1;
-                if (node.depth >= 4)
+                if (node.depth >= 2)
                     isAction = true;
 
                 if (isAction) {
-                    node.setAction(utilities.getRandom(actuators), Math.random());
+                    node.setAction(brainEvo.generateAction());
                 } else {
-                    node.setFalseBranch(new DTree.DTree(this, actuators, sensors));
-                    node.setTrueBranch(new DTree.DTree(this, actuators, sensors));
+                    node.setFalseBranch(new DTree.DTree());
+                    node.setTrueBranch(new DTree.DTree());
 
-                    node.setCondition(utilities.getRandom(sensors), utilities.getRandom(DTree.comparators), Math.random());
+                    node.setCondition(brainEvo.generateCondition());
 
                 }
 
             });
-            console.log(dtree);
             return dtree;
 
             /*
-            var genome = [];
-            for (var i = 0; i < this.genomeLength; i++) {
-                genome[i] = Math.random();
-            }
-            return genome;
-            */
+             var genome = [];
+             for (var i = 0; i < this.genomeLength; i++) {
+             genome[i] = Math.random();
+             }
+             return genome;
+             */
+        },
+
+        generateAction : function() {
+            return new DTree.Action(utilities.getRandom(this.actuators), Math.random());
+        },
+
+        generateCondition : function() {
+            return new DTree.Condition(utilities.getRandom(this.sensors), utilities.getRandom(DTree.comparators), Math.random());
+
         },
 
         createIndividual : function(genome) {
             console.log("genome", genome);
-            return genome.clone();
+            //    var g2 = genome.cloneBranch();
+
+            genome.debugPrint();
+            //    g2.debugPrint();
+            return genome;
+
         },
 
-        mutateGenome : function(genome, amt) {
-            return genome.mutate(amt);
+        // Mutate a condition with either major or minor changes
+        mutateCondition : function(node, majorChange, mutationStrength) {
+
+            var seed = Math.random();
+            if (majorChange) {
+                if (seed < .33) {
+                    mutationLog("  replace condition with action");
+                    node.setAction(this.generateAction());
+                } else if (seed < .66) {
+                    mutationLog("  swap true/false branches");
+                    node.swapBranches();
+                } else {
+                    mutationLog("  switch sensor");
+                    node.condition.sensor = utilities.getRandom(this.sensors);
+                }
+            } else {
+                // minor change
+                if (seed < .5) {
+                    mutationLog("  adjust targetValue");
+                    /* vary based on mutation strength */
+                    node.condition.changeValue(Math.random() * mutationStrength);
+                } else {
+                    mutationLog("  switch comparator");
+                    node.condition.changeComparator();
+                }
+            }
+
+        },
+
+        mutateAction : function(node, majorChange, mutationStrength) {
+            var seed = Math.random();
+
+            if (majorChange) {
+                mutationLog("  replace action with condition");
+                node.setCondition(this.generateCondition());
+
+                var trueBranch = new DTree.DTree();
+                trueBranch.setAction(this.generateAction());
+                var falseBranch = new DTree.DTree();
+                falseBranch.setAction(this.generateAction());
+
+                node.setTrueBranch(trueBranch);
+                node.setFalseBranch(falseBranch);
+
+                node.debugPrint();
+
+            } else {
+                // minor change
+                if (seed < .5) {
+                    mutationLog("  change actuator value");
+                    node.action.changeValue(Math.random() * mutationStrength);
+                } else {
+                    mutationLog("  randomize actuator");
+                    node.action.actuator = utilities.getRandom(this.actuators);
+                }
+
+            }
+        },
+
+        mutateNode : function(node, mutationIntensity) {
+
+            mutationLog("MUTATE NODE " + node.idNumber);
+            // We classify some mutations as major. Major changes are less likely the lower the mutationIntensity.
+            var majorChange = (Math.random() < mutationIntensity * 0.5 );
+          
+            if (node.action !== undefined) {
+                this.mutateAction(node, majorChange, mutationIntensity);
+            } else {
+                this.mutateCondition(node, majorChange, mutationIntensity);
+            }
+        },
+
+        mutateGenome : function(genome) {
+            mutLog = "";
+            var tree = genome;
+
+            var mutationIntensity = this.mutagen;
+
+            //Get lookup tables for nodes in the tree
+            var decisions = [];
+            var actions = [];
+            var nodes = []
+            tree.compileNodes(decisions, function(node) {
+                return node.decision !== undefined;
+            });
+            tree.compileNodes(actions, function(node) {
+                return node.action !== undefined;
+            });
+
+            tree.compileNodes(nodes, function(node) {
+                return true;
+            });
+
+            //Randomly select node to mutate
+            var table = Math.random() > .5 ? decisions : actions;
+
+            var selectedNode = utilities.getRandom(nodes);
+            this.mutateNode(selectedNode, mutationIntensity);
+
+            tree.mutLog = mutLog;
+            return tree;
         },
 
         crossoverGenomes : function(g0, g1) {
@@ -148,13 +276,19 @@ define(["common", "modules/evo/evoSim", "./ai/dtree"], function(common, EvoSim, 
             g.colorMode(g.HSB, 1);
             var w = 30;
             var totalH = 200;
-            for (var i = 0; i < this.scoredPopulation.length; i++) {
-                //  console.log("draw " + i);
-                var ind = this.scoredPopulation[i];
-                var score = ind.avgScore;
 
-                g.fill(i * .1, 1, 1);
-                g.rect(w * i, totalH, w, -score * .1);
+            var scores = this.scoredPopulation;
+            scores = this.arena.scores;
+
+            if (scores !== undefined) {
+                for (var i = 0; i < scores.length; i++) {
+                    //  console.log("draw " + i);
+                    var ind = scores[i];
+                    var score = ind.total;
+
+                    g.fill(i * .1, 1, 1);
+                    g.rect(w * i, totalH, w, -score * .1);
+                }
             }
 
         },
