@@ -28,6 +28,7 @@ define(["d3"], function(_d3) {
         },
 
         setTree : function(tree) {
+            //console.log("tree", tree);
             var nodes = this.cluster.nodes(tree);
             var links = this.cluster.links(nodes);
 

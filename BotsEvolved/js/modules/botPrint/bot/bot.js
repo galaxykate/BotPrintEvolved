@@ -58,7 +58,8 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
                     dtree = this.brain[this.intention];
                 }
 
-                dtree.resetActive();
+                //Deprecated?
+                //dtree.resetActive();
                 dtree.makeDecision();
             }
         },
