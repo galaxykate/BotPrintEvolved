@@ -109,6 +109,7 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
 
             var arena = this;
             arena.scores = [];
+            arena.bots = [];
             arena.reset();
             // Give each bot an arena position
             $.each(population, function(index, bot) {
@@ -144,7 +145,7 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
             }
             app.log("Arena update: " + timestep + " time" + time.total);
             this.time += timestep
-            
+
             $.each(this.bots, function(index, bot) {
                 bot.update(time);
             });
@@ -165,7 +166,8 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
         updateScores : function() {
             var arena = this;
             $.each(this.bots, function(index, bot) {
-                arena.scores[index].total += .1;
+                arena.scores[index].total = arena.getLightMapAt(bot.transform);
+                app.log(index + ": score " + arena.scores[index].total);
             });
         },
 
@@ -180,8 +182,7 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
             return b;
         },
 
-        createLightMap : function(processing) {
-            this.lightMap = processing.createGraphics(processing.width, processing.height);
+        createLightMap : function() {
 
             var g = this.lightMap;
             g.colorMode(g.HSB, 1);
@@ -219,7 +220,9 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
 
             //   g.ellipse(0, 0, 400, 400);
             if (this.lightMap === undefined) {
+                this.lightMap = g.createGraphics(g.width, g.height);
                 this.createLightMap(g);
+
             }
 
             g.image(this.lightMap, -g.width / 2, -g.height / 2);

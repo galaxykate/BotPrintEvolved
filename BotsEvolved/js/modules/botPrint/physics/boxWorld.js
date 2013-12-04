@@ -80,6 +80,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             testShape.SetAsBox(a, a);
 
             var bodyDef = new Box2D.b2BodyDef();
+            bodyDef.angularDamping = 1.01;
             bodyDef.set_type(Box2D.b2_dynamicBody);
 
             $.each(objects, function(index, obj) {
@@ -111,7 +112,6 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             for (var i = 0; i < 30; i++) {
 
                 bodyDef.set_position(new b2Vec2(Math.random() * 40 - 20, Math.random() * 40 - 20));
-                bodyDef.angularDamping = 20.01;
                 var body = this.world.CreateBody(bd);
                 body.CreateFixture(shape, 5.0);
                 this.bodies[i] = body;

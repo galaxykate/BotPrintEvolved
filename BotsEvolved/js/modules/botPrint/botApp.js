@@ -22,6 +22,11 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", ".
             app.arena = new Arena();
 
             app.changeMode("arena");
+
+            this.createAndTestNewBot();
+        },
+
+        createAndTestNewBot : function() {
             var task = "doThing";
 
             app.currentBot = new Bot();
@@ -82,7 +87,7 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", ".
                 description : "Current scores",
                 side : "top",
                 sidePos : 5,
-                dimensions : new Vector(400, 200),
+                dimensions : new Vector(400, 100),
 
             });
 
@@ -187,7 +192,7 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", ".
             });
 
             $("#reset_arena").click(function() {
-                app.testArena();
+                app.createAndTestNewBot();
             });
 
             $("#mutate").click(function() {

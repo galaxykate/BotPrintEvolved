@@ -111,15 +111,19 @@ define(["common", "./pathPoint", "./wiring", "io", "modules/threeUtils/modGeo", 
         generateAttachments : function() {
             this.attachments = [];
             this.attachPoints = [];
-            var count = 5;
+            var count = 9;
             for (var i = 0; i < count; i++) {
                 var index = Math.floor(Math.random() * this.points.length);
                 var pct = Math.random();
                 var attachPoint = new Path.PathTracer(this, index, pct);
 
                 var attachment = new Attachment();
-                if (Math.random() > .5) {
-                    attachment = new Attachment.Sensor();
+                if (Math.random() > .4) {
+                    if (Math.random() > .5) {
+                        attachment = new Attachment.Sensor();
+                    } else
+                        attachment = new Attachment.Sensor.Timer();
+
                 } else {
                     attachment = new Attachment.Actuator();
 

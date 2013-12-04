@@ -42,7 +42,7 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
             g.ellipse(0, 0, r * 1.2, r * 1.2);
             g.fill(0);
             g.rect(r * .7, -r, r, r * 2);
-            
+
             g.fill(1, 0, 1, .7);
             g.text(this.idNumber, -3, 5);
 
@@ -54,6 +54,21 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
 
         }
     });
+
+    var Timer = Sensor.extend({
+        init : function() {
+            this._super();
+            this.id = "Timer" + this.idNumber;
+        },
+
+        update : function(time) {
+
+            this.senseValue = Math.sin(time.total) * .5 + .5;
+
+        },
+    });
+    
+    Sensor.Timer = Timer;
 
     return Sensor;
 });
