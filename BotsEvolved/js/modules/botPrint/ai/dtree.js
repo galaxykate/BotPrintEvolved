@@ -68,7 +68,7 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
         }
     });
 
-    // Adding a condition class
+    // Adding an class
     var Action = Class.extend({
         init : function(actuator, value) {
             this.actuator = actuator;

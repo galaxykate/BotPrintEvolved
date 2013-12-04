@@ -193,7 +193,7 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", ".
             $("#mutate").click(function() {
 				console.log("defaultTree before: ", app.currentBot.brain.defaultTree)
                 app.evoSim.mutateGenome(app.currentBot.brain.defaultTree);
-                app.evoSim.treeViz.setTree(app.currentBot.brain);
+                app.evoSim.treeViz.setTree(app.currentBot.brain.defaultTree);
 				console.log("defaultTree after: ", app.currentBot.brain.defaultTree)
             });
 
