@@ -40,7 +40,7 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", ".
             app.ui.addOption("drawWiring", false);
             app.ui.addOption("drawComponents", false);
             app.ui.addOption("logConditionTests", false);
-            app.ui.addOption("logMutations", false);
+            app.ui.addOption("logMutations", true);
 
             ui.addPanel({
                 id : "arena",
@@ -191,10 +191,25 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", ".
             });
 
             $("#mutate").click(function() {
-				console.log("defaultTree before: ", app.currentBot.brain.defaultTree)
+                console.log("-------------------------- ");
+                console.log("Mutating ");
+                app.currentBot.brain.defaultTree.debugPrint();
                 app.evoSim.mutateGenome(app.currentBot.brain.defaultTree);
+
                 app.evoSim.treeViz.setTree(app.currentBot.brain.defaultTree);
-				console.log("defaultTree after: ", app.currentBot.brain.defaultTree)
+                app.currentBot.brain.defaultTree.debugPrint();
+            });
+
+            $("#mutateBig").click(function() {
+                console.log("-------------------------- ");
+                console.log("Mutating ");
+                app.currentBot.brain.defaultTree.debugPrint();
+                for (var i = 0; i < 20; i++) {
+                    app.evoSim.mutateGenome(app.currentBot.brain.defaultTree);
+                }
+
+                app.evoSim.treeViz.setTree(app.currentBot.brain.defaultTree);
+                app.currentBot.brain.defaultTree.debugPrint();
             });
 
             var ui = this.ui;
@@ -235,7 +250,7 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", ".
                 // only do if its the arena mode
                 if (app.mode === app.modes.arena) {
                     app.updateWorld(g.millis() * .001);
-                    app.arena.update(app.time);
+                    app.arena.update(app.time.ellapsed);
 
                     app.arenaWindow.render(function(context) {
                         app.arena.render(context);
@@ -253,6 +268,7 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", ".
                 if (app.mode === app.modes.arena) {
                     g.background(.8, 1, .3);
                     app.evoSim.renderScores(g);
+
                 }
 
             });

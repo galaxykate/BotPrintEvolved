@@ -6,16 +6,6 @@ define(["d3"], function(_d3) {
 
     var DTreeViz = Class.extend({
         init : function() {
-            var width = 400, height = 400;
-
-            this.cluster = d3.layout.cluster().size([height, width - 160]);
-
-            // Convert
-            this.diagonal = d3.svg.diagonal().projection(function(d) {
-                return [d.y, d.x];
-            });
-
-            this.svg = d3.select("#ai_overlay").append("svg").attr("width", width).attr("height", height).append("g").attr("transform", "translate(40,0)");
         },
 
         updateText : function() {
@@ -28,7 +18,19 @@ define(["d3"], function(_d3) {
         },
 
         setTree : function(tree) {
-            //console.log("tree", tree);
+
+            $("#ai_overlay").html(tree.mutLog);
+            var width = 400, height = 400;
+
+            this.cluster = d3.layout.cluster().size([height, width - 190]);
+
+            // Convert
+            this.diagonal = d3.svg.diagonal().projection(function(d) {
+                return [d.y, d.x];
+            });
+
+            this.svg = d3.select("#ai_overlay").append("svg").attr("width", width).attr("height", height).append("g").attr("transform", "translate(40,0)");
+
             var nodes = this.cluster.nodes(tree);
             var links = this.cluster.links(nodes);
 

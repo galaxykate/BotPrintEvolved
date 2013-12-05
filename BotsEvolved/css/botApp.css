@@ -14,6 +14,13 @@
 	top: 340px;
 }
 
+#mutateBig {
+	position: absolute;
+	left: 0px;
+	top: 370px;
+}
+
+
 #ai_overlay {
 	position: absolute;
 	top: 10px;

@@ -106,7 +106,9 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
         // Run a test
 
         addPopulation : function(population) {
+
             var arena = this;
+            arena.scores = [];
             arena.reset();
             // Give each bot an arena position
             $.each(population, function(index, bot) {
@@ -116,23 +118,33 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
                 t.setToPolar(Math.random() * 400 - 200, Math.random() * 400 - 200);
                 t.rotation = Math.random() * 200;
                 bot.transform = t;
+                arena.scores[index] = {
+                    total : 0,
+                    individual : bot,
+                }
             });
 
             arena.boxWorld.addObjects(population);
 
         },
 
-        runFor : function(seconds, timestep, postUpdate) {
-
-            while (this.time < seconds) {
-                this.time += timestep;
-                this.boxWorld.simulate(timestep);
-                postUpdate();
+        runFor : function(seconds, timestep) {
+            var total = 0;
+            while (total < seconds) {
+                total += timestep;
+                this.update(timestep);
             }
         },
 
-        update : function(time) {
-            this.time += time.ellapsed;
+        update : function(timestep) {
+            app.log("Arena update: " + timestep);
+            var time = {
+                total : this.time,
+                ellapsed : timestep,
+            }
+            app.log("Arena update: " + timestep + " time" + time.total);
+            this.time += timestep
+            
             $.each(this.bots, function(index, bot) {
                 bot.update(time);
             });
@@ -141,6 +153,20 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
                 bot.act(time);
             });
             this.boxWorld.simulate(time.ellapsed);
+
+            this.postUpdate();
+
+        },
+
+        postUpdate : function() {
+            this.updateScores();
+        },
+
+        updateScores : function() {
+            var arena = this;
+            $.each(this.bots, function(index, bot) {
+                arena.scores[index].total += .1;
+            });
         },
 
         getLightMapAt : function(p) {
