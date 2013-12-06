@@ -30,65 +30,21 @@
 
 		<div id="app" class="app_size" >
 
-			<div id="inspector_panel" class="panel">
+			<div id="scribble" class="panel">
 				<div class="app_size">
-					<canvas id="inspector_canvas" class="full_canvas"></canvas>
-				</div>
-				<button id="test_button">
-					Test!
-				</button>
-
-			</div>
-
-			<div id="arena_panel" class="panel">
-
-				<canvas id="arena_canvas" class="full_canvas"></canvas>
-				<div id ="side_buttons">
-					<button id="reset_arena" >
-						Reset arena
-					</button>
-					<button id="mutate" >
-						mutate current bot
-					</button>
-
-					<button id="mutateBig" >
-						mutate a lot
-					</button>
-					<button id="spawnRelatives" >
-						spawn relatives
-					</button>
-				</div>
-
-			</div>
-
-			<div id="render_panel" class="panel">
-
-			</div>
-
-			<div id="scores_panel" class="panel">
-
-				<canvas id="score_canvas" class="full_canvas"></canvas>
-
-			</div>
-
-			<div id="ui" class="app_size app_overlay">
-				<div id="news_bar"></div>
-
-				<div id="dev_controls">
-
+					<canvas id="drawing_canvas" class="full_canvas"></canvas>
 				</div>
 
 			</div>
 
 		</div>
-		<div id="ai_overlay"></div>
 
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 		<script>
             window.jQuery || document.write('<script src="js/vendor/jquery-1.10.2.min.js"><\/script>')
 		</script>
 		<script src="js/plugins.js"></script>
-		<script data-main="js/botMain" src="js/vendor/require.js"></script>
+		<script data-main="js/scribbleMain" src="js/vendor/require.js"></script>
 
 		<!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
 		<script>

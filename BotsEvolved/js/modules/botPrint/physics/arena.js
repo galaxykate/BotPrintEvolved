@@ -108,9 +108,10 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
         addPopulation : function(population) {
 
             var arena = this;
+            arena.reset();
             arena.scores = [];
             arena.bots = [];
-            arena.reset();
+
             // Give each bot an arena position
             $.each(population, function(index, bot) {
                 arena.bots.push(bot);

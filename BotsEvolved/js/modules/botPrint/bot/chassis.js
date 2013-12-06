@@ -2,28 +2,22 @@
  * @author Kate Compton
  */
 
-define(["common", "./pathPoint", "./wiring", "io", "modules/threeUtils/modGeo", "./attachment/attachments"], function(common, Path, Wiring, IO, ModGeo, Attachment) {'use strict';
+define(["common", "geo", "./wiring", "io", "./attachment/attachments"], function(common, geo, Wiring, IO, Attachment) {'use strict';
     var chassisCount = 0;
     // Points MUST be coplanar
 
     // var CylinderGeometry = new
     //  IO.saveFile("test", "txt", "M 100 100 L 300 100 L 200 300 z");
 
-    var Chassis = Path.extend({
-        init : function(parent) {
+    var Chassis = common.Tree.extend({
+        init : function() {
             this._super();
 
             var chassis = this;
+
+            this.path = new geo.Path();
             this.curveSubdivisions = 3;
 
-            this.parent = parent;
-            if (parent.bot === undefined)
-                this.bot = parent;
-            else
-                this.bot = this.parent.bot;
-
-            this.idNumber = chassisCount;
-            chassisCount++;
             this.idColor = new common.KColor((.2813 * this.idNumber + .23) % 1, 1, 1);
 
             this.center = new Vector(0, 0);
@@ -32,10 +26,10 @@ define(["common", "./pathPoint", "./wiring", "io", "modules/threeUtils/modGeo", 
             for (var i = 0; i < pointCount; i++) {
                 var theta = i * Math.PI * 2 / pointCount;
                 var r = 100 * utilities.unitNoise(.7 * theta + 50 * this.idNumber);
-                var pt = new Path.PathPoint(0, 0, 30, 30, theta - Math.PI / 2);
+                var pt = new geo.Path.Point(0, 0, 30, 30, theta - Math.PI / 2);
                 pt.addPolar(r, theta);
                 pt.updateControlHandles();
-                this.addPoint(pt);
+                this.path.addPoint(pt);
             }
             this.generateWiring();
             this.generateAttachments();
@@ -44,7 +38,21 @@ define(["common", "./pathPoint", "./wiring", "io", "modules/threeUtils/modGeo", 
         //======================================================================================
         //======================================================================================
         //======================================================================================
+        // Cloning + modification
+
+        clone : function() {
+            return new Chassis();
+        },
+
+        //======================================================================================
+        //======================================================================================
+        //======================================================================================
         // Transformation
+
+        getBot : function() {
+            if (this.parent !== undefined)
+                return this.parent.getBot();
+        },
 
         transformToGlobal : function(local, global) {
 
@@ -111,23 +119,27 @@ define(["common", "./pathPoint", "./wiring", "io", "modules/threeUtils/modGeo", 
         generateAttachments : function() {
             this.attachments = [];
             this.attachPoints = [];
+
+            // Weights and attachment types: there should be the same number in each array, please!
+            var weights = [1, 1];
+            var attachmentTypes = [Attachment.Sensor, Attachment.Actuator];
+
+            if (app.getOption("useTimers")) {
+                attachmentTypes.push(Attachment.Sensor.Timer), weights.push(1);
+            }
+
+            // How many attachments to generate
             var count = 9;
+
             for (var i = 0; i < count; i++) {
-                var index = Math.floor(Math.random() * this.points.length);
+                // Create some random point around the path to attach this to.
+                var index = Math.floor(Math.random() * this.path.points.length);
                 var pct = Math.random();
-                var attachPoint = new Path.PathTracer(this, index, pct);
+                var attachPoint = new geo.Path.Tracer(this.path, index, pct);
 
-                var attachment = new Attachment();
-                if (Math.random() > .4) {
-                    if (Math.random() > .5) {
-                        attachment = new Attachment.Sensor();
-                    } else
-                        attachment = new Attachment.Sensor.Timer();
-
-                } else {
-                    attachment = new Attachment.Actuator();
-
-                }
+                // Create an attachment of some random type
+                var typeIndex = utilities.getWeightedRandomIndex(weights);
+                var attachment = new attachmentTypes[typeIndex]();
 
                 attachment.attachTo(this, attachPoint);
                 this.attachments.push(attachment);
@@ -158,24 +170,7 @@ define(["common", "./pathPoint", "./wiring", "io", "modules/threeUtils/modGeo", 
         update : function(time) {
             var chassis = this;
 
-            $.each(this.points, function(index, point) {
-                point.update(time);
-            });
-            // Is any point dirty?  Update the geomety
-            var isDirty = false;
-            $.each(this.points, function(index, point) {
-                if (point.isDirty) {
-                    console.log("Dirty point!");
-                    point.isDirty = false;
-                    isDirty = true;
-                }
-            });
-            if (isDirty) {
-                chassis.setMeshFromPoints();
-                $.each(this.attachPoints, function(index, point) {
-                    point.updatePosition();
-                });
-            }
+            this.path.update(time);
 
             $.each(this.attachments, function(index, attachment) {
                 attachment.update(time);
@@ -185,46 +180,9 @@ define(["common", "./pathPoint", "./wiring", "io", "modules/threeUtils/modGeo", 
 
         // Get something relative to this chassis
         getAt : function(query) {
-            var closest = undefined;
-            var closestDist = 99;
 
             app.moveLog("Get at " + query.screenPos);
-            $.each(this.points, function(index, point) {
-
-                $.each(point.subPoints, function(index, subPoint) {
-                    // Ignore the filtered out ones
-                    if (query.filter === undefined || query.filter(subPoint)) {
-                        var d;
-                        // Get the screenspace distance
-                        if (query.screenPos) {
-
-                            d = query.screenPos.getDistanceToIgnoreZ(subPoint.screenPos);
-
-                            if (subPoint.screenRadius)
-                                d -= subPoint.screenRadius;
-                            app.moveLog("Distance to " + subPoint + ": " + d);
-                        }
-
-                        // or the worldspace distance
-                        else {
-                            d = query.pos.getDistanceTo(subPoint);
-                            if (subPoint.radius)
-                                d -= subPoint.radius;
-                        }
-
-                        if (d < closestDist) {
-                            closest = subPoint;
-                            closestDist = d;
-                        }
-
-                        app.moveLog("Distance to " + subPoint + ": " + d);
-
-                    }
-                });
-
-            });
-
-            return closest;
+            return this.path.getAt(query);
 
         },
 
@@ -233,36 +191,24 @@ define(["common", "./pathPoint", "./wiring", "io", "modules/threeUtils/modGeo", 
         // render this bot in a 2D frame
 
         render : function(context) {
+            var bot = this.getBot();
             var g = context.g;
 
             g.strokeWeight(1);
             this.idColor.fill(g, .2, 1);
 
             this.idColor.stroke(g, -.4, 1);
-            if (this.bot.selected) {
+            if (bot.selected) {
                 g.strokeWeight(5);
                 this.idColor.stroke(g, -.7, 1);
                 this.idColor.fill(g, .5, 1);
             }
 
             // Draw the region
-            g.beginShape();
-            this.points[0].vertex(g);
-
-            $.each(this.points, function(index, point) {
-                if (context.useChassisCurves)
-                    point.makeCurveVertex(g);
-                else
-                    point.vertex(g);
-            })
-            g.endShape(g.CLOSE);
+            this.path.drawPath(context.g, context.useChassisCurves);
+            this.path.drawPoints(context.g, !context.simplifiedBots);
 
             if (!context.simplifiedBots) {
-                g.strokeWeight(1);
-
-                $.each(this.points, function(index, point) {
-                    point.render(context);
-                });
 
                 if (app.getOption("drawComponents")) {
                     $.each(this.components, function(index, component) {
@@ -285,35 +231,6 @@ define(["common", "./pathPoint", "./wiring", "io", "modules/threeUtils/modGeo", 
         hover : function(pos) {
 
         },
-        createThreeMesh : function() {
-
-            this.geometry = new ModGeo.Cylinder(this.points.length * this.curveSubdivisions, 20, 1);
-
-            this.mesh = this.geometry.createMesh();
-            this.setMeshFromPoints();
-            return this.mesh;
-
-        },
-        setMeshFromPoints : function() {
-            var chassis = this;
-
-            this.geometry.modSideVertices(function(v, context) {
-                var index = context.side;
-
-                var ptIndex = Math.floor(index / chassis.curveSubdivisions);
-                var pct = (index - ptIndex * chassis.curveSubdivisions) / chassis.curveSubdivisions;
-
-                var pt = chassis.points[ptIndex].getSubdivisionPoint(pct);
-
-                var theta = context.thetaPct * Math.PI * 2;
-                var r = 20 * (Math.sin(3 * theta) + 2) + 10 * Math.cos(6 * context.lengthPct);
-
-                var z = -30 + 70 * context.lengthPct;
-                //  v.setToCylindrical(r, theta, z);
-                v.setTo(pt.x, pt.y, z);
-
-            });
-        }
     });
 
     return Chassis;

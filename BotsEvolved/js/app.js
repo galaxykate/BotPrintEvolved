@@ -3,12 +3,12 @@
  */
 
 var app;
-
 define(["ui", "common"], function(UI, common) {
     var App = Class.extend({
 
         init : function(name, dimensions) {
             app = this;
+            console.log("app", app);
             app.div = $("#app");
 
             app.dimensions = dimensions;

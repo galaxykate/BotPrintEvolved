@@ -30,6 +30,7 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", ".
             var task = "doThing";
 
             app.currentBot = new Bot();
+
             app.evoSim = new BotEvo.BrainEvo(app.currentBot, task, app.arena);
             var testBrain = app.evoSim.createIndividual(app.evoSim.createGenome());
             app.currentBot.setBrain(testBrain);
@@ -46,6 +47,7 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", ".
             app.ui.addOption("drawComponents", false);
             app.ui.addOption("logConditionTests", false);
             app.ui.addOption("logMutations", true);
+            app.ui.addOption("useTimers", true);
 
             ui.addPanel({
                 id : "arena",
@@ -215,6 +217,17 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", ".
 
                 app.evoSim.treeViz.setTree(app.currentBot.brain.defaultTree);
                 app.currentBot.brain.defaultTree.debugPrint();
+            });
+
+            $("#spawnRelatives").click(function() {
+                console.log("Spawn relatives");
+                var bots = [];
+                // Create relatives
+                for (var i = 0; i < 10; i++) {
+                    bots[i] = app.currentBot.clone();
+                    // bots[i].mutate(.7);
+                }
+                app.arena.addPopulation(bots);
             });
 
             var ui = this.ui;

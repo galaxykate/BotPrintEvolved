@@ -13,15 +13,6 @@ define(["common", "modules/evo/evoSim", "./ai/dtree"], function(common, EvoSim, 
 
     var viz = new DTree.DTreeViz();
 
-    // Offsets a value up or down randomly, scaled by the intensity.
-    var getWeightedOffset = function(val, intensity) {
-        var scaledRandom = (Math.random() * intensity) - (0.5 * intensity);
-        val += scaledRandom;
-        // Normalize
-        val = utilties.constrain(val, 0, 1);
-        return val;
-    };
-
     var BrainEvo = EvoSim.extend({
         init : function(bot, task, arena) {
             this._super();

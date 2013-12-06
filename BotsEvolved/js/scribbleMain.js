@@ -87,9 +87,8 @@ require.config({
     }
 });
 
-var app;
-require(["modules/botPrint/botApp"], function(BotApp) {
-    app = new BotApp();
+require(["./modules/scribbles/scribbleApp"], function(ScribbleApp) {
+    var app = new ScribbleApp();
     app.start();
     console.log("Start");
 
