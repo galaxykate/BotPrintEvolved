@@ -80,7 +80,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             testShape.SetAsBox(a, a);
 
             var bodyDef = new Box2D.b2BodyDef();
-            bodyDef.angularDamping = 1.01;
+            bodyDef.angularDamping = 10.01;
             bodyDef.set_type(Box2D.b2_dynamicBody);
 
             $.each(objects, function(index, obj) {

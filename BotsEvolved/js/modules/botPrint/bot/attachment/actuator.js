@@ -61,5 +61,55 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
         }
     });
 
+    var Sharpie = Actuator.extend({
+
+        init : function() {
+            this._super();
+            this.id = "Sharpie" + this.idNumber;
+
+            this.color = new common.KColor(Math.random(), 1, 1);
+        },
+
+        update : function(time) {
+            var marker = this;
+            this.actuation *= Math.pow(this.decay, time.ellapsed) - .1 * this.decay * time.ellapsed;
+            this.actuation = utilities.constrain(this.actuation, 0, 1);
+            var worldPos = this.getWorldTransform();
+
+            var strength = this.actuation;
+            app.arena.drawOnto(worldPos, function(g) {
+                marker.color.fill(g, 0, -1 + 2*strength);
+                g.ellipse(0, 0, 5, 15);
+            });
+
+        },
+
+        getForce : function() {
+            return undefined;
+        },
+
+        renderDetails : function(context) {
+            var g = context.g;
+            var r = 10
+            g.fill(0);
+            g.noStroke();
+            g.ellipse(r / 2, 0, r * 1.2, r * 1.2);
+
+            g.fill(0);
+            g.ellipse(-r * 1.5, 0, r * 1.4, r * .4);
+
+            var length = -r * 2.7;
+            var r2 = .2 * r;
+            this.color.fill(g);
+            g.ellipse(length, 0, r2, r2);
+
+            g.fill(1, 0, 1, .7);
+            g.text(this.idNumber, -3, 5);
+
+        },
+    });
+
+    Actuator.Sharpie = Sharpie;
+
     return Actuator;
 });

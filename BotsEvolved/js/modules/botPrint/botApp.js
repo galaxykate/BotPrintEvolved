@@ -48,6 +48,7 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", ".
             app.ui.addOption("logConditionTests", false);
             app.ui.addOption("logMutations", true);
             app.ui.addOption("useTimers", true);
+            app.ui.addOption("useSharpie", true);
 
             ui.addPanel({
                 id : "arena",

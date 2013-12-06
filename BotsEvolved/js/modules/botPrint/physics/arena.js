@@ -24,6 +24,7 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
 
         reset : function() {
             this.time = 0;
+            this.resetDrawing();
             this.boxWorld.removeBodies();
         },
 
@@ -172,6 +173,53 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
             });
         },
 
+        //-------------------------------------------
+        //  Light maps and drawing maps
+
+        resetDrawing : function() {
+            var g = this.drawingMap;
+            if (g !== undefined) {
+
+                g.background(1);
+                g.beginDraw();
+                for (var i = 0; i < 20; i++) {
+                    var x = Math.random() * g.width;
+                    var y = Math.random() * g.height;
+                    g.noStroke();
+                    var r = 150 * (Math.random() + 1);
+                    g.fill(Math.random() * .2 + .5, .1 + .3 * Math.random(), 1, .5);
+                    g.ellipse(x, y, r, r);
+
+                }
+                
+            g.endDraw();
+            }
+
+        },
+
+        drawOnto : function(p, drawFxn) {
+
+            var g = this.drawingMap;
+            if (g !== undefined) {
+
+                var x = Math.round(p.x + g.width / 2);
+                var y = Math.round(p.y + g.height / 2);
+
+                g.pushMatrix();
+                g.translate(x, y);
+                g.rotate(p.rotation);
+                drawFxn(g);
+                g.popMatrix();
+            }
+        },
+
+        createDrawingMap : function() {
+
+            var g = this.drawingMap;
+            g.colorMode(g.HSB, 1);
+            this.resetDrawing();
+        },
+
         getLightMapAt : function(p) {
             if (this.lightMap === undefined)
                 return 0;
@@ -223,16 +271,21 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
             if (this.lightMap === undefined) {
                 this.lightMap = g.createGraphics(g.width, g.height);
                 this.createLightMap(g);
-
             }
 
-            g.image(this.lightMap, -g.width / 2, -g.height / 2);
+            if (this.drawingMap === undefined) {
+                this.drawingMap = g.createGraphics(g.width, g.height);
+                this.createDrawingMap(g);
+            }
+
+            //  g.image(this.lightMap, -g.width / 2, -g.height / 2);
+            g.image(this.drawingMap, -g.width / 2, -g.height / 2);
 
             // Draw the edges
             var arenaColor = new common.KColor(.2, .6, .2);
             g.strokeWeight(3);
-            arenaColor.stroke(g, -.3, 1);
-            arenaColor.fill(g, -.3, -.5);
+            arenaColor.stroke(g, .3, -.5);
+            arenaColor.fill(g, .5, -.85);
             this.border.render(context);
 
             context.simplifiedBots = true;

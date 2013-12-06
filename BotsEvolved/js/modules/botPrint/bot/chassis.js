@@ -128,6 +128,10 @@ define(["common", "geo", "./wiring", "io", "./attachment/attachments"], function
                 attachmentTypes.push(Attachment.Sensor.Timer), weights.push(1);
             }
 
+            if (app.getOption("useSharpie")) {
+                attachmentTypes.push(Attachment.Actuator.Sharpie), weights.push(2);
+            }
+
             // How many attachments to generate
             var count = 9;
 
