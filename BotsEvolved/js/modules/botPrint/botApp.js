@@ -2,7 +2,7 @@
  * @author Kate Compton
  */
 
-define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", "./botEvo", "app", "common"], function(UI, Bot, Arena, ThreeView, BotEvo, App, common) {
+define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "common"], function(UI, Bot, Arena, threeUtils, BotEvo, App, common) {
 
     var BotApp = App.extend({
         init : function() {
@@ -13,9 +13,6 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", ".
             this.fullPanelDimensions = new Vector(w - 20, h - 40);
 
             app._super("Bots", new Vector(w, h));
-            app.controls.addListeners(app.inspectorWindow);
-            app.controls.addListeners(app.arenaWindow);
-            app.controls.addListeners(app.threeWindow);
 
             // app.changeMode("inspector");
             app.editBot();
@@ -23,7 +20,23 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", ".
 
             app.changeMode("arena");
 
-            this.createAndTestNewBot();
+            //   this.createAndTestNewBot();
+            this.createAndTestManyBots();
+
+        },
+
+        createAndTestManyBots : function() {
+            var task = "doThing";
+            var bots = [];
+            var count = 5;
+            for (var i = 0; i < count; i++) {
+                var bot = new Bot();
+                bots[i] = bot;
+            }
+            app.currentBot = bots[0];
+
+            app.arena.addPopulation(bots);
+
         },
 
         createAndTestNewBot : function() {
@@ -103,66 +116,12 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", ".
                     title : "arena",
                     panels : app.ui.getPanels(["arena", "scores"]),
 
-                    // Custom controls for the arena mode
-                    controls : {
-                        onMove : function(touch) {
-                            var p = app.arenaWindow.localPos;
-                            app.arena.hover(p);
-                        },
-
-                        onPress : function(touch) {
-                            var p = app.arenaWindow.localPos;
-                            app.arena.selectBotAt(p);
-                        },
-                    }
                 }),
 
                 inspector : new UI.Mode({
                     title : "inspector",
                     panels : app.ui.getPanels(["inspector", "threeRender"]),
-                    // Control mapping
-                    controls : {
-                        onMove : function(touch) {
-                            var p = app.inspectorWindow.localPos;
-                            app.currentBot.hover(p);
-                        },
 
-                        onDrag : function(touch) {
-                            if (app.threeWindow.active) {
-                                var p = app.threeWindow.localPos;
-                                app.threeRender.camera.offsetFromBookmark(p.x * .01, -p.y * .01);
-
-                            } else {
-                                var p = app.inspectorWindow.localPos;
-                                app.currentBot.dragPoint(p);
-                            }
-
-                        },
-
-                        onPress : function(touch) {
-                            if (app.threeWindow.active) {
-                                app.pauseSpinning = true;
-                                app.threeRender.camera.bookmark();
-
-                            } else {
-                                var p = app.inspectorWindow.localPos;
-                                app.currentBot.selectPoint(p);
-                            }
-                        },
-
-                        onRelease : function(touch) {
-
-                            if (app.threeWindow.active) {
-                                app.pauseSpinning = true;
-                                app.threeRender.camera.bookmark();
-
-                            } else {
-                                var p = app.inspectorWindow.localPos;
-                                app.currentBot.releasePoint(p);
-                            }
-
-                        }
-                    }
                 }),
 
             };
@@ -183,6 +142,51 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", ".
                         app.ui.devMode.toggle()
                     },
                 },
+
+            });
+
+            // Make some of the windows touchable
+
+            var touchRender = app.controls.addTouchable("threeRender", $("#render_panel"));
+            var touchInspector = app.controls.addTouchable("inspector", $("#inspector_canvas"));
+            var touchArena = app.controls.addTouchable("arena", $("#arena_canvas"));
+
+            // Camera Controls
+            touchRender.onDrag(function(touchwindow, p) {
+                var cam = app.threeRender.camera;
+                cam.orbit.theta = p.x * -.003;
+                cam.orbit.phi = -p.y * .004 + 1.7;
+                cam.updateOrbit();
+
+            });
+            touchRender.onUp(function(touchwindow, p) {
+                app.pauseSpinning = false;
+            });
+
+            touchRender.onDown(function(touchwindow, p) {
+                app.pauseSpinning = true;
+            });
+
+            touchRender.onScroll(function(touchwindow, delta) {
+                var cam = app.threeRender.camera;
+                cam.orbit.distance *= 1 + .03 * delta;
+                cam.orbit.distance = utilities.constrain(cam.orbit.distance, 300, 1200);
+                cam.updateOrbit();
+
+            });
+
+            // Inspector controls
+            touchInspector.onDrag(function(touchwindow, p) {
+                var x = p.x - touchwindow.rect.w / 2;
+                var y = p.y - touchwindow.rect.h / 2;
+                // app.coin.designTransform.setTo(x, y, 0);
+            });
+
+            touchInspector.onMove(function(touchwindow, p) {
+                //  get midPoint
+                var x = p.x - touchwindow.rect.w / 2;
+                var y = p.y - touchwindow.rect.h / 2;
+                //  app.coin.selectAt(new Vector(x, y));
 
             });
 
@@ -238,6 +242,32 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", ".
                 height : "600px",
             });
 
+            // Create the Three scene
+            app.threeRender = new threeUtils.ThreeView($("#render_panel"), function() {
+                // update the camera
+
+                if (!app.pauseSpinning) {
+                    this.camera.orbit.theta += .01;
+
+                    this.camera.orbit.phi = .93;
+                }
+                // app.log(this.camera.orbit.theta);
+                this.camera.updateOrbit();
+
+            });
+
+            // Initial camera settings
+            var cam = app.threeRender.camera;
+            cam.orbit.distance = 600;
+            cam.updateOrbit();
+
+            app.threeWindow = new UI.DrawingWindow("3D Bot View", $("#render_panel"));
+
+            //create an empty container
+            app.threeBotMesh = new THREE.Object3D();
+            app.threeRender.scene.add(app.threeBotMesh);
+
+            // These windows all use processing for the drawing
             app.inspectorWindow = new UI.DrawingWindow("inspector", $("#inspector_canvas"));
             app.arenaWindow = new UI.DrawingWindow("arena", $("#arena_canvas"));
             app.scoreWindow = new UI.DrawingWindow("score", $("#score_canvas"));
@@ -251,7 +281,8 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", ".
                 // only do if its the inspector mode
                 if (app.mode === app.modes.inspector) {
                     // Updates
-                    app.updateWorld(g.millis() * .001);
+
+                    app.worldTime.updateTime(g.millis() * .001);
                     app.currentBot.update(app.time);
 
                     app.inspectorWindow.render(function(context) {
@@ -268,8 +299,9 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", ".
 
                 // only do if its the arena mode
                 if (app.mode === app.modes.arena) {
-                    app.updateWorld(g.millis() * .001);
-                    app.arena.update(app.time.ellapsed);
+                    app.worldTime.updateTime(g.millis() * .001);
+
+                    app.arena.update(app.worldTime.ellapsed);
 
                     app.arenaWindow.render(function(context) {
                         app.arena.render(context);
@@ -284,41 +316,13 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", ".
             }, function(g) {
 
                 // only do if its the arena mode
-                if (app.mode === app.modes.arena) {
+                if (app.mode === app.modes.arena && app.evoSim) {
                     g.background(.8, 1, .3);
                     app.evoSim.renderScores(g);
 
                 }
 
             });
-
-            //================================================
-            //================================================
-            //================================================
-            // Iniialize the viewing ports (Processing and Three.JS)
-            // Create the processing.  camera stuff will move into own file eventually
-
-            // Create the Three scene
-            app.threeRender = new ThreeView($("#render_panel"), function() {
-                // update the camera
-
-                if (!app.pauseSpinning)
-                    this.camera.orbit.theta += .03;
-                // app.log(this.camera.orbit.theta);
-                this.camera.updateOrbit();
-            });
-            app.threeWindow = new UI.DrawingWindow("3D Bot View", $("#render_panel"));
-
-            //create an empty container
-            app.threeBotMesh = new THREE.Object3D();
-            app.threeRender.scene.add(app.threeBotMesh);
-
-        },
-
-        updateWorld : function(t) {
-
-            this._super(t);
-            app.ui.output.clear();
 
         },
 

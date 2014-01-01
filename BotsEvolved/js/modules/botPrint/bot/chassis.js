@@ -2,7 +2,7 @@
  * @author Kate Compton
  */
 
-define(["common", "geo", "./wiring", "io", "./attachment/attachments"], function(common, geo, Wiring, IO, Attachment) {'use strict';
+define(["common", "graph", "./wiring", "./attachment/attachments"], function(common, Graph, Wiring, Attachment) {'use strict';
     var chassisCount = 0;
     // Points MUST be coplanar
 
@@ -15,7 +15,7 @@ define(["common", "geo", "./wiring", "io", "./attachment/attachments"], function
 
             var chassis = this;
 
-            this.path = new geo.Path();
+            this.path = new Graph.Path();
             this.curveSubdivisions = 3;
 
             this.idColor = new common.KColor((.2813 * this.idNumber + .23) % 1, 1, 1);
@@ -26,10 +26,9 @@ define(["common", "geo", "./wiring", "io", "./attachment/attachments"], function
             for (var i = 0; i < pointCount; i++) {
                 var theta = i * Math.PI * 2 / pointCount;
                 var r = 100 * utilities.unitNoise(.7 * theta + 50 * this.idNumber);
-                var pt = new geo.Path.Point(0, 0, 30, 30, theta - Math.PI / 2);
-                pt.addPolar(r, theta);
-                pt.updateControlHandles();
-                this.path.addPoint(pt);
+                var pt = Vector.polar(r, theta);
+
+                this.path.addEdgeTo(pt);
             }
             this.generateWiring();
             this.generateAttachments();
@@ -121,7 +120,7 @@ define(["common", "geo", "./wiring", "io", "./attachment/attachments"], function
             this.attachPoints = [];
 
             // Weights and attachment types: there should be the same number in each array, please!
-            var weights = [1, 1];
+            var weights = [.3, 1];
             var attachmentTypes = [Attachment.Sensor, Attachment.Actuator];
 
             if (app.getOption("useTimers")) {
@@ -129,18 +128,21 @@ define(["common", "geo", "./wiring", "io", "./attachment/attachments"], function
             }
 
             if (app.getOption("useSharpie")) {
-                attachmentTypes.push(Attachment.Actuator.Sharpie), weights.push(2);
+                attachmentTypes.push(Attachment.Actuator.Sharpie), weights.push(1);
             }
 
             // How many attachments to generate
-            var count = 9;
+            var count = 15;
 
             for (var i = 0; i < count; i++) {
                 // Create some random point around the path to attach this to.
-                var index = Math.floor(Math.random() * this.path.points.length);
+                var edge = this.path.getRandomEdge();
                 var pct = Math.random();
-                var attachPoint = new geo.Path.Tracer(this.path, index, pct);
 
+                // Make the tracer slightly inset
+                var attachPoint = edge.getTracer(pct, -3);
+                if (!attachPoint || !attachPoint.isValid())
+                    throw "Found invalid attach point: " + attachPoint + " edge: " + edge + " pct: " + pct;
                 // Create an attachment of some random type
                 var typeIndex = utilities.getWeightedRandomIndex(weights);
                 var attachment = new attachmentTypes[typeIndex]();
@@ -173,8 +175,6 @@ define(["common", "geo", "./wiring", "io", "./attachment/attachments"], function
 
         update : function(time) {
             var chassis = this;
-
-            this.path.update(time);
 
             $.each(this.attachments, function(index, attachment) {
                 attachment.update(time);
@@ -209,8 +209,8 @@ define(["common", "geo", "./wiring", "io", "./attachment/attachments"], function
             }
 
             // Draw the region
-            this.path.drawPath(context.g, context.useChassisCurves);
-            this.path.drawPoints(context.g, !context.simplifiedBots);
+            context.drawPath = true;
+            this.path.draw(context);
 
             if (!context.simplifiedBots) {
 

@@ -68,13 +68,14 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
         // render this bot in a 2D frame
 
         getHull : function() {
-            return this.mainChassis.path.points;
+            return this.mainChassis.path.getHull();
         },
         update : function(time) {
             this.mainChassis.update(time);
 
         },
         act : function(time) {
+            var bot = this;
             if (this.brain !== undefined) {
                 var dtree = this.brain.defaultTree;
                 if (this.intention !== undefined) {
@@ -83,8 +84,15 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
 
                 dtree.resetActive();
                 dtree.makeDecision();
+            } else {
+                $.each(this.actuators, function(index, actuator) {
+                    var value = Math.sin(index + time.total + bot.idNumber) * 3;
+                    value = utilities.constrain(value, 0, 1);
+                    actuator.actuate(value);
+                });
             }
         },
+
         render : function(context) {
             var g = context.g;
             g.pushMatrix();
@@ -161,7 +169,11 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
         },
 
         createThreeMesh : function() {
-            this.mainChassis.path.createThreeMesh();
+            this.mainChassis.path.createThreeMesh({
+                rings : 3,
+                capRings : 2,
+                height : 18
+            });
             // set up the sphere vars
 
             var sphereMaterial = new THREE.MeshLambertMaterial({

@@ -9,12 +9,13 @@ define(["d3"], function(_d3) {
         },
 
         updateText : function() {
-            var node = this.svg.selectAll(".node").attr("class", function(d) {
-                if (d.active)
-                    return "node active";
-                return "node";
-            });
-
+            if (this.svg !== undefined) {
+                var node = this.svg.selectAll(".node").attr("class", function(d) {
+                    if (d.active)
+                        return "node active";
+                    return "node";
+                });
+            }
         },
 
         setTree : function(tree) {

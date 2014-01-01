@@ -2,7 +2,7 @@
  * @author Kate Compton
  */
 
-define(["common"], function(common) {'use strict';
+define(["common", "graph"], function(common, Graph) {'use strict';
     var wireCount = 0;
     var Wire = Class.extend({
         init : function(start, end) {
@@ -59,7 +59,7 @@ define(["common"], function(common) {'use strict';
 
             _.extend(this, settings);
 
-            this.region = new common.Region.makeRectangle(this.center, this.width, this.height);
+            this.region = Graph.makeRectangle(this.center, this.width, this.height);
 
             // construct snap points
             for (var i = 0; i < 3; i++) {

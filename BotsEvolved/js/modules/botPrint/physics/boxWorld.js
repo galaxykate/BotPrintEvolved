@@ -47,6 +47,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             }
             return ground;
         },
+
         setTo : function(b2D, x, y) {
             b2D.set_x(x / this.scale);
             b2D.set_y(y / this.scale);
@@ -86,6 +87,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             $.each(objects, function(index, obj) {
 
                 var points = obj.getHull();
+                
                 // var customShapes = boxWorld.createPolygonShapes(obj.points);
                 var customShapes = boxWorld.createTriFanShapes(points);
 
@@ -183,6 +185,8 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
         createTriFanShapes : function(vertices) {
             var boxWorld = this;
+            if (vertices === undefined)
+                throw "No vertices: can't make B2D triangle-fan";
 
             var center = Vector.average(vertices);
             var shapes = [];

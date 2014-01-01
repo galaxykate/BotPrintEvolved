@@ -2,11 +2,11 @@
  * @author Kate Compton
  */
 
-define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
+define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'use strict';
 
     var Arena = Class.extend({
         init : function() {
-            this.border = new common.Region(new common.Vector(0, 0));
+            this.border = new Graph.Path();
             this.bots = [];
 
             this.boxWorld = new BoxWorld(0);
@@ -18,7 +18,7 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
                 var p = common.Vector.polar(r, theta);
                 this.border.addPoint(p);
             }
-            var ground = this.boxWorld.makeEdgeRing(this.border.points);
+            var ground = this.boxWorld.makeEdgeRing(this.border.nodes);
             ground.isTerrain = true;
         },
 
@@ -191,8 +191,8 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
                     g.ellipse(x, y, r, r);
 
                 }
-                
-            g.endDraw();
+
+                g.endDraw();
             }
 
         },
@@ -286,7 +286,7 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
             g.strokeWeight(3);
             arenaColor.stroke(g, .3, -.5);
             arenaColor.fill(g, .5, -.85);
-            this.border.render(context);
+            this.border.draw(context);
 
             context.simplifiedBots = true;
             $.each(this.bots, function(index, bot) {
@@ -299,7 +299,8 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
             this.boxWorld.render(g);
 
             // Update the tree viz
-            app.evoSim.treeViz.updateText();
+            if (app.evoSim !== undefined)
+                app.evoSim.treeViz.updateText();
 
         },
     });

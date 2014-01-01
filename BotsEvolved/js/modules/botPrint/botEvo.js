@@ -2,7 +2,7 @@
  * @author Kate Compton
  */
 
-define(["common", "modules/evo/evoSim", "./ai/dtree"], function(common, EvoSim, DTree) {'use strict';
+define(["common", "evo", "./ai/dtree"], function(common, EvoSim, DTree) {'use strict';
     var mutLog = "";
     //createGenome, createIndividual, mutateGenome, crossoverGenomes, evaluatePopulation
     function mutationLog(s) {

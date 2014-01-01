@@ -8,6 +8,10 @@ html, body {
 	overflow: hidden;
 }
 
+#ui {
+	pointer-events: none;
+}
+
 .app_size {
 	width: 800px;
 	height: 600px;
@@ -16,6 +20,16 @@ html, body {
 	top: 0px;
 	left: 0px;
 	position: absolute;
+}
+
+.full_canvas {
+	width: 100%;
+	height: 100%;
+}
+
+.canvas_container {
+	/* this fixes the overflow:hidden in Chrome/Opera */
+	-webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);
 }
 
 #control_bar {
@@ -93,13 +107,12 @@ html, body {
 }
 .panel {
 	font-size: 70%;
-	z-index: 50;
+
 	position: absolute;
 	border: 2px solid white;
 	background: rgba(200, 210, 210, .8);
 	width: 200px;
 	height: 200px;
-	
 	box-shadow: 2px 2px 15px 0px rgba(0, 0, 0, .4);
 	border-radius: 15px;
 	overflow: hidden;
