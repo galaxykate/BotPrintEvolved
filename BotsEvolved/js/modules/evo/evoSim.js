@@ -54,7 +54,7 @@ define(["common"], function(common) {'use strict';
                         return a.avgScore < b.avgScore;
                     });
 
-                    console.log(scoredPopulation);
+                    console.log("scoredPopulation: ", scoredPopulation);
 
                     // Fill the next generation with crossovers and mutants
                     var crossoverCount = Math.floor(evoSim.cohortSize * evoRun.crossoverPct);

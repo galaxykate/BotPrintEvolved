@@ -19,7 +19,6 @@ define(["d3"], function(_d3) {
 
         setTree : function(tree) {
 
-
             $("#ai_overlay").html(tree.mutLog);
             var width = 400, height = 400;
 

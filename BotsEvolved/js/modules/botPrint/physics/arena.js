@@ -191,7 +191,6 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
                     g.ellipse(x, y, r, r);
 
                 }
-                
             g.endDraw();
             }
 

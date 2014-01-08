@@ -42,6 +42,7 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
             bot.setMainChassis(this.mainChassis.clone());
 
             this.compileAttachments();
+            return bot;
         },
 
         setBrain : function(dtree) {

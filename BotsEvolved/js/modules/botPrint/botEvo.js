@@ -11,20 +11,27 @@ define(["common", "modules/evo/evoSim", "./ai/dtree"], function(common, EvoSim, 
         mutLog += (s + " <br>");
     };
 
-    var viz = new DTree.DTreeViz();
+    // Offsets a value up or down randomly, scaled by the intensity.
+    var getWeightedOffset = function(val, intensity) {
+        var scaledRandom = (Math.random() * intensity) - (0.5 * intensity);
+        val += scaledRandom;
+        // Normalize
+        val = utilties.constrain(val, 0, 1);
+        return val;
+    };
 
     var BrainEvo = EvoSim.extend({
         init : function(bot, task, arena) {
             this._super();
             this.genomeLength = 30;
-            this.cohortSize = 4;
+            this.cohortSize = 1;
 
             this.mutagen = 1;
             this.bot = bot;
             this.task = task;
             this.arena = arena;
 
-            this.treeViz = viz;
+            this.treeViz = new DTree.DTreeViz();
             this.scoredPopulation = [];
             this.sensors = this.bot.sensors;
             this.actuators = this.bot.actuators;
@@ -55,14 +62,6 @@ define(["common", "modules/evo/evoSim", "./ai/dtree"], function(common, EvoSim, 
 
             });
             return dtree;
-
-            /*
-             var genome = [];
-             for (var i = 0; i < this.genomeLength; i++) {
-             genome[i] = Math.random();
-             }
-             return genome;
-             */
         },
 
         generateAction : function() {
@@ -148,7 +147,6 @@ define(["common", "modules/evo/evoSim", "./ai/dtree"], function(common, EvoSim, 
             mutationLog("MUTATE NODE " + node.idNumber);
             // We classify some mutations as major. Major changes are less likely the lower the mutationIntensity.
             var majorChange = (Math.random() < mutationIntensity * 0.5 );
-
             if (node.action !== undefined) {
                 this.mutateAction(node, majorChange, mutationIntensity);
             } else {
@@ -159,32 +157,30 @@ define(["common", "modules/evo/evoSim", "./ai/dtree"], function(common, EvoSim, 
         mutateGenome : function(genome) {
             mutLog = "";
             var tree = genome;
-
             var mutationIntensity = this.mutagen;
-
-            //Get lookup tables for nodes in the tree
-            var decisions = [];
-            var actions = [];
             var nodes = []
-            tree.compileNodes(decisions, function(node) {
-                return node.decision !== undefined;
-            });
-            tree.compileNodes(actions, function(node) {
-                return node.action !== undefined;
-            });
-
             tree.compileNodes(nodes, function(node) {
                 return true;
             });
-
-            //Randomly select node to mutate
-            var table = Math.random() > .5 ? decisions : actions;
 
             var selectedNode = utilities.getRandom(nodes);
             this.mutateNode(selectedNode, mutationIntensity);
 
             tree.mutLog = mutLog;
             return tree;
+/*
+            //Get lookup tables for nodes in the tree
+            var decisions = [];
+            var actions = [];
+            tree.compileNodes(decisions, function(node) {
+                return node.decision !== undefined;
+            });
+            tree.compileNodes(actions, function(node) {
+                return node.action !== undefined;
+            });
+            //Randomly select node to mutate
+            var table = Math.random() > .5 ? decisions : actions;
+*/
         },
 
         crossoverGenomes : function(g0, g1) {
@@ -203,7 +199,7 @@ define(["common", "modules/evo/evoSim", "./ai/dtree"], function(common, EvoSim, 
             // Run each individual in the arena for N seconds
             var index = 0;
             var individual;
-            console.log(population);
+            //console.log(population);
             var arena = this.arena;
             var testBot = this.bot;
 
@@ -245,7 +241,6 @@ define(["common", "modules/evo/evoSim", "./ai/dtree"], function(common, EvoSim, 
 
                 } else {
                     // Update the score window
-
                     // finished testing!
                     callback(scoredPopulation);
                 }
@@ -266,24 +261,22 @@ define(["common", "modules/evo/evoSim", "./ai/dtree"], function(common, EvoSim, 
         },
 
         renderScores : function(g) {
+            //Keep track of top, min, avg
             g.colorMode(g.HSB, 1);
             var w = 30;
-            var totalH = 95;
+            var totalH = 200;
 
             var scores = this.scoredPopulation;
             scores = this.arena.scores;
-            g.fill(1);
-            //  g.ellipse(0, 0, 50, 50);
 
             if (scores !== undefined) {
                 for (var i = 0; i < scores.length; i++) {
                     //  console.log("draw " + i);
                     var ind = scores[i];
                     var score = ind.total;
-                    //  console.log(score);
 
                     g.fill(i * .1, 1, 1);
-                    g.rect(w * i, totalH, w, -score * 100);
+                    g.rect(w * i, totalH, w, -score * .1);
                 }
             }
 

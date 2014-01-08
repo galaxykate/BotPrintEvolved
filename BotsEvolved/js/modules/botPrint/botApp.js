@@ -211,7 +211,9 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", ".
 
             $("#mutateBig").click(function() {
                 console.log("-------------------------- ");
-                console.log("Mutating ");
+                console.log("Mutating Generations");
+                app.evoSim.runGenerations(2);
+                /*
                 app.currentBot.brain.defaultTree.debugPrint();
                 for (var i = 0; i < 20; i++) {
                     app.evoSim.mutateGenome(app.currentBot.brain.defaultTree);
@@ -219,18 +221,19 @@ define(["ui", "./bot/bot", "./physics/arena", "modules/threeUtils/threeView", ".
 
                 app.evoSim.treeViz.setTree(app.currentBot.brain.defaultTree);
                 app.currentBot.brain.defaultTree.debugPrint();
+                */
             });
 
             $("#spawnRelatives").click(function() {
                 console.log("Spawn relatives");
                 var bots = [];
                 // Create relatives
+                console.log(app.currentBot.clone());
                 for (var i = 0; i < 10; i++) {
                     bots[i] = app.currentBot.clone();
                     // bots[i].mutate(.7);
                 }
                 app.arena.addPopulation(bots);
-
             });
 
             var ui = this.ui;
