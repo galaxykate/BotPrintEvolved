@@ -1,25 +1,10 @@
-#test_button {
+#side_buttons {
 	position: absolute;
 	left: 0px;
-	top: 310px;
+	top: 140px;
+	width: 100px;
+	height: 300px;
 }
-#reset_arena {
-	position: absolute;
-	left: 0px;
-	top: 310px;
-}
-#mutate {
-	position: absolute;
-	left: 0px;
-	top: 340px;
-}
-
-#mutateBig {
-	position: absolute;
-	left: 0px;
-	top: 370px;
-}
-
 
 #ai_overlay {
 	position: absolute;

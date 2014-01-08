@@ -4,8 +4,7 @@
 
 var utilities = {};
 var prefix = "modules/common/";
-define('common', ["inheritance", "noise", prefix + "transform", prefix + "region", prefix + "vector",  prefix + "tree", prefix + "edge", prefix + "rect", prefix + "map", prefix + "kcolor", prefix + "timespan", prefix + "utilities", prefix + "range", "jQueryUI", "underscore"], 
-function(Inheritance, _Noise, _Transform, _Region, _Vector, _Tree, _Edge, _Rect, _Map, _KColor, _TimeSpan, _utilities, _Range, JQUERY, _) {
+define('common', ["inheritance", "noise", prefix + "transform", prefix + "region", prefix + "vector", prefix + "tree", prefix + "edge", prefix + "rect", prefix + "map", prefix + "kcolor", prefix + "timespan", prefix + "utilities", prefix + "range", "jQueryUI", "underscore"], function(Inheritance, _Noise, _Transform, _Region, _Vector, _Tree, _Edge, _Rect, _Map, _KColor, _TimeSpan, _utilities, _Range, JQUERY, _) {
     var common = {
         Vector : _Vector,
 
@@ -20,6 +19,66 @@ function(Inheritance, _Noise, _Transform, _Region, _Vector, _Tree, _Edge, _Rect,
         Transform : _Transform,
 
     }
+
+    //=============================================================
+    //=============================================================
+    //=============================================================
+    // Add watching
+    /*
+    * object.watch polyfill
+    *
+    * 2012-04-03
+    *
+    * By Eli Grey, http://eligrey.com
+    * Public Domain.
+    * NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
+    */
+
+    // object.watch
+    if (!Object.prototype.watch) {
+        Object.defineProperty(Object.prototype, "watch", {
+            enumerable : false,
+            configurable : true,
+            writable : false,
+            value : function(prop, handler) {
+                var oldval = this[prop], newval = oldval, getter = function() {
+                    return newval;
+                }, setter = function(val) {
+                    oldval = newval;
+                    return newval = handler.call(this, prop, oldval, val);
+                };
+
+                if (
+                delete this[prop]) {// can't watch constants
+                    Object.defineProperty(this, prop, {
+                        get : getter,
+                        set : setter,
+                        enumerable : true,
+                        configurable : true
+                    });
+                }
+            }
+        });
+    }
+
+    // object.unwatch
+    if (!Object.prototype.unwatch) {
+        Object.defineProperty(Object.prototype, "unwatch", {
+            enumerable : false,
+            configurable : true,
+            writable : false,
+            value : function(prop) {
+                var val = this[prop];
+                delete this[prop];
+                // remove accessors
+                this[prop] = val;
+            }
+        });
+    }
+
+    //=============================================================
+    //=============================================================
+    //=============================================================
 
     utilities = _utilities;
     utilities.noiseObj = new _Noise();

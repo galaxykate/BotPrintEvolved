@@ -8,8 +8,39 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
         init : function() {
             this.idNumber = botCount;
             botCount++;
-            this.mainChassis = new Chassis(this);
+            this.setMainChassis(new Chassis(this));
             this.transform = new common.Transform();
+            this.compileAttachments();
+        },
+
+        //======================================================================================
+        //======================================================================================
+        //======================================================================================
+        // Transformation
+
+        getBot : function() {
+            return this;
+        },
+
+        // Transform this bot-local position to a global one
+        transformToGlobal : function(local, global) {
+            this.transform.toWorld(local, global);
+        },
+
+        setMainChassis : function(chassis) {
+            this.mainChassis = chassis;
+            this.mainChassis.setParent(this);
+        },
+
+        //======================================================================================
+        //======================================================================================
+        //======================================================================================
+        //
+
+        clone : function() {
+            var bot = new Bot();
+            bot.setMainChassis(this.mainChassis.clone());
+
             this.compileAttachments();
         },
 
@@ -17,12 +48,6 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
             this.brain = {
                 defaultTree : dtree
             };
-        },
-
-        // Transform this bot-local position to a global one
-        transformToGlobal : function(local, global) {
-            this.transform.toWorld(local, global);
-
         },
 
         compileAttachments : function() {
@@ -43,14 +68,12 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
         // render this bot in a 2D frame
 
         getHull : function() {
-            return this.mainChassis.points;
+            return this.mainChassis.path.points;
         },
-
         update : function(time) {
             this.mainChassis.update(time);
 
         },
-
         act : function(time) {
             if (this.brain !== undefined) {
                 var dtree = this.brain.defaultTree;
@@ -63,7 +86,6 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
                 dtree.makeDecision();
             }
         },
-
         render : function(context) {
             var g = context.g;
             g.pushMatrix();
@@ -91,14 +113,12 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
              */
 
         },
-
         getForceAmt : function() {
             if (this.decisionTree === undefined)
                 return Math.max(100000 * Math.sin(this.arena.time + this.idNumber), 0);
             else
                 return this.decisionTree.makeDecision();
         },
-
         getForces : function() {
             var forces = [];
             this.mainChassis.compileForces(forces);
@@ -140,8 +160,9 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
         getAt : function(query) {
             return this.mainChassis.getAt(query);
         },
+
         createThreeMesh : function() {
-            this.mainChassis.createThreeMesh();
+            this.mainChassis.path.createThreeMesh();
             // set up the sphere vars
 
             var sphereMaterial = new THREE.MeshLambertMaterial({
@@ -149,7 +170,7 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
             });
             this.mesh = new THREE.Mesh(new THREE.SphereGeometry(2, 8, 6), sphereMaterial);
 
-            this.mesh.add(this.mainChassis.mesh);
+            this.mesh.add(this.mainChassis.path.mesh);
 
             return this.mesh;
 

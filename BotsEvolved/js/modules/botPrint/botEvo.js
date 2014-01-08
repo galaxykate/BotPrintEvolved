@@ -11,14 +11,7 @@ define(["common", "modules/evo/evoSim", "./ai/dtree"], function(common, EvoSim, 
         mutLog += (s + " <br>");
     };
 
-    // Offsets a value up or down randomly, scaled by the intensity.
-    var getWeightedOffset = function(val, intensity) {
-        var scaledRandom = (Math.random() * intensity) - (0.5 * intensity);
-        val += scaledRandom;
-        // Normalize
-        val = utilties.constrain(val, 0, 1);
-        return val;
-    };
+    var viz = new DTree.DTreeViz();
 
     var BrainEvo = EvoSim.extend({
         init : function(bot, task, arena) {
@@ -31,7 +24,7 @@ define(["common", "modules/evo/evoSim", "./ai/dtree"], function(common, EvoSim, 
             this.task = task;
             this.arena = arena;
 
-            this.treeViz = new DTree.DTreeViz();
+            this.treeViz = viz;
             this.scoredPopulation = [];
             this.sensors = this.bot.sensors;
             this.actuators = this.bot.actuators;
@@ -155,7 +148,7 @@ define(["common", "modules/evo/evoSim", "./ai/dtree"], function(common, EvoSim, 
             mutationLog("MUTATE NODE " + node.idNumber);
             // We classify some mutations as major. Major changes are less likely the lower the mutationIntensity.
             var majorChange = (Math.random() < mutationIntensity * 0.5 );
-          
+
             if (node.action !== undefined) {
                 this.mutateAction(node, majorChange, mutationIntensity);
             } else {
@@ -275,19 +268,22 @@ define(["common", "modules/evo/evoSim", "./ai/dtree"], function(common, EvoSim, 
         renderScores : function(g) {
             g.colorMode(g.HSB, 1);
             var w = 30;
-            var totalH = 200;
+            var totalH = 95;
 
             var scores = this.scoredPopulation;
             scores = this.arena.scores;
+            g.fill(1);
+            //  g.ellipse(0, 0, 50, 50);
 
             if (scores !== undefined) {
                 for (var i = 0; i < scores.length; i++) {
                     //  console.log("draw " + i);
                     var ind = scores[i];
                     var score = ind.total;
+                    //  console.log(score);
 
                     g.fill(i * .1, 1, 1);
-                    g.rect(w * i, totalH, w, -score * .1);
+                    g.rect(w * i, totalH, w, -score * 100);
                 }
             }
 

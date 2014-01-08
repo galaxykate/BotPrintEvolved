@@ -24,6 +24,7 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
 
         reset : function() {
             this.time = 0;
+            this.resetDrawing();
             this.boxWorld.removeBodies();
         },
 
@@ -108,8 +109,10 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
         addPopulation : function(population) {
 
             var arena = this;
-            arena.scores = [];
             arena.reset();
+            arena.scores = [];
+            arena.bots = [];
+
             // Give each bot an arena position
             $.each(population, function(index, bot) {
                 arena.bots.push(bot);
@@ -144,7 +147,7 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
             }
             app.log("Arena update: " + timestep + " time" + time.total);
             this.time += timestep
-            
+
             $.each(this.bots, function(index, bot) {
                 bot.update(time);
             });
@@ -165,8 +168,56 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
         updateScores : function() {
             var arena = this;
             $.each(this.bots, function(index, bot) {
-                arena.scores[index].total += .1;
+                arena.scores[index].total = arena.getLightMapAt(bot.transform);
+                app.log(index + ": score " + arena.scores[index].total);
             });
+        },
+
+        //-------------------------------------------
+        //  Light maps and drawing maps
+
+        resetDrawing : function() {
+            var g = this.drawingMap;
+            if (g !== undefined) {
+
+                g.background(1);
+                g.beginDraw();
+                for (var i = 0; i < 20; i++) {
+                    var x = Math.random() * g.width;
+                    var y = Math.random() * g.height;
+                    g.noStroke();
+                    var r = 150 * (Math.random() + 1);
+                    g.fill(Math.random() * .2 + .5, .1 + .3 * Math.random(), 1, .5);
+                    g.ellipse(x, y, r, r);
+
+                }
+                
+            g.endDraw();
+            }
+
+        },
+
+        drawOnto : function(p, drawFxn) {
+
+            var g = this.drawingMap;
+            if (g !== undefined) {
+
+                var x = Math.round(p.x + g.width / 2);
+                var y = Math.round(p.y + g.height / 2);
+
+                g.pushMatrix();
+                g.translate(x, y);
+                g.rotate(p.rotation);
+                drawFxn(g);
+                g.popMatrix();
+            }
+        },
+
+        createDrawingMap : function() {
+
+            var g = this.drawingMap;
+            g.colorMode(g.HSB, 1);
+            this.resetDrawing();
         },
 
         getLightMapAt : function(p) {
@@ -180,8 +231,7 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
             return b;
         },
 
-        createLightMap : function(processing) {
-            this.lightMap = processing.createGraphics(processing.width, processing.height);
+        createLightMap : function() {
 
             var g = this.lightMap;
             g.colorMode(g.HSB, 1);
@@ -219,16 +269,23 @@ define(["common", "./boxWorld"], function(common, BoxWorld) {'use strict';
 
             //   g.ellipse(0, 0, 400, 400);
             if (this.lightMap === undefined) {
+                this.lightMap = g.createGraphics(g.width, g.height);
                 this.createLightMap(g);
             }
 
-            g.image(this.lightMap, -g.width / 2, -g.height / 2);
+            if (this.drawingMap === undefined) {
+                this.drawingMap = g.createGraphics(g.width, g.height);
+                this.createDrawingMap(g);
+            }
+
+            //  g.image(this.lightMap, -g.width / 2, -g.height / 2);
+            g.image(this.drawingMap, -g.width / 2, -g.height / 2);
 
             // Draw the edges
             var arenaColor = new common.KColor(.2, .6, .2);
             g.strokeWeight(3);
-            arenaColor.stroke(g, -.3, 1);
-            arenaColor.fill(g, -.3, -.5);
+            arenaColor.stroke(g, .3, -.5);
+            arenaColor.fill(g, .5, -.85);
             this.border.render(context);
 
             context.simplifiedBots = true;
