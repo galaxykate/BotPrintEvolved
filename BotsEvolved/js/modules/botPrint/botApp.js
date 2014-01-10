@@ -62,6 +62,8 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.ui.addOption("logMutations", true);
             app.ui.addOption("useTimers", true);
             app.ui.addOption("useSharpie", true);
+            app.ui.addOption("useSuperFun", true);
+            app.ui.addOption("useHyperFun",true);
 
             ui.addPanel({
                 id : "arena",

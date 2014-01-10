@@ -68,6 +68,36 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
         },
     });
     
+    //Hyperfun is a sensor that is square shaped(20x20) and randomly changes colors, the sense value is updated all the time as a random number between 0 and 1.
+    var HyperFun = Sensor.extend({
+    	   init : function() {
+            this._super();
+            this.id = "HyperFun" + this.idNumber;
+        },
+		
+		 
+        update : function(time) {
+
+            this.senseValue = Math.random(1);
+
+        },
+        
+        renderDetails : function(context) {
+            var g = context.g;
+            var r = 10;
+            g.strokeWeight(1);
+            g.fill(this.senseValue,this.senseValue, this.senseValue);
+            g.stroke(0);
+            g.rect(0, 0, r * 2, r * 2);
+            g.fill(this.senseValue,this.senseValue,this.senseValue);
+            g.rect(r * .7, -r, r, r * 2);
+            g.fill(1, 0, 1, .7);
+            g.text(this.idNumber, -3, 5);
+
+        },
+    	
+    });
+    Sensor.HyperFun = HyperFun;
     Sensor.Timer = Timer;
 
     return Sensor;

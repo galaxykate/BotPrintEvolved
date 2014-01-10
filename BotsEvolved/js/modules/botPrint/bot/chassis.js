@@ -126,9 +126,16 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
             if (app.getOption("useTimers")) {
                 attachmentTypes.push(Attachment.Sensor.Timer), weights.push(1);
             }
-
+            //I added this .- Afshin
+            if (app.getOption("useHyperFun")) {
+                attachmentTypes.push(Attachment.Sensor.HyperFun), weights.push(1);
+            }
             if (app.getOption("useSharpie")) {
                 attachmentTypes.push(Attachment.Actuator.Sharpie), weights.push(1);
+            }
+            //I added this .- Afshin
+            if(app.getOption("useSuperFun")){
+            	attachmentTypes.push(Attachment.Actuator.SuperFun), weights.push(1);
             }
 
             // How many attachments to generate
