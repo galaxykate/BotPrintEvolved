@@ -21,16 +21,22 @@ require.config({
         'processing' : 'vendor/processing-1.4.1',
         'inheritance' : 'vendor/inheritance',
         'noise' : 'vendor/simplex_noise',
-
+        'helvetiker' : 'modules/shared/threeUtils/fonts/helvetiker_regular.typeface',
         // My modules
-        'common' : 'modules/common/common',
-        'geo' : 'modules/geo/geometry',
-        'ui' : 'modules/ui/ui',
-        'io' : 'modules/io/saveFile',
-        'arena' : 'modules/arena/arena',
+        'common' : 'modules/shared/common/commonUtils',
+        'geo' : 'modules/shared/geo/geometryUtils',
+        'graph' : 'modules/shared/graphs/graphUtils',
+        'evo' : 'modules/shared/evo/evoSim',
+        'ui' : 'modules/shared/ui/uiUtils',
+        'threeUtils' : 'modules/shared/threeUtils/threeUtils'
 
     },
     shim : {
+
+        'helvetiker' : {
+            exports : 'helvetic',
+            deps : ['three']
+        },
         'jQueryUITouchPunch' : {
             exports : '$',
             deps : ['jQueryUI']
@@ -87,9 +93,8 @@ require.config({
     }
 });
 
-var app;
-require(["modules/botPrint/botApp"], function(BotApp) {
-    app = new BotApp();
+require(["./modules/botPrint/botApp"], function(BotApp) {
+    var app = new BotApp();
     app.start();
     console.log("Start");
 

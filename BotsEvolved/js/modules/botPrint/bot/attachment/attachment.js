@@ -48,6 +48,7 @@ define(["common"], function(common) {'use strict';
 
         attachTo : function(parent, attachPoint) {
             this.parent = parent;
+            
             this.attachPoint = attachPoint;
         },
 

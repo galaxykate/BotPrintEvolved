@@ -65,6 +65,10 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
 
         init : function() {
             this._super();
+
+            this.stamp = "";
+            if (Math.random() > .999)
+                this.stamp = "BotPrint!";
             this.id = "Sharpie" + this.idNumber;
 
             this.color = new common.KColor(Math.random(), 1, 1);
@@ -78,8 +82,11 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
 
             var strength = this.actuation;
             app.arena.drawOnto(worldPos, function(g) {
-                marker.color.fill(g, 0, -1 + 2*strength);
+                marker.color.fill(g, 0, -1 + 2 * strength);
                 g.ellipse(0, 0, 5, 15);
+
+                if (marker.stamp.length > 0)
+                    g.text(marker.stamp, -5, 0);
             });
 
         },

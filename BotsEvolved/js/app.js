@@ -4,6 +4,32 @@
 
 var app;
 define(["ui", "common"], function(UI, common) {
+
+    var Time = Class.extend({
+        init : function(name) {
+            this.name = name;
+            this.ellapsed = 0;
+            this.total = 0;
+            this.timespans = new common.TimeSpan.Manager();
+
+        },
+
+        addElapsed : function(t) {
+            this.ellapsed = t;
+            this.total += t;
+        },
+
+        updateTime : function(t) {
+
+            this.ellapsed = t - this.total;
+            this.total = t;
+        },
+
+        toString : function() {
+            return this.name + ": " + this.total.toFixed(2) + "(" + this.ellapsed.toFixed(3) + ")";
+        }
+    });
+
     var App = Class.extend({
 
         init : function(name, dimensions) {
@@ -12,11 +38,9 @@ define(["ui", "common"], function(UI, common) {
             app.div = $("#app");
 
             app.dimensions = dimensions;
-            app.time = {
-                worldTime : 0,
-                appTime : 0,
-                ellapsed : 0
-            };
+
+            app.worldTime = new Time("world");
+            app.appTime = new Time("app");
 
             app.rect = new common.Rect(0, 0, app.dimensions.x, app.dimensions.y);
             app.ui = new UI({
@@ -25,7 +49,6 @@ define(["ui", "common"], function(UI, common) {
 
             app.ui.addDevUI($("#dev_controls"));
 
-            app.timespans = new common.TimeSpan.Manager();
             console.log(name + ": INIT UI");
             this.initUI();
 
@@ -99,38 +122,20 @@ define(["ui", "common"], function(UI, common) {
         //========================================
         // option/tuning value accessors
         getOption : function(key) {
-            return app.ui.options[key].value;
+            if (app.ui.options[key] !== undefined)
+                return app.ui.options[key].value;
+            return false;
         },
 
         getTuningValue : function(key) {
-            return app.ui.tuningValues[key].value;
+            if (app.ui.tuningValues[key]) {
+                return app.ui.tuningValues[key].value;
+            }
+            return 0;
         },
-
         //========================================
         // time
 
-        updateWorld : function(t) {
-
-            this.time.ellapsed = t - this.time.worldTime;
-            this.time.worldTime = t;
-            app.log("Time: ");
-            app.log("  world: " + this.time.worldTime.toFixed(2));
-            app.log("  ellapsed: " + this.time.ellapsed.toFixed(2));
-            app.log("  FPS: " + (1 / this.time.ellapsed).toFixed(2));
-
-            app.timespans.update(this.time.ellapsed);
-        },
-
-        getAppTime : function() {
-            this.setAppTime();
-            return this.time.appTime;
-        },
-
-        setAppTime : function() {
-            var date = new Date();
-            var time = date.getTime() - this.startTime;
-            this.time.appTime = time;
-        },
     });
 
     return App;
