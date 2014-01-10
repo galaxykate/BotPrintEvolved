@@ -42,6 +42,7 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
             bot.setMainChassis(this.mainChassis.clone());
 
             this.compileAttachments();
+            return bot;
         },
 
         setBrain : function(dtree) {
@@ -82,7 +83,8 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
                     dtree = this.brain[this.intention];
                 }
 
-                dtree.resetActive();
+                //Deprecated?
+                //dtree.resetActive();
                 dtree.makeDecision();
             } else {
                 $.each(this.actuators, function(index, actuator) {

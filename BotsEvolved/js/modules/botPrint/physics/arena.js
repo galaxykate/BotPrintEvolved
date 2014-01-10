@@ -191,7 +191,6 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
                     g.ellipse(x, y, r, r);
 
                 }
-
                 g.endDraw();
             }
 
