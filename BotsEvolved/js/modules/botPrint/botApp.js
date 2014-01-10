@@ -23,6 +23,10 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             //   this.createAndTestNewBot();
             this.createAndTestManyBots();
 
+            $("*").click(function(evt) {
+                console.log("Clicked ", this);
+            });
+
         },
 
         createAndTestManyBots : function() {
@@ -61,7 +65,8 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.ui.addOption("logConditionTests", false);
             app.ui.addOption("logMutations", true);
             app.ui.addOption("useTimers", true);
-            app.ui.addOption("useSharpie", true);
+            app.ui.addOption("useSharpie", false);
+            app.ui.addOption("useSharpie", false);
 
             ui.addPanel({
                 id : "arena",
@@ -218,14 +223,14 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
                 console.log("Mutating Generations");
                 app.evoSim.runGenerations(2);
                 /*
-                app.currentBot.brain.defaultTree.debugPrint();
-                for (var i = 0; i < 20; i++) {
-                    app.evoSim.mutateGenome(app.currentBot.brain.defaultTree);
-                }
+                 app.currentBot.brain.defaultTree.debugPrint();
+                 for (var i = 0; i < 20; i++) {
+                 app.evoSim.mutateGenome(app.currentBot.brain.defaultTree);
+                 }
 
-                app.evoSim.treeViz.setTree(app.currentBot.brain.defaultTree);
-                app.currentBot.brain.defaultTree.debugPrint();
-                */
+                 app.evoSim.treeViz.setTree(app.currentBot.brain.defaultTree);
+                 app.currentBot.brain.defaultTree.debugPrint();
+                 */
             });
 
             $("#spawnRelatives").click(function() {

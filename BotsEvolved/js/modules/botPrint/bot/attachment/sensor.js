@@ -67,7 +67,7 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
 
         },
     });
-    
+
     Sensor.Timer = Timer;
 
     return Sensor;
