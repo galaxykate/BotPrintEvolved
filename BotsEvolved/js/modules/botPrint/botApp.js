@@ -66,8 +66,10 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.ui.addOption("logMutations", true);
             app.ui.addOption("useTimers", true);
             app.ui.addOption("useSharpie", false);
-            app.ui.addOption("useSharpie", false);
-
+            app.ui.addTuningValue("unicornFluffiness", 100, 1, 700, function(key, value) {
+                // do something on change
+            });
+            
             ui.addPanel({
                 id : "arena",
                 div : $("#arena_panel"),
