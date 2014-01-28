@@ -1,55 +1,73 @@
-#side_buttons {
+.app_size {
+	width: 900px;
+	height: 600px;
+}
+
+#arena_UI {
 	position: absolute;
 	left: 0px;
-	top: 140px;
-	width: 100px;
-	height: 300px;
+	top: 0px;
 }
 
-#ai_overlay {
+#population_panel {
 	position: absolute;
-	top: 10px;
-	left: 810px;
-	z-index: 100;
-	width: 600px;
+	width: 200px;
+	height: 500px;
+	bottom: 0px;
+	right: 0px;
+}
+
+#arena_panel {
+	position: absolute;
+	width: 200px;
+	height: 200px;
+	bottom: 0px;
+}
+
+#testing_panel {
+	position: absolute;
+	width: 200px;
+	height: 200px;
+	top: 0px;
+}
+
+.main_canvas {
+	position: absolute;
+	width: 700px;
+	height: 500px;
+}
+
+#edit_menus {
+	width: 100px;
 	height: 600px;
-	background: rgba(110, 120, 140,.9);
 }
 
-.text_panel {
-	padding: 5px;
-	padding-top: 10px;
+.edit_menus {
+	width: 100px;
+	height: 600px;
 }
 
-.full_canvas {
 
+#switch_modes {
+	position: absolute;
+	right: 0px;
 }
 
-.node circle {
-	fill: #fff;
-	stroke: steelblue;
-	stroke-width: 1.5px;
+#edit {
+	transition: all .2s;
+	-webkit-transform: translate(0px, 0px) rotateX(.01deg) scale3d(1, 1, 1);
 }
 
-.node.active {
-	fill: #FF4444;
+#arena {
+	transition: all .2s;
+	-webkit-transform: translate(0px, 0px) rotateX(0deg) scale3d(1, 1, 1);
 }
 
-.node {
-	fill: #003565;
+#arena.away {
+	-webkit-transform: translate(-600px, 0px) rotateY(70deg);
 }
 
-.link {
-	fill: none;
-}
-
-.link_false {
-
-	stroke: #f22;
-}
-
-.link_true {
-
-	stroke: #2ff;
+#edit.away {
+	-webkit-transform: translate(600px, 0px) rotateY(70deg);
 }
 
