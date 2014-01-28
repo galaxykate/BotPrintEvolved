@@ -38,15 +38,27 @@
 }
 
 #edit_menus {
-	width: 100px;
+
+	position: absolute;
+	top: 40px;
+	right: 0px;
+	width: 200px;
 	height: 600px;
 }
 
-.edit_menus {
-	width: 100px;
+.edit_menu {
+	perspective: 600px;
+	transition: all .2s;
+	overflow: hidden;
+	width: 95%;
 	height: 600px;
 }
 
+.edit_menu.away {
+	overflow: hidden;
+	-webkit-transform: translate(0px, 0px) rotateY(90deg) scale3d(1, 1, 1);
+	height: 600px;
+}
 
 #switch_modes {
 	position: absolute;
@@ -71,3 +83,7 @@
 	-webkit-transform: translate(600px, 0px) rotateY(70deg);
 }
 
+.subpanel {
+	margin: 5px;
+	background: rgba(100, 110, 110, .2);
+}

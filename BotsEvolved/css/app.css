@@ -103,12 +103,12 @@ html, body {
 }
 
 .panel {
+	pointer-events: all;
 	position: absolute;
 	font-size: 70%;
 	border: 2px solid white;
 	background: rgba(200, 210, 210, .8);
-	width: 200px;
-	height: 200px;
+
 	box-shadow: 2px 2px 15px 0px rgba(0, 0, 0, .4);
 	border-radius: 15px;
 	overflow: hidden;

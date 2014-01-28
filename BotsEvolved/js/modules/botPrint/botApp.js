@@ -8,6 +8,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         init : function() {
             var app = this;
             app.paused = false;
+            app.editChassis = false;
 
             app._super("Bots", new Vector(30, 30));
 
@@ -18,6 +19,10 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 
             $("#switch_modes").click(function() {
                 app.toggleMainMode();
+            });
+
+            $(".edit_menu").click(function() {
+                app.toggleEditMode();
             });
 
             app.openEditMode();
@@ -44,7 +49,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 
             // Make wiring for this bot?
             app.currentBot.transform.setTo(0, 0, 0);
-
+            app.openEditChassis();
         },
 
         openArenaMode : function() {
@@ -52,6 +57,29 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             $("#edit").addClass("away");
             $("#arena").removeClass("away");
             this.createAndTestManyBots();
+        },
+
+        //-------------------------------------------------------
+
+        toggleEditMode : function() {
+            console.log("Toggle edit mode " + app.editChassis);
+            if (app.editChassis)
+                app.openEditChassis();
+            else
+                app.openEditParts();
+        },
+
+        openEditParts : function() {
+            app.editChassis = true;
+            $("#chassis_edit").addClass("away");
+            $("#parts_edit").removeClass("away");
+
+        },
+
+        openEditChassis : function() {
+            app.editChassis = false;
+            $("#chassis_edit").removeClass("away");
+            $("#parts_edit").addClass("away");
         },
 
         openLoadScreen : function() {
