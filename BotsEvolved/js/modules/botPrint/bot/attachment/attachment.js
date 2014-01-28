@@ -2,12 +2,15 @@
  * @author Kate Compton
  */
 
-define(["common"], function(common) {'use strict';
+define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use strict';
     var attachmentCount = 0;
     var Attachment = Class.extend({
         init : function() {
             this.idNumber = attachmentCount;
             attachmentCount++;
+            
+            this.pins = [];
+            this.subParts = [];
         },
 
         getForce : function() {
@@ -56,18 +59,51 @@ define(["common"], function(common) {'use strict';
 
         },
 
+		//========================================================
+		// Build subparts
+		
+		compileShape : function() {
+			var r = 10;
+            
+        	this.subParts.push(Graph.makeRectangle(this.attachPoint, (r / 2), r * 3));
+        	
+        	//add pins
+        	// each component gets three snap points randomly distributed
+            // TODO: extend this generic component for both the Baby Orangatang (sp?) and the battery pack
+            for (var i = 0; i < 3; i++) {
+                var pin = new Wiring.Pin({
+                    edge : this.subParts[0].getRandomEdge(),
+                    pct : (i + .5) / 6,
+                    positive : Math.random() > .5,
+                    parent : this,
+                });
+                this.pins.push(pin);
+            }
+		},
+		
         //========================================================
         // Rendering
+        // overloading this to also account for pin shifts
+        // TODO: not entirely happy with this impementation
 
         renderDetails : function(context) {
             var r = 10;
             var g = context.g;
-
+			        	
             g.fill(.7, 1, 1);
             g.stroke(0);
             g.ellipse(0, 0, r * 1.4, r * 1.4);
-            g.rect(0, -r / 2, -r * 3, r);
-
+            //g.rect(0, -r / 2, -r * 3, r);
+            
+            //render subparts
+            $.each(this.subParts, function(index, part){
+            	part.draw(context);
+            });
+            
+            //render pins
+            $.each(this.pins, function(index, pin) {
+                pin.render(context);
+            });
         },
 
         render : function(context) {
@@ -75,12 +111,21 @@ define(["common"], function(common) {'use strict';
 
             g.pushMatrix();
             this.attachPoint.applyTransform(g);
-
+			
             this.renderDetails(context);
 
             g.popMatrix();
 
-        }
+        },
+        
+        //===========================================================
+        // Configure Pins
+		compilePins : function(pinList, filter) {
+            $.each(this.pins, function(index, pin) {
+                if (filter(pin))
+                    pinList.push(pin);
+            });
+        }        
     });
 
     return Attachment;
