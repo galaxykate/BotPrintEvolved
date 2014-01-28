@@ -7,27 +7,98 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
     var BotApp = App.extend({
         init : function() {
             var app = this;
+            app.paused = false;
+            app.editChassis = false;
 
-            var w = 800;
-            var h = 600;
-            this.fullPanelDimensions = new Vector(w - 20, h - 40);
-
-            app._super("Bots", new Vector(w, h));
+            app._super("Bots", new Vector(30, 30));
 
             // app.changeMode("inspector");
-            app.editBot();
             app.arena = new Arena();
 
-            app.changeMode("arena");
+            app.currentBot = new Bot();
 
-            //   this.createAndTestNewBot();
+            $("#switch_modes").click(function() {
+                app.toggleMainMode();
+            });
+
+            $(".edit_menu").click(function() {
+                app.toggleEditMode();
+            });
+
+            app.openEditMode();
+            app.closeLoadScreen();
+        },
+
+        //=====================================================================
+        //=====================================================================
+        //=====================================================================
+        //=====================================================================
+
+        toggleMainMode : function() {
+            console.log("Toggle main mode " + app.editMode);
+            if (app.editMode)
+                app.openArenaMode();
+            else
+                app.openEditMode();
+        },
+
+        openEditMode : function() {
+            app.editMode = true;
+            $("#arena").addClass("away");
+            $("#edit").removeClass("away");
+
+            // Make wiring for this bot?
+            app.currentBot.transform.setTo(0, 0, 0);
+            app.openEditChassis();
+        },
+
+        openArenaMode : function() {
+            app.editMode = false;
+            $("#edit").addClass("away");
+            $("#arena").removeClass("away");
             this.createAndTestManyBots();
+        },
+
+        //-------------------------------------------------------
+
+        toggleEditMode : function() {
+            console.log("Toggle edit mode " + app.editChassis);
+            if (app.editChassis)
+                app.openEditChassis();
+            else
+                app.openEditParts();
+        },
+
+        openEditParts : function() {
+            app.editChassis = true;
+            $("#chassis_edit").addClass("away");
+            $("#parts_edit").removeClass("away");
+
+        },
+
+        openEditChassis : function() {
+            app.editChassis = false;
+            $("#chassis_edit").removeClass("away");
+            $("#parts_edit").addClass("away");
+        },
+
+        openLoadScreen : function() {
+            $("#load_screen").show();
+        },
+
+        closeLoadScreen : function() {
+            $("#load_screen").hide();
 
             $("*").click(function(evt) {
                 console.log("Clicked ", this);
             });
 
         },
+
+        //=====================================================================
+        //=====================================================================
+        //=====================================================================
+        //=====================================================================
 
         createAndTestManyBots : function() {
             var task = "doThing";
@@ -66,6 +137,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.ui.addOption("logMutations", true);
             app.ui.addOption("useTimers", true);
             app.ui.addOption("useSharpie", false);
+<<<<<<< HEAD
             app.ui.addTuningValue("unicornFluffiness", 100, 1, 700, function(key, value) {
                 // do something on change
             });
@@ -136,51 +208,32 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             $.each(this.modes, function(key, mode) {
                 mode.id = key;
             });
+=======
+>>>>>>> 86c48e3c066e25207e7969f8d4bf2c24d4f66911
 
         },
-
         initControls : function() {
 
             // Set all the default UI controls
             app.controls = new UI.Controls($("body"), {
 
                 onKeyPress : {
+
                     d : function(event) {
                         app.ui.devMode.toggle()
                     },
+
+                    space : function() {
+                        app.paused = !app.paused;
+                    }
                 },
 
             });
 
             // Make some of the windows touchable
 
-            var touchRender = app.controls.addTouchable("threeRender", $("#render_panel"));
-            var touchInspector = app.controls.addTouchable("inspector", $("#inspector_canvas"));
+            var touchInspector = app.controls.addTouchable("inspector", $("#edit_canvas"));
             var touchArena = app.controls.addTouchable("arena", $("#arena_canvas"));
-
-            // Camera Controls
-            touchRender.onDrag(function(touchwindow, p) {
-                var cam = app.threeRender.camera;
-                cam.orbit.theta = p.x * -.003;
-                cam.orbit.phi = -p.y * .004 + 1.7;
-                cam.updateOrbit();
-
-            });
-            touchRender.onUp(function(touchwindow, p) {
-                app.pauseSpinning = false;
-            });
-
-            touchRender.onDown(function(touchwindow, p) {
-                app.pauseSpinning = true;
-            });
-
-            touchRender.onScroll(function(touchwindow, delta) {
-                var cam = app.threeRender.camera;
-                cam.orbit.distance *= 1 + .03 * delta;
-                cam.orbit.distance = utilities.constrain(cam.orbit.distance, 300, 1200);
-                cam.updateOrbit();
-
-            });
 
             // Inspector controls
             touchInspector.onDrag(function(touchwindow, p) {
@@ -198,8 +251,8 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             });
 
         },
-
         initUI : function() {
+<<<<<<< HEAD
 
             $("#test_button").click(function() {
                 app.changeMode("arena");
@@ -254,6 +307,9 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
                 height : "600px",
             });
 
+=======
+            var ui = app.ui;
+>>>>>>> 86c48e3c066e25207e7969f8d4bf2c24d4f66911
             // Create the Three scene
             app.threeRender = new threeUtils.ThreeView($("#render_panel"), function() {
                 // update the camera
@@ -280,26 +336,36 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.threeRender.scene.add(app.threeBotMesh);
 
             // These windows all use processing for the drawing
-            app.inspectorWindow = new UI.DrawingWindow("inspector", $("#inspector_canvas"));
+            app.editWindow = new UI.DrawingWindow("edit", $("#edit_canvas"));
             app.arenaWindow = new UI.DrawingWindow("arena", $("#arena_canvas"));
-            app.scoreWindow = new UI.DrawingWindow("score", $("#score_canvas"));
 
-            app.inspectorProcessing = ui.addProcessingWindow(app.inspectorWindow.element, function(g) {
-                app.inspectorWindow.setProcessing(g);
+            app.editorProcessing = ui.addProcessingWindow(app.editWindow.element, function(g) {
+                app.editWindow.setProcessing(g);
 
             }, function(g) {
                 // Updates
 
                 // only do if its the inspector mode
-                if (app.mode === app.modes.inspector) {
+                if (app.editMode) {
                     // Updates
 
-                    app.worldTime.updateTime(g.millis() * .001);
-                    app.currentBot.update(app.time);
+                    if (!app.paused) {
+                        app.worldTime.updateTime(g.millis() * .001);
+                        app.currentBot.update(app.worldTime.ellapsed);
+                    }
 
-                    app.inspectorWindow.render(function(context) {
+                    app.editWindow.render(function(context) {
+
+                        var g = context.g;
+                        g.background(.8);
                         context.useChassisCurves = true;
+                        // Draw the bot
+
+                        g.fill(.8, 1, 1);
+                        g.ellipse(0, 0, 90, 90);
+
                         app.currentBot.render(context);
+
                     });
                 }
             });
@@ -308,44 +374,20 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.arenaProcessing = ui.addProcessingWindow(app.arenaWindow.element, function(g) {
                 app.arenaWindow.setProcessing(g);
             }, function(g) {
-
                 // only do if its the arena mode
-                if (app.mode === app.modes.arena) {
-                    app.worldTime.updateTime(g.millis() * .001);
+                if (!app.editMode) {
 
-                    app.arena.update(app.worldTime.ellapsed);
-
+                    if (!app.paused) {
+                        app.worldTime.updateTime(g.millis() * .001);
+                        app.arena.update(app.worldTime.ellapsed);
+                    }
                     app.arenaWindow.render(function(context) {
+                        context.scale = 3;
                         app.arena.render(context);
                     });
                 }
 
             });
-
-            // Create the arena
-            app.scoreProcessing = ui.addProcessingWindow(app.scoreWindow.element, function(g) {
-                app.scoreWindow.setProcessing(g);
-            }, function(g) {
-
-                // only do if its the arena mode
-                if (app.mode === app.modes.arena && app.evoSim) {
-                    g.background(.8, 1, .3);
-                    app.evoSim.renderScores(g);
-
-                }
-
-            });
-
-        },
-
-        editBot : function(bot) {
-            app.changeMode("inspector");
-
-            if (bot === undefined)
-                bot = new Bot();
-
-            app.currentBot = bot;
-            app.threeBotMesh.add(bot.createThreeMesh());
 
         },
     });
