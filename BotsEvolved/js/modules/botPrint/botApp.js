@@ -89,6 +89,10 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         closeLoadScreen : function() {
             $("#load_screen").hide();
 
+            $("*").click(function(evt) {
+                console.log("Clicked ", this);
+            });
+
         },
 
         //=====================================================================
@@ -175,7 +179,9 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 
         },
         initUI : function() {
+
             var ui = app.ui;
+
             // Create the Three scene
             app.threeRender = new threeUtils.ThreeView($("#render_panel"), function() {
                 // update the camera

@@ -104,6 +104,7 @@ html, body {
 
 .panel {
 	pointer-events: all;
+	font-size: 70%;
 	position: absolute;
 	font-size: 70%;
 	border: 2px solid white;
