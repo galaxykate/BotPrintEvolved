@@ -4,6 +4,9 @@
 
 define(["common"], function(common) {'use strict';
 
+    /**
+     * @class EvoSim
+     */
     var EvoSim = Class.extend({
 
         //createGenome, createIndividual, mutateGenome, crossoverGenomes, evaluatePopulation
@@ -12,7 +15,12 @@ define(["common"], function(common) {'use strict';
 
         },
 
-        // Create a population with random genomes
+        /**
+         * Create a population with random genomes
+         * @method createPopulation
+         * @param {Number} count
+         * @return {Array} population with count members
+         */
         createPopulation : function(count) {
             var population = [];
             console.log("Generate a population of " + count)
@@ -26,6 +34,10 @@ define(["common"], function(common) {'use strict';
             return population;
         },
 
+        /**
+         * @method runGenerations
+         * @param {Number} generationCount
+         */
         runGenerations : function(generationCount) {
             console.log("Run " + generationCount + " generation");
             var evoRun = {
@@ -40,6 +52,15 @@ define(["common"], function(common) {'use strict';
             this.runGeneration(evoRun, population);
         },
 
+        /**
+         * @method runGeneration
+         * @param {Object} evoRun
+         *   @param {Number} crossOverPct (0-1)
+         *   @param {Array} generations
+         *   @param {Number} currentGeneration
+         *   @param {Number generationCount
+         * @param {Array} population
+         */
         runGeneration : function(evoRun, population) {
             var evoSim = this;
             if (evoRun.currentGeneration < evoRun.generationCount) {
