@@ -1,0 +1,8 @@
+{
+    "name" : "The BotPrint API",
+    "description" : "Documentation for the BotPrint project's API",
+    "version": "0.0.1",
+    "options" : {
+        "outdir" : "./docs"
+    }
+}
