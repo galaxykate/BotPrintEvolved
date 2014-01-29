@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>BotsEvolved/js/modules/botPrint/physics/boxDebugDraw.js - The BotPrint API</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title="The BotPrint API"></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.0.1</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/App.html">App</a></li>
+            
+                <li><a href="../classes/BrainEvo.html">BrainEvo</a></li>
+            
+                <li><a href="../classes/Collision.html">Collision</a></li>
+            
+                <li><a href="../classes/Coords.html">Coords</a></li>
+            
+                <li><a href="../classes/Draggable.html">Draggable</a></li>
+            
+                <li><a href="../classes/EvoSim.html">EvoSim</a></li>
+            
+                <li><a href="../classes/Gridster.html">Gridster</a></li>
+            
+                <li><a href="../classes/Time.html">Time</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: BotsEvolved/js/modules/botPrint/physics/boxDebugDraw.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ * @author Kate Compton
+ * Modified from https://github.com/kripken/box2d.js/
+ */
+define([&quot;jQuery&quot;, &quot;box2D&quot;, &quot;common&quot;], function(JQUERY, Box2D, common) {
+
+    function drawAxes(ctx) {
+        ctx.strokeStyle = &#x27;rgb(192,0,0)&#x27;;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(1, 0);
+        ctx.stroke();
+        ctx.strokeStyle = &#x27;rgb(0,192,0)&#x27;;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(0, 1);
+        ctx.stroke();
+    }
+
+    function setColorFromDebugDrawCallback(color) {
+        var col = Box2D.wrapPointer(color, b2Color);
+        var red = (col.get_r() * 255) | 0;
+        var green = (col.get_g() * 255) | 0;
+        var blue = (col.get_b() * 255) | 0;
+        var colStr = red + &quot;,&quot; + green + &quot;,&quot; + blue;
+        context.fillStyle = &quot;rgba(&quot; + colStr + &quot;,0.5)&quot;;
+        context.strokeStyle = &quot;rgb(&quot; + colStr + &quot;)&quot;;
+    }
+
+    function drawSegment(vert1, vert2) {
+        var vert1V = Box2D.wrapPointer(vert1, b2Vec2);
+        var vert2V = Box2D.wrapPointer(vert2, b2Vec2);
+        context.beginPath();
+        context.moveTo(vert1V.get_x(), vert1V.get_y());
+        context.lineTo(vert2V.get_x(), vert2V.get_y());
+        context.stroke();
+    }
+
+    function drawPolygon(vertices, vertexCount, fill) {
+        context.beginPath();
+        for ( tmpI = 0; tmpI &lt; vertexCount; tmpI++) {
+            var vert = Box2D.wrapPointer(vertices + (tmpI * 8), b2Vec2);
+            if (tmpI == 0)
+                context.moveTo(vert.get_x(), vert.get_y());
+            else
+                context.lineTo(vert.get_x(), vert.get_y());
+        }
+        context.closePath();
+        if (fill)
+            context.fill();
+        context.stroke();
+    }
+
+    function drawCircle(center, radius, axis, fill) {
+        var centerV = Box2D.wrapPointer(center, b2Vec2);
+        var axisV = Box2D.wrapPointer(axis, b2Vec2);
+
+        context.beginPath();
+        context.arc(centerV.get_x(), centerV.get_y(), radius, 0, 2 * Math.PI, false);
+        if (fill)
+            context.fill();
+        context.stroke();
+
+        if (fill) {
+            //render axis marker
+            var vert2V = copyVec2(centerV);
+            vert2V.op_add(scaledVec2(axisV, radius));
+            context.beginPath();
+            context.moveTo(centerV.get_x(), centerV.get_y());
+            context.lineTo(vert2V.get_x(), vert2V.get_y());
+            context.stroke();
+        }
+    }
+
+    function drawTransform(transform) {
+        var trans = Box2D.wrapPointer(transform, b2Transform);
+        var pos = trans.get_p();
+        var rot = trans.get_q();
+
+        context.save();
+        context.translate(pos.get_x(), pos.get_y());
+        context.scale(0.5, 0.5);
+        context.rotate(rot.GetAngle());
+        context.lineWidth *= 2;
+        drawAxes(context);
+        context.restore();
+    }
+
+    function getCanvasDebugDraw() {
+        var debugDraw = new Box2D.b2Draw();
+
+        Box2D.customizeVTable(debugDraw, [{
+            original : Box2D.b2Draw.prototype.DrawSegment,
+            replacement : function(ths, vert1, vert2, color) {
+                setColorFromDebugDrawCallback(color);
+                drawSegment(vert1, vert2);
+            }
+        }]);
+
+        Box2D.customizeVTable(debugDraw, [{
+            original : Box2D.b2Draw.prototype.DrawPolygon,
+            replacement : function(ths, vertices, vertexCount, color) {
+                setColorFromDebugDrawCallback(color);
+                drawPolygon(vertices, vertexCount, false);
+            }
+        }]);
+
+        Box2D.customizeVTable(debugDraw, [{
+            original : Box2D.b2Draw.prototype.DrawSolidPolygon,
+            replacement : function(ths, vertices, vertexCount, color) {
+                setColorFromDebugDrawCallback(color);
+                drawPolygon(vertices, vertexCount, true);
+            }
+        }]);
+
+        Box2D.customizeVTable(debugDraw, [{
+            original : Box2D.b2Draw.prototype.DrawCircle,
+            replacement : function(ths, center, radius, color) {
+                setColorFromDebugDrawCallback(color);
+                var dummyAxis = b2Vec2(0, 0);
+                drawCircle(center, radius, dummyAxis, false);
+            }
+        }]);
+
+        Box2D.customizeVTable(debugDraw, [{
+            original : Box2D.b2Draw.prototype.DrawSolidCircle,
+            replacement : function(ths, center, radius, axis, color) {
+                setColorFromDebugDrawCallback(color);
+                drawCircle(center, radius, axis, true);
+            }
+        }]);
+
+        Box2D.customizeVTable(debugDraw, [{
+            original : Box2D.b2Draw.prototype.DrawTransform,
+            replacement : function(ths, transform) {
+                drawTransform(transform);
+            }
+        }]);
+
+        return debugDraw;
+    }
+
+}); 
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

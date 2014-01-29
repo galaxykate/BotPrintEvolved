@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>BotsEvolved/js/modules/shared/ui/uiUtils.js - The BotPrint API</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title="The BotPrint API"></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.0.1</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/App.html">App</a></li>
+            
+                <li><a href="../classes/BrainEvo.html">BrainEvo</a></li>
+            
+                <li><a href="../classes/Collision.html">Collision</a></li>
+            
+                <li><a href="../classes/Coords.html">Coords</a></li>
+            
+                <li><a href="../classes/Draggable.html">Draggable</a></li>
+            
+                <li><a href="../classes/EvoSim.html">EvoSim</a></li>
+            
+                <li><a href="../classes/Gridster.html">Gridster</a></li>
+            
+                <li><a href="../classes/Time.html">Time</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: BotsEvolved/js/modules/shared/ui/uiUtils.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ * @author Kate Compton
+ */
+/**
+ * @author Kate Compton
+ */
+
+var prefix = &quot;modules/shared/ui/&quot;;
+define([&quot;common&quot;, &quot;processing&quot;, prefix + &quot;panel&quot;, prefix + &quot;controls&quot;, prefix + &quot;popup&quot;, prefix + &quot;mode&quot;, prefix + &quot;output&quot;, prefix + &quot;window&quot;], function(common, Processing, Panel, Controls, Popup, Mode, Output, DrawingWindow) {&#x27;use strict&#x27;;
+
+    var addSlider = function(parent, key, defaultValue, minValue, maxValue, onChange) {
+
+        // Create an empty slider div
+        var optionDiv = $(&quot;&lt;div/&gt;&quot;, {
+        });
+        optionDiv.css({
+            &quot;pointer-events&quot; : &quot;auto&quot;
+        });
+        parent.append(optionDiv);
+
+        var slider = $(&#x27;&lt;div /&gt;&#x27;, {
+            id : &#x27;slider_&#x27; + key,
+            class : &quot;tuning_slider&quot;,
+            value : key
+        });
+
+        var step = maxValue - minValue;
+        if (step &lt; 10)
+            step = .1;
+        else
+            step = 1;
+
+      
+        slider.appendTo(optionDiv);
+        slider.slider({
+            range : &quot;min&quot;,
+            value : defaultValue,
+            min : minValue,
+            max : maxValue,
+            step : step,
+            slide : function(event, ui) {
+                $(&quot;#&quot; + key + &quot;amt&quot;).text(ui.value);
+                console.log(&quot;Slide &quot; + ui.value);
+                if (onChange !== undefined) {
+                    onChange(key, ui.value);
+                }
+            }
+        });
+
+        // Create a lable
+        $(&#x27;&lt;label /&gt;&#x27;, {
+            &#x27;for&#x27; : &#x27;slider_&#x27; + key,
+            text : key + &quot;: &quot;
+        }).appendTo(optionDiv);
+
+        // Create a lable
+        $(&#x27;&lt;span /&gt;&#x27;, {
+            id : key + &quot;amt&quot;,
+            text : defaultValue
+        }).appendTo(optionDiv);
+
+        return slider;
+    };
+    //==============================================================
+    //==============================================================
+    //==============================================================
+    // UI, mode switching, panel opening/closing
+
+    var UI = Class.extend({
+
+        init : function(context) {
+            this.modes = {
+
+            };
+            this.panels = {};
+            this.options = {};
+            this.tuningValues = {};
+            this.popupManagers = {};
+
+            $.extend(this, context);
+
+            $.each(this.modes, function(index, mode) {
+                mode.enabled = false;
+            });
+
+        },
+
+        addProcessingWindow : function(div, setupFunc, drawFunc) {
+
+            var canvas = div.get(0);
+
+            var processingInstance = new Processing(canvas, function sketchProc(processing) {
+                // Setup
+                processing.size(div.width(), div.height());
+
+                setupFunc(processing);
+
+                // Override draw function, by default it will be called 60 times per second
+                processing.draw = function() {
+                    drawFunc(processing);
+                }
+            });
+
+        },
+
+        addPanel : function(options) {
+            this.panels[options.id] = new Panel(options);
+        },
+
+        getPanels : function(names) {
+            var ui = this;
+            var panels = _.map(names, function(name) {
+                return ui.panels[name];
+            });
+
+            console.log(&quot;Get Panels &quot; + names + &quot; -&gt; &quot; + panels);
+            return panels;
+        },
+
+        addDevUI : function(parentDiv) {
+            console.log(&quot;Add Dev UI&quot;);
+            var ui = this;
+            var w = 170;
+            var h = 300;
+            var offset = 250;
+            var spacing = 24;
+
+            // Create divs for the panels
+            if (parentDiv !== undefined) {
+                var slidersDiv = $(&quot;&lt;div/&gt;&quot;, {
+                    id : &quot;dev_sliders&quot;,
+                    &quot;class&quot; : &quot;panel text_panel&quot;
+                });
+
+                var optionsDiv = $(&quot;&lt;div/&gt;&quot;, {
+                    id : &quot;dev_options&quot;,
+                    &quot;class&quot; : &quot;panel text_panel&quot;
+                });
+
+                var outputDiv = $(&quot;&lt;div/&gt;&quot;, {
+                    id : &quot;dev_output&quot;,
+                    &quot;class&quot; : &quot;panel text_panel&quot;
+                });
+
+                parentDiv.append(slidersDiv);
+                parentDiv.append(optionsDiv);
+                parentDiv.append(outputDiv);
+
+                outputDiv.append($(&quot;&lt;div/&gt;&quot;, {
+                    id : &quot;debugOutput&quot;,
+                }));
+                outputDiv.append($(&quot;&lt;div/&gt;&quot;, {
+                    id : &quot;moveOutput&quot;,
+                }));
+
+                outputDiv.append($(&quot;&lt;div/&gt;&quot;, {
+                    id : &quot;modeOutput&quot;,
+                }));
+            }
+
+            $.extend(this.panels, {
+                devOutput : new Panel({
+                    title : &quot;Dev Output&quot;,
+                    div : $(&quot;#dev_output&quot;),
+                    dimensions : new Vector(w, h),
+                    side : &quot;top&quot;,
+                    sidePos : (w + spacing) * 2 + offset,
+                }),
+
+                devOptions : new Panel({
+                    title : &quot;Dev Options&quot;,
+                    div : $(&quot;#dev_options&quot;),
+                    dimensions : new Vector(w, h),
+                    side : &quot;top&quot;,
+                    sidePos : (w + spacing) * 0 + offset,
+                }),
+
+                devSliders : new Panel({
+                    title : &quot;Dev Tuning Values&quot;,
+                    div : $(&quot;#dev_sliders&quot;),
+                    dimensions : new Vector(w, h),
+                    side : &quot;top&quot;,
+                    sidePos : (w + spacing) * 1 + offset,
+                }),
+
+            });
+
+            this.devMode = new Mode({
+
+                title : &quot;Dev Mode&quot;,
+                description : &quot;For Dev Eyes Only&quot;,
+                panels : ui.getPanels([&quot;devOptions&quot;, &quot;devSliders&quot;, &quot;devOutput&quot;]),
+            });
+
+            this.moveOutput = new Output($(&quot;#moveOutput&quot;));
+            this.modeOutput = new Output($(&quot;#modeOutput&quot;));
+            this.output = new Output($(&quot;#debugOutput&quot;));
+        },
+
+        addOption : function(key, defaultValue, onChange) {
+            var ui = this;
+
+            var optionDiv = $(&quot;&lt;div/&gt;&quot;, {
+
+            });
+
+            var parent = this.panels.devOptions.div;
+            parent.append(optionDiv);
+
+            var checkbox = $(&#x27;&lt;input /&gt;&#x27;, {
+                type : &#x27;checkbox&#x27;,
+                id : &#x27;cb_&#x27; + key,
+                value : key
+            });
+
+            checkbox.appendTo(optionDiv);
+
+            $(&#x27;&lt;label /&gt;&#x27;, {
+                &#x27;for&#x27; : &#x27;cb&#x27; + key,
+                text : key
+            }).appendTo(optionDiv);
+
+            ui.options[key] = {
+                value : defaultValue,
+                checkbox : checkbox,
+            };
+            checkbox.prop(&#x27;checked&#x27;, defaultValue);
+
+            checkbox.click(function() {
+                ui.options[key].value = checkbox.prop(&#x27;checked&#x27;);
+                console.log(key + &quot;: &quot; + ui.options[key].value);
+                if (onChange !== undefined) {
+                    onChange(key, ui.options[key].value);
+                }
+            });
+
+        },
+
+        addTuningValue : function(key, defaultValue, minValue, maxValue, onChange) {
+            var ui = this;
+            var parent = this.panels.devSliders.div;
+            var uiOnChange = function(key, value) {
+                ui.tuningValues[key].value = value;
+                onChange(key, value);
+            }
+            var slider = addSlider(parent, key, defaultValue, minValue, maxValue, uiOnChange);
+
+            ui.tuningValues[key] = {
+                value : defaultValue,
+                slider : slider,
+            };
+
+        },
+
+        addPopupManager : function(id, manager) {
+            this.popupManagers[id] = manager;
+            return manager;
+        },
+
+        createSlider : function() {
+
+        }
+    });
+
+    UI.Controls = Controls;
+    UI.DrawingWindow = DrawingWindow;
+    UI.Panel = Panel;
+    UI.Popup = Popup;
+    UI.Mode = Mode;
+
+    return UI;
+});
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>
