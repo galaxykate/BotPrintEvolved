@@ -120,7 +120,7 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
             this.attachPoints = [];
 
             // Weights and attachment types: there should be the same number in each array, please!
-            var weights = [.3, 1];
+            var weights = [.3, .6];
             var attachmentTypes = [Attachment.Sensor, Attachment.Actuator];
 
             if (app.getOption("useTimers")) {
@@ -131,8 +131,12 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
                 attachmentTypes.push(Attachment.Actuator.Sharpie), weights.push(1);
             }
 
+            attachmentTypes.push(Attachment.Actuator.DiscoLight), weights.push(1);
+
+
+
             // How many attachments to generate
-            var count = 15;
+            var count = 4;
 
             for (var i = 0; i < count; i++) {
                 // Create some random point around the path to attach this to.
