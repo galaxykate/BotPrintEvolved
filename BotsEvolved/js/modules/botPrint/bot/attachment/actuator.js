@@ -117,12 +117,17 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
         },
     });
 
+<<<<<<< HEAD
 //Superfun is an actuator that is similar to the sharpie but it paints randomly colored squares. It is also grey colored. 
 	var SuperFun = Actuator.extend({
+=======
+    var DiscoLight = Actuator.extend({
+>>>>>>> master
 
         init : function() {
             this._super();
 
+<<<<<<< HEAD
             this.stamp = "";
             if (Math.random() > .999)
                 this.stamp = "Superfun";
@@ -130,6 +135,43 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
 
             this.color = new common.KColor(0.7, Math.random(1), 1);
         },
+=======
+            this.color = new common.KColor(Math.random(), 1, 1);
+            this.blinkOffset = 0;
+        },
+
+        update : function(time) {
+            this.blinkOffset = time.total;
+        },
+
+        getForce : function() {
+            return undefined;
+        },
+
+        renderDetails : function(context) {
+            var g = context.g;
+            var r = 10
+            g.noStroke();
+            g.fill(0, 0, 0, .3);
+            g.ellipse(0, 0, 25, 25);
+            g.ellipse(0, 0, 15, 15);
+            
+            for (var i = 0; i < 10; i++) {
+                this.color.fill(g, i*.1, -.5);
+                var r = 30 * utilities.noise(5*i + this.blinkOffset);
+                var theta = i + this.blinkOffset;
+                g.ellipse(r * Math.cos(theta), r * Math.sin(theta), 6, 6);
+
+            }
+
+            g.text(this.idNumber, -3, 5);
+
+        },
+    });
+
+    Actuator.Sharpie = Sharpie;
+    Actuator.DiscoLight = DiscoLight;
+>>>>>>> master
 
         update : function(time) {
             var marker = this;

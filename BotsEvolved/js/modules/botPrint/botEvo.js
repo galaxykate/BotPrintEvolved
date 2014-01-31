@@ -20,7 +20,17 @@ define(["common", "evo", "./ai/dtree"], function(common, EvoSim, DTree) {'use st
         return val;
     };
 
+    /**
+     * @class BrainEvo
+     * @extends EvoSim
+     */
     var BrainEvo = EvoSim.extend({
+        /**
+         * @method init
+         * @param bot
+         * @param task
+         * @param arena
+         */
         init : function(bot, task, arena) {
             this._super();
             this.genomeLength = 30;
@@ -38,6 +48,10 @@ define(["common", "evo", "./ai/dtree"], function(common, EvoSim, DTree) {'use st
 
         },
 
+        /**
+         * @method createGenome
+         * @return {DTree} dtree
+         */
         createGenome : function() {
             var brainEvo = this;
 
@@ -64,15 +78,27 @@ define(["common", "evo", "./ai/dtree"], function(common, EvoSim, DTree) {'use st
             return dtree;
         },
 
+        /**
+         * @method generateAction
+         * @return {Action}
+         */
         generateAction : function() {
             return new DTree.Action(utilities.getRandom(this.actuators), Math.random());
         },
 
+        /**
+         * @method generateCondition
+         * @return {Condition}
+         */
         generateCondition : function() {
             return new DTree.Condition(utilities.getRandom(this.sensors), utilities.getRandom(DTree.comparators), Math.random());
 
         },
 
+        /**
+         * @method createIndividual
+         * @param genome
+         */
         createIndividual : function(genome) {
             console.log("genome", genome);
             //    var g2 = genome.cloneBranch();
@@ -83,7 +109,13 @@ define(["common", "evo", "./ai/dtree"], function(common, EvoSim, DTree) {'use st
 
         },
 
-        // Mutate a condition with either major or minor changes
+        /**
+         * Mutate a condition with either major or minor changes
+         * @method mutateCondition
+         * @param node
+         * @param {Boolean} majorChange
+         * @param mutationStrength
+         */
         mutateCondition : function(node, majorChange, mutationStrength) {
 
             var seed = Math.random();
@@ -112,6 +144,12 @@ define(["common", "evo", "./ai/dtree"], function(common, EvoSim, DTree) {'use st
 
         },
 
+        /**
+         * @method mutateAction
+         * @param node
+         * @param {Boolean} majorChange
+         * @param mutationStrength
+         */
         mutateAction : function(node, majorChange, mutationStrength) {
             var seed = Math.random();
 
@@ -142,6 +180,11 @@ define(["common", "evo", "./ai/dtree"], function(common, EvoSim, DTree) {'use st
             }
         },
 
+        /**
+         * @method mutateNode
+         * @param node
+         * @param mutationIntensity
+         */
         mutateNode : function(node, mutationIntensity) {
 
             mutationLog("MUTATE NODE " + node.idNumber);
@@ -154,6 +197,10 @@ define(["common", "evo", "./ai/dtree"], function(common, EvoSim, DTree) {'use st
             }
         },
 
+        /**
+         * @method mutateGenome
+         * @param genome
+         */
         mutateGenome : function(genome) {
             mutLog = "";
             var tree = genome;
@@ -183,13 +230,24 @@ define(["common", "evo", "./ai/dtree"], function(common, EvoSim, DTree) {'use st
 */
         },
 
+        /**
+         * @method crossoverGenomes
+         * @param g0
+         * @param g1
+         */
         crossoverGenomes : function(g0, g1) {
 
         },
 
-        //----------------
-        // Test individuals one at a time
-        // evaluatePopulation returns an array of objects{individual:obj, avgScore:num}
+
+        /**
+         * Test individuals one at a time
+         * @method evaluatePopulation
+         * @async
+         * @param population
+         * @param {Function} callback
+         * @return Array of Objects, with properties individual:Object and avgScore:Number
+         */
 
         evaluatePopulation : function(population, callback) {
             var evoSim = this;
@@ -260,6 +318,10 @@ define(["common", "evo", "./ai/dtree"], function(common, EvoSim, DTree) {'use st
 
         },
 
+        /**
+         * @method renderScores
+         * @param g
+         */
         renderScores : function(g) {
             //Keep track of top, min, avg
             g.colorMode(g.HSB, 1);
