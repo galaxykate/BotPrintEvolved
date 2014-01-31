@@ -67,8 +67,37 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
 
         },
     });
+	
+	
+    var ColorLerper = Sensor.extend({
+        init : function() {
+            this._super();
+            this.id = "ColorLerper" + this.idNumber;
+        },
+
+        update : function(time) {
+
+            this.senseValue = (time.total%50)/50;
+
+        },
+		
+		renderDetails: function(context){
+			var g = context.g;
+            var r = 10;
+            g.strokeWeight(1);
+            g.fill(this.senseValue, 1, .85);
+            g.stroke(0);
+            g.ellipse(0, 0, r * 1.2, r * 1.2);
+
+            g.fill(1, 0, 1, .7);
+			//displays the hue at the current time on the sensor
+			g.textSize(9);
+            g.text(this.senseValue.toFixed(2), -9, 4);
+		},
+    });
 
     Sensor.Timer = Timer;
+	Sensor.ColorLerper = ColorLerper;
 
     return Sensor;
 });
