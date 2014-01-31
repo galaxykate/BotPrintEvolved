@@ -23,7 +23,7 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
             //  this.senseValue = utilities.noise(p.x, p.y);
             var worldPos = this.getWorldTransform();
             var value = app.arena.getLightMapAt(worldPos);
-            this.senseValue = value;
+            this.senseValue = value || 0;
 
             // this.senseValue *= Math.pow(this.decay, time.ellapsed) - .1 * this.decay * time.ellapsed;
             // this.senseValue = utilities.constrain(this.senseValue, 0, 1);
@@ -76,8 +76,8 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
         },
 
         update : function(time) {
-
             this.senseValue = (time.total%50)/50;
+			
 
         },
 		
