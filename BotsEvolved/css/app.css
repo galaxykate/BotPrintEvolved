@@ -101,15 +101,18 @@ html, body {
 	border-radius: 15px;
 	transition: all .3s ease-in-out;
 }
-<<<<<<< HEAD
-.panel {
-	pointer-events: all;
-	font-size: 70%;
-=======
 
 .panel {
 	pointer-events: all;
->>>>>>> 86c48e3c066e25207e7969f8d4bf2c24d4f66911
+	font-size: 70%;
+
+.panel {
+	pointer-events: all;
+
+
+.panel {
+	pointer-events: all;
+	font-size: 70%;
 	position: absolute;
 	font-size: 70%;
 	border: 2px solid white;

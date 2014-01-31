@@ -20,14 +20,14 @@
 #arena_panel {
 	position: absolute;
 	width: 200px;
-	height: 200px;
+	height: 100px;
 	bottom: 0px;
 }
 
 #testing_panel {
 	position: absolute;
 	width: 200px;
-	height: 200px;
+	height: 100px;
 	top: 0px;
 }
 

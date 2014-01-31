@@ -137,7 +137,6 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.ui.addOption("logMutations", true);
             app.ui.addOption("useTimers", true);
             app.ui.addOption("useSharpie", false);
-<<<<<<< HEAD
             app.ui.addTuningValue("unicornFluffiness", 100, 1, 700, function(key, value) {
                 // do something on change
             });
@@ -208,9 +207,6 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             $.each(this.modes, function(key, mode) {
                 mode.id = key;
             });
-=======
->>>>>>> 86c48e3c066e25207e7969f8d4bf2c24d4f66911
-
         },
         initControls : function() {
 
@@ -252,8 +248,6 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 
         },
         initUI : function() {
-<<<<<<< HEAD
-
             $("#test_button").click(function() {
                 app.changeMode("arena");
             });
@@ -272,44 +266,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
                 console.log("defaultTree after: ", app.currentBot.brain.defaultTree)
 
             });
-
-            $("#mutateBig").click(function() {
-                console.log("-------------------------- ");
-                console.log("Mutating Generations");
-                app.evoSim.runGenerations(2);
-                /*
-                 app.currentBot.brain.defaultTree.debugPrint();
-                 for (var i = 0; i < 20; i++) {
-                 app.evoSim.mutateGenome(app.currentBot.brain.defaultTree);
-                 }
-
-                 app.evoSim.treeViz.setTree(app.currentBot.brain.defaultTree);
-                 app.currentBot.brain.defaultTree.debugPrint();
-                 */
-            });
-
-            $("#spawnRelatives").click(function() {
-                console.log("Spawn relatives");
-                var bots = [];
-                // Create relatives
-                console.log(app.currentBot.clone());
-                for (var i = 0; i < 10; i++) {
-                    bots[i] = app.currentBot.clone();
-                    // bots[i].mutate(.7);
-                }
-                app.arena.addPopulation(bots);
-            });
-
-            var ui = this.ui;
-
-            $(".full_canvas").css({
-                width : "800px",
-                height : "600px",
-            });
-
-=======
             var ui = app.ui;
->>>>>>> 86c48e3c066e25207e7969f8d4bf2c24d4f66911
             // Create the Three scene
             app.threeRender = new threeUtils.ThreeView($("#render_panel"), function() {
                 // update the camera
