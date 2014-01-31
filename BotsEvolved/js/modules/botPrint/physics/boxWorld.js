@@ -51,19 +51,21 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
         setTo : function(b2D, x, y) {
             b2D.set_x(x / this.scale);
             b2D.set_y(y / this.scale);
-
         },
+        
         readIntoTransform : function(body, transform) {
             var bpos = body.GetPosition();
             transform.rotation = body.GetAngle();
             transform.setTo(bpos.get_x() * this.scale, bpos.get_y() * this.scale);
         },
+        
         toB2Vec : function(p) {
             if (arguments.length === 1)
                 return new b2Vec2(arguments[0].x / this.scale, arguments[0].y / this.scale);
             if (arguments.length === 2)
                 return new b2Vec2(arguments[0] / this.scale, arguments[1] / this.scale);
         },
+        
         setBodyPosition : function(bodyDef, p) {
             bodyDef.set_position(this.toB2Vec(p));
         },

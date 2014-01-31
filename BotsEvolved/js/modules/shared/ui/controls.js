@@ -30,19 +30,19 @@ define(["common", "mousewheel"], function(common, MOUSEWHEEL) {'use strict';
             this.onScrollFxns = [];
             this.onUpFxns = [];
             this.onMoveFxns = [];
+            this.onDblTapFxns = [];
+            this.onTapFxns = [];
 
             // Record which div is being activated in the touch,
             selector.mousedown(function(event) {
                 tw.activate();
-                console.log("MOUSE DOWN");
                 event.preventDefault();
 
             });
 
             selector.mouseup(function(event) {
                 tw.deactivate();
-                console.log("MOUSE UP");
-                event.preventDefault();
+                 event.preventDefault();
             });
 
             selector.mousemove(function(event) {
@@ -58,6 +58,20 @@ define(["common", "mousewheel"], function(common, MOUSEWHEEL) {'use strict';
 
             selector.mouseleave(function(event) {
                 tw.controls.exitTouchable(tw);
+            });
+
+            selector.click(function(event) {
+
+                $.each(tw.onTapFxns, function(index, f) {
+                    f(tw, tw.localPos);
+                });
+            });
+
+            selector.dblclick(function(event) {
+
+                $.each(tw.onDblTapFxns, function(index, f) {
+                    f(tw, tw.localPos);
+                });
             });
 
             selector.append("something");
@@ -82,6 +96,13 @@ define(["common", "mousewheel"], function(common, MOUSEWHEEL) {'use strict';
 
         onUp : function(fxn) {
             this.onUpFxns.push(fxn);
+        },
+
+        onTap : function(fxn) {
+            this.onTapFxns.push(fxn);
+        },
+        onDblTap : function(fxn) {
+            this.onDblTapFxns.push(fxn);
         },
 
         setLocalPos : function(screenPos) {
@@ -119,7 +140,6 @@ define(["common", "mousewheel"], function(common, MOUSEWHEEL) {'use strict';
             $.each(this.onDownFxns, function(index, f) {
                 f(tw, tw.localPos);
             });
-            console.log(tw + "-down:" + this.localPos);
         },
 
         touchMove : function(mouseDown, screenPos) {
@@ -143,6 +163,20 @@ define(["common", "mousewheel"], function(common, MOUSEWHEEL) {'use strict';
         touchScroll : function(delta) {
             var tw = this;
             $.each(this.onScrollFxns, function(index, f) {
+                f(tw, delta);
+            });
+        },
+
+        touchTap : function(delta) {
+            var tw = this;
+            $.each(this.onTapFxns, function(index, f) {
+                f(tw, delta);
+            });
+        },
+
+        touchDblTap : function(delta) {
+            var tw = this;
+            $.each(this.onDblTapFxns, function(index, f) {
                 f(tw, delta);
             });
         },
@@ -292,8 +326,7 @@ define(["common", "mousewheel"], function(common, MOUSEWHEEL) {'use strict';
             var timeDown = touch.lastUp.time - touch.lastDown.time;
 
             if (timeDown < 200 && touch.draggedDistance < 10) {
-                console.log("Tap");
-                controls.onTap(touch);
+                 controls.onTap(touch);
             }
 
             // Set to the local position of the active element
