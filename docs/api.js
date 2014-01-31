@@ -8,7 +8,10 @@ YUI.add("yuidoc-meta", function(Y) {
         "Draggable",
         "EvoSim",
         "Gridster",
-        "Time"
+        "Time",
+        "Tree",
+        "Utilities",
+        "Vector"
     ],
     "modules": [],
     "allModules": []

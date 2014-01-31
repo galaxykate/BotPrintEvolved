@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>App - The BotPrint API</title>
+    <title>Tree - The BotPrint API</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -102,7 +102,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>App Class</h1>
+                        <h1>Tree Class</h1>
 <div class="box meta">
     
 
@@ -110,7 +110,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/BotsEvolved_js_app.js.html#l53"><code>BotsEvolved&#x2F;js&#x2F;app.js:53</code></a>
+            Defined in: <a href="../files/BotsEvolved_js_modules_shared_common_tree.js.html#l8"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;shared&#x2F;common&#x2F;tree.js:8</code></a>
         </div>
     
 
@@ -150,28 +150,28 @@
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
-                                <a href="#method_changeMode">changeMode</a>
+                                <a href="#method_compileNodes">compileNodes</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_getOption">getOption</a>
+                                <a href="#method_debugPrint">debugPrint</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_getPositionRelativeTo">getPositionRelativeTo</a>
+                                <a href="#method_generateTree">generateTree</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_getTuningValue">getTuningValue</a>
+                                <a href="#method_getChildren">getChildren</a>
 
                                 
                                 
@@ -185,28 +185,35 @@
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_log">log</a>
+                                <a href="#method_reduceDown">reduceDown</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_modeLog">modeLog</a>
+                                <a href="#method_removeChildren">removeChildren</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_moveLog">moveLog</a>
+                                <a href="#method_removeParent">removeParent</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_start">start</a>
+                                <a href="#method_setParent">setParent</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_toString">toString</a>
 
                                 
                                 
@@ -228,8 +235,8 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_changeMode" class="method item">
-    <h3 class="name"><code>changeMode</code></h3>
+                    <div id="method_compileNodes" class="method item">
+    <h3 class="name"><code>compileNodes</code></h3>
 
     
         <div class="args">
@@ -237,94 +244,13 @@
             
                 <li class="arg">
                     
-                        <code>modeName</code>
+                        <code>list</code>
                     
                 </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/BotsEvolved_js_app.js.html#l108"><code>BotsEvolved&#x2F;js&#x2F;app.js:108</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">modeName</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_getOption" class="method item">
-    <h3 class="name"><code>getOption</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
             
                 <li class="arg">
                     
-                        <code>key</code>
+                        <code>query</code>
                     
                 </li>
             
@@ -361,7 +287,7 @@
             
         
         
-        <a href="../files/BotsEvolved_js_app.js.html#l187"><code>BotsEvolved&#x2F;js&#x2F;app.js:187</code></a>
+        <a href="../files/BotsEvolved_js_modules_shared_common_tree.js.html#l24"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;shared&#x2F;common&#x2F;tree.js:24</code></a>
         
         </p>
 
@@ -383,8 +309,23 @@
             
                 <li class="param">
                     
-                        <code class="param-name">key</code>
-                        <span class="type">Object</span>
+                        <code class="param-name">list</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">query</code>
+                        <span class="type">Function</span>
                     
 
                     
@@ -407,7 +348,7 @@
             <div class="returns-description">
                 
                     
-                    <p>Returns the option, or false if undefined</p>
+                    <p>Pushes all nodes that return true to the query onto the list.</p>
 
                 
             </div>
@@ -418,667 +359,8 @@
 </div>
 
                 
-                    <div id="method_getPositionRelativeTo" class="method item">
-    <h3 class="name"><code>getPositionRelativeTo</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>div</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>pos</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type"><a href="../classes/Vector.html" class="crosslink">Vector</a></span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/BotsEvolved_js_app.js.html#l141"><code>BotsEvolved&#x2F;js&#x2F;app.js:141</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">div</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">pos</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                        <ul class="params-list">
-                            
-                            <li class="param">
-                                
-                                    <code class="param-name">x</code>
-                                    <span class="type">Number</span>
-                                
-
-                                <div class="param-description">
-                                    
-                                </div>
-
-                                
-                            </li>
-                            
-                            <li class="param">
-                                
-                                    <code class="param-name">y</code>
-                                    <span class="type">Number</span>
-                                
-
-                                <div class="param-description">
-                                    
-                                </div>
-
-                                
-                            </li>
-                            
-                        </ul>
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type"><a href="../classes/Vector.html" class="crosslink">Vector</a></span>:
-                    
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_getTuningValue" class="method item">
-    <h3 class="name"><code>getTuningValue</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>key</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/BotsEvolved_js_app.js.html#l198"><code>BotsEvolved&#x2F;js&#x2F;app.js:198</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">key</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                    <p>Returns the tuning value or 0 if undefined</p>
-
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_init" class="method item">
-    <h3 class="name"><code>init</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>name</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>dimensions</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/BotsEvolved_js_app.js.html#l58"><code>BotsEvolved&#x2F;js&#x2F;app.js:58</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">name</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">dimensions</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                        <ul class="params-list">
-                            
-                            <li class="param">
-                                
-                                    <code class="param-name">x</code>
-                                    <span class="type">Number</span>
-                                
-
-                                <div class="param-description">
-                                    
-                                </div>
-
-                                
-                            </li>
-                            
-                            <li class="param">
-                                
-                                    <code class="param-name">y</code>
-                                    <span class="type">Number</span>
-                                
-
-                                <div class="param-description">
-                                    
-                                </div>
-
-                                
-                            </li>
-                            
-                        </ul>
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_log" class="method item">
-    <h3 class="name"><code>log</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>line</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/BotsEvolved_js_app.js.html#l158"><code>BotsEvolved&#x2F;js&#x2F;app.js:158</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Logs to the UI logger, not the console</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">line</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_modeLog" class="method item">
-    <h3 class="name"><code>modeLog</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>line</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/BotsEvolved_js_app.js.html#l176"><code>BotsEvolved&#x2F;js&#x2F;app.js:176</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Logs mode changes</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">line</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_moveLog" class="method item">
-    <h3 class="name"><code>moveLog</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>line</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/BotsEvolved_js_app.js.html#l167"><code>BotsEvolved&#x2F;js&#x2F;app.js:167</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Logs when things move in the UI</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">line</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_start" class="method item">
-    <h3 class="name"><code>start</code></h3>
+                    <div id="method_debugPrint" class="method item">
+    <h3 class="name"><code>debugPrint</code></h3>
 
     
         <span class="paren">()</span>
@@ -1109,7 +391,7 @@
             
         
         
-        <a href="../files/BotsEvolved_js_app.js.html#l96"><code>BotsEvolved&#x2F;js&#x2F;app.js:96</code></a>
+        <a href="../files/BotsEvolved_js_modules_shared_common_tree.js.html#l87"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;shared&#x2F;common&#x2F;tree.js:87</code></a>
         
         </p>
 
@@ -1120,8 +402,579 @@
     </div>
 
     <div class="description">
-        <p>Set the starting time of the app</p>
+        
+    </div>
 
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_generateTree" class="method item">
+    <h3 class="name"><code>generateTree</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>initNode</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/BotsEvolved_js_modules_shared_common_tree.js.html#l130"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;shared&#x2F;common&#x2F;tree.js:130</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">initNode</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_getChildren" class="method item">
+    <h3 class="name"><code>getChildren</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Array</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/BotsEvolved_js_modules_shared_common_tree.js.html#l79"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;shared&#x2F;common&#x2F;tree.js:79</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Array</span>:
+                    
+                    <p>children</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_init" class="method item">
+    <h3 class="name"><code>init</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/BotsEvolved_js_modules_shared_common_tree.js.html#l12"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;shared&#x2F;common&#x2F;tree.js:12</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_reduceDown" class="method item">
+    <h3 class="name"><code>reduceDown</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>f</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>base</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/BotsEvolved_js_modules_shared_common_tree.js.html#l105"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;shared&#x2F;common&#x2F;tree.js:105</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">f</code>
+                        <span class="type">Function</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">base</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_removeChildren" class="method item">
+    <h3 class="name"><code>removeChildren</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/BotsEvolved_js_modules_shared_common_tree.js.html#l41"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;shared&#x2F;common&#x2F;tree.js:41</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Severs all children from the tree, sets this.children to []</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_removeParent" class="method item">
+    <h3 class="name"><code>removeParent</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/BotsEvolved_js_modules_shared_common_tree.js.html#l52"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;shared&#x2F;common&#x2F;tree.js:52</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Severs the node from the tree.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_setParent" class="method item">
+    <h3 class="name"><code>setParent</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>parent</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/BotsEvolved_js_modules_shared_common_tree.js.html#l61"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;shared&#x2F;common&#x2F;tree.js:61</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">parent</code>
+                        <span class="type"><a href="../classes/Tree.html" class="crosslink">Tree</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_toString" class="method item">
+    <h3 class="name"><code>toString</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/BotsEvolved_js_modules_shared_common_tree.js.html#l123"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;shared&#x2F;common&#x2F;tree.js:123</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
     </div>
 
     

@@ -157,21 +157,27 @@
         "BotsEvolved/js/modules/shared/common/tree.js": {
             "name": "BotsEvolved/js/modules/shared/common/tree.js",
             "modules": {},
-            "classes": {},
+            "classes": {
+                "Tree": 1
+            },
             "fors": {},
             "namespaces": {}
         },
         "BotsEvolved/js/modules/shared/common/utilities.js": {
             "name": "BotsEvolved/js/modules/shared/common/utilities.js",
             "modules": {},
-            "classes": {},
+            "classes": {
+                "Utilities": 1
+            },
             "fors": {},
             "namespaces": {}
         },
         "BotsEvolved/js/modules/shared/common/vector.js": {
             "name": "BotsEvolved/js/modules/shared/common/vector.js",
             "modules": {},
-            "classes": {},
+            "classes": {
+                "Vector": 1
+            },
             "fors": {},
             "namespaces": {}
         },
@@ -437,6 +443,40 @@
             "file": "BotsEvolved/js/modules/botPrint/botEvo.js",
             "line": 23,
             "extends": "EvoSim"
+        },
+        "Tree": {
+            "name": "Tree",
+            "shortname": "Tree",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "BotsEvolved/js/modules/shared/common/tree.js",
+            "line": 8
+        },
+        "Utilities": {
+            "name": "Utilities",
+            "shortname": "Utilities",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "BotsEvolved/js/modules/shared/common/utilities.js",
+            "line": 7
+        },
+        "Vector": {
+            "name": "Vector",
+            "shortname": "Vector",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 8,
+            "description": "Reusable Vector class"
         },
         "EvoSim": {
             "name": "EvoSim",
@@ -1027,67 +1067,1333 @@
             "file": "BotsEvolved/js/modules/shared/ai/hfsm.js",
             "line": 1,
             "author": "Kate Compton",
-            "class": "EvoSim"
+            "class": "Tree"
         },
         {
             "file": "BotsEvolved/js/modules/shared/common/commonUtils.js",
             "line": 1,
             "author": "Kate Compton",
-            "class": "EvoSim"
+            "class": "Tree"
         },
         {
             "file": "BotsEvolved/js/modules/shared/common/kcolor.js",
             "line": 1,
             "author": "Kate Compton",
-            "class": "EvoSim"
+            "class": "Tree"
         },
         {
             "file": "BotsEvolved/js/modules/shared/common/map.js",
             "line": 1,
             "author": "Kate Compton",
-            "class": "EvoSim"
+            "class": "Tree"
         },
         {
             "file": "BotsEvolved/js/modules/shared/common/range.js",
             "line": 1,
             "author": "Kate Compton",
-            "class": "EvoSim"
+            "class": "Tree"
         },
         {
             "file": "BotsEvolved/js/modules/shared/common/rect.js",
             "line": 1,
             "author": "Kate Compton",
-            "class": "EvoSim"
+            "class": "Tree"
         },
         {
             "file": "BotsEvolved/js/modules/shared/common/timespan.js",
             "line": 1,
             "author": "Kate Compton",
-            "class": "EvoSim"
+            "class": "Tree"
         },
         {
             "file": "BotsEvolved/js/modules/shared/common/transform.js",
             "line": 1,
             "author": "Kate Compton",
-            "class": "EvoSim"
+            "class": "Tree"
         },
         {
             "file": "BotsEvolved/js/modules/shared/common/tree.js",
             "line": 1,
             "author": "Kate Compton",
-            "class": "EvoSim"
+            "class": "Tree"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/tree.js",
+            "line": 12,
+            "itemtype": "method",
+            "name": "init",
+            "class": "Tree"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/tree.js",
+            "line": 24,
+            "itemtype": "method",
+            "name": "compileNodes",
+            "params": [
+                {
+                    "name": "list",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "query",
+                    "description": "",
+                    "type": "Function"
+                }
+            ],
+            "return": {
+                "description": "Pushes all nodes that return true to the query onto the list."
+            },
+            "class": "Tree"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/tree.js",
+            "line": 41,
+            "description": "Severs all children from the tree, sets this.children to []",
+            "itemtype": "method",
+            "name": "removeChildren",
+            "class": "Tree"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/tree.js",
+            "line": 52,
+            "description": "Severs the node from the tree.",
+            "itemtype": "method",
+            "name": "removeParent",
+            "class": "Tree"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/tree.js",
+            "line": 61,
+            "itemtype": "method",
+            "name": "setParent",
+            "params": [
+                {
+                    "name": "parent",
+                    "description": "",
+                    "type": "Tree"
+                }
+            ],
+            "class": "Tree"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/tree.js",
+            "line": 79,
+            "itemtype": "method",
+            "name": "getChildren",
+            "return": {
+                "description": "children",
+                "type": "Array"
+            },
+            "class": "Tree"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/tree.js",
+            "line": 87,
+            "itemtype": "method",
+            "name": "debugPrint",
+            "class": "Tree"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/tree.js",
+            "line": 105,
+            "itemtype": "method",
+            "name": "reduceDown",
+            "params": [
+                {
+                    "name": "f",
+                    "description": "",
+                    "type": "Function"
+                },
+                {
+                    "name": "base",
+                    "description": ""
+                }
+            ],
+            "class": "Tree"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/tree.js",
+            "line": 123,
+            "itemtype": "method",
+            "name": "toString",
+            "class": "Tree"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/tree.js",
+            "line": 130,
+            "itemtype": "method",
+            "name": "generateTree",
+            "params": [
+                {
+                    "name": "initNode",
+                    "description": ""
+                }
+            ],
+            "class": "Tree"
         },
         {
             "file": "BotsEvolved/js/modules/shared/common/utilities.js",
             "line": 1,
             "author": "Kate Compton",
-            "class": "EvoSim"
+            "class": "Utilities"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/utilities.js",
+            "line": 13,
+            "itemtype": "attribute",
+            "name": "words",
+            "class": "Utilities"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/utilities.js",
+            "line": 17,
+            "itemtype": "property",
+            "name": "words.animals",
+            "class": "Utilities"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/utilities.js",
+            "line": 21,
+            "itemtype": "property",
+            "name": "worlds.moods",
+            "class": "Utilities"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/utilities.js",
+            "line": 25,
+            "itemtype": "property",
+            "name": "words.colors",
+            "class": "Utilities"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/utilities.js",
+            "line": 29,
+            "itemtype": "method",
+            "name": "words.getRandomPhrase",
+            "class": "Utilities"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/utilities.js",
+            "line": 37,
+            "itemtype": "method",
+            "name": "arrayToString",
+            "params": [
+                {
+                    "name": "array",
+                    "description": ""
+                }
+            ],
+            "class": "Utilities"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/utilities.js",
+            "line": 51,
+            "itemtype": "method",
+            "name": "inSquareBrackets",
+            "params": [
+                {
+                    "name": "s",
+                    "description": ""
+                }
+            ],
+            "return": {
+                "description": "Returns the input string with brackets around out."
+            },
+            "class": "Utilities"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/utilities.js",
+            "line": 60,
+            "itemtype": "method",
+            "name": "getSpacer",
+            "params": [
+                {
+                    "name": "count",
+                    "description": ""
+                }
+            ],
+            "return": {
+                "description": "Returns a string of spaces count long"
+            },
+            "class": "Utilities"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/utilities.js",
+            "line": 72,
+            "itemtype": "method",
+            "name": "sCurve",
+            "params": [
+                {
+                    "name": "v",
+                    "description": ""
+                },
+                {
+                    "name": "iterations",
+                    "description": ""
+                }
+            ],
+            "class": "Utilities"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/utilities.js",
+            "line": 87,
+            "itemtype": "method",
+            "name": "within",
+            "params": [
+                {
+                    "name": "val",
+                    "description": ""
+                },
+                {
+                    "name": "min",
+                    "description": ""
+                },
+                {
+                    "name": "max",
+                    "description": ""
+                }
+            ],
+            "return": {
+                "description": "Returns whether val is between min and max",
+                "type": "Boolean"
+            },
+            "class": "Utilities"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/utilities.js",
+            "line": 98,
+            "description": "The weight is determined by the function getWeight(index, item, list)",
+            "itemtype": "method",
+            "name": "getWeightedRandomIndex",
+            "params": [
+                {
+                    "name": "array",
+                    "description": ""
+                }
+            ],
+            "class": "Utilities"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/utilities.js",
+            "line": 127,
+            "description": "Get a random element from an Array",
+            "itemtype": "method",
+            "name": "getRandom",
+            "params": [
+                {
+                    "name": "array",
+                    "description": ""
+                }
+            ],
+            "class": "Utilities"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/utilities.js",
+            "line": 136,
+            "description": "Get a random index from an Array",
+            "itemtype": "method",
+            "name": "getRandomIndex",
+            "params": [
+                {
+                    "name": "array",
+                    "description": ""
+                }
+            ],
+            "class": "Utilities"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/utilities.js",
+            "line": 145,
+            "description": "Get a random key from an Object",
+            "itemtype": "method",
+            "name": "getRandomKey",
+            "params": [
+                {
+                    "name": "obj",
+                    "description": ""
+                }
+            ],
+            "class": "Utilities"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/utilities.js",
+            "line": 154,
+            "description": "Returns val if it is within upper and lower.\nReturns the bound if val passes outside",
+            "itemtype": "method",
+            "name": "constrain",
+            "params": [
+                {
+                    "name": "val",
+                    "description": ""
+                },
+                {
+                    "name": "lowerBound",
+                    "description": ""
+                },
+                {
+                    "name": "upperBound",
+                    "description": ""
+                }
+            ],
+            "class": "Utilities"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/utilities.js",
+            "line": 170,
+            "itemtype": "method",
+            "name": "lerp",
+            "params": [
+                {
+                    "name": "start",
+                    "description": ""
+                },
+                {
+                    "name": "end",
+                    "description": ""
+                },
+                {
+                    "name": "percent",
+                    "description": ""
+                }
+            ],
+            "class": "Utilities"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/utilities.js",
+            "line": 180,
+            "itemtype": "method",
+            "name": "lerpAngles",
+            "params": [
+                {
+                    "name": "start",
+                    "description": ""
+                },
+                {
+                    "name": "end",
+                    "description": ""
+                },
+                {
+                    "name": "percent",
+                    "description": ""
+                }
+            ],
+            "class": "Utilities"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/utilities.js",
+            "line": 190,
+            "description": "Return a random, possibly between two numbers",
+            "itemtype": "method",
+            "name": "random",
+            "class": "Utilities"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/utilities.js",
+            "line": 205,
+            "itemtype": "method",
+            "name": "roundNumber",
+            "params": [
+                {
+                    "name": "num",
+                    "description": ""
+                },
+                {
+                    "name": "places",
+                    "description": "",
+                    "optional": true
+                }
+            ],
+            "class": "Utilities"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/utilities.js",
+            "line": 219,
+            "itemtype": "method",
+            "name": "angleBetween",
+            "params": [
+                {
+                    "name": "a",
+                    "description": ""
+                },
+                {
+                    "name": "b",
+                    "description": ""
+                }
+            ],
+            "class": "Utilities"
         },
         {
             "file": "BotsEvolved/js/modules/shared/common/vector.js",
             "line": 1,
             "author": "Kate Compton",
-            "class": "EvoSim"
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 14,
+            "itemtype": "method",
+            "name": "init",
+            "params": [
+                {
+                    "name": "x",
+                    "description": ""
+                },
+                {
+                    "name": "y",
+                    "description": ""
+                },
+                {
+                    "name": "z",
+                    "description": ""
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 46,
+            "itemtype": "method",
+            "name": "clone",
+            "return": {
+                "description": "this",
+                "type": "Vector"
+            },
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 54,
+            "description": "Copies x, y, and z from this into v.",
+            "itemtype": "method",
+            "name": "cloneInto",
+            "params": [
+                {
+                    "name": "v",
+                    "description": "",
+                    "type": "Vector"
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 65,
+            "itemtype": "method",
+            "name": "addMultiple",
+            "params": [
+                {
+                    "name": "v",
+                    "description": "",
+                    "type": "Vector"
+                },
+                {
+                    "name": "m",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 76,
+            "itemtype": "method",
+            "name": "addPolar",
+            "params": [
+                {
+                    "name": "r",
+                    "description": ""
+                },
+                {
+                    "name": "theta",
+                    "description": ""
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 86,
+            "itemtype": "method",
+            "name": "addSpherical",
+            "params": [
+                {
+                    "name": "r",
+                    "description": ""
+                },
+                {
+                    "name": "theta",
+                    "description": ""
+                },
+                {
+                    "name": "phi",
+                    "description": ""
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 98,
+            "itemtype": "method",
+            "name": "addRotated",
+            "params": [
+                {
+                    "name": "v",
+                    "description": "",
+                    "type": "Vector"
+                },
+                {
+                    "name": "theta",
+                    "description": ""
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 112,
+            "itemtype": "method",
+            "name": "setToPolar",
+            "params": [
+                {
+                    "name": "r",
+                    "description": ""
+                },
+                {
+                    "name": "theta",
+                    "description": ""
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 122,
+            "itemtype": "method",
+            "name": "setToCylindrical",
+            "params": [
+                {
+                    "name": "r",
+                    "description": ""
+                },
+                {
+                    "name": "theta",
+                    "description": ""
+                },
+                {
+                    "name": "z",
+                    "description": ""
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 134,
+            "itemtype": "method",
+            "name": "setToPolarOffset",
+            "params": [
+                {
+                    "name": "v",
+                    "description": "",
+                    "type": "Vector"
+                },
+                {
+                    "name": "theta",
+                    "description": ""
+                },
+                {
+                    "name": "r",
+                    "description": ""
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 146,
+            "itemtype": "method",
+            "name": "setToMultiple",
+            "params": [
+                {
+                    "name": "v",
+                    "description": "",
+                    "type": "Vector"
+                },
+                {
+                    "name": "m",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 157,
+            "itemtype": "method",
+            "name": "setToLerp",
+            "params": [
+                {
+                    "name": "v0",
+                    "description": "",
+                    "type": "Vector"
+                },
+                {
+                    "name": "v1",
+                    "description": "",
+                    "type": "Vector"
+                },
+                {
+                    "name": "m",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 170,
+            "itemtype": "method",
+            "name": "setToAddMultiple",
+            "params": [
+                {
+                    "name": "v0",
+                    "description": "",
+                    "type": "Vector"
+                },
+                {
+                    "name": "m0",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "v1",
+                    "description": "",
+                    "type": "Vector"
+                },
+                {
+                    "name": "m1",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 183,
+            "itemtype": "method",
+            "name": "setToDifference",
+            "params": [
+                {
+                    "name": "v0",
+                    "description": "",
+                    "type": "Vector"
+                },
+                {
+                    "name": "v1",
+                    "description": "",
+                    "type": "Vector"
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 194,
+            "itemtype": "method",
+            "name": "setTo",
+            "params": [
+                {
+                    "name": "x",
+                    "description": ""
+                },
+                {
+                    "name": "y",
+                    "description": ""
+                },
+                {
+                    "name": "z",
+                    "description": ""
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 220,
+            "itemtype": "method",
+            "name": "setScreenPosition",
+            "params": [
+                {
+                    "name": "g",
+                    "description": ""
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 231,
+            "itemtype": "method",
+            "name": "magnitude",
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 238,
+            "itemtype": "method",
+            "name": "normalize",
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 245,
+            "itemtype": "method",
+            "name": "constrainMagnitude",
+            "params": [
+                {
+                    "name": "min",
+                    "description": ""
+                },
+                {
+                    "name": "max",
+                    "description": ""
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 258,
+            "itemtype": "method",
+            "name": "getDistanceTo",
+            "params": [
+                {
+                    "name": "p",
+                    "description": "",
+                    "type": "Vector"
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 269,
+            "itemtype": "method",
+            "name": "getDistanceToIgnoreZ",
+            "params": [
+                {
+                    "name": "p",
+                    "description": "",
+                    "type": "Vector"
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 280,
+            "itemtype": "method",
+            "name": "getAngleTo",
+            "params": [
+                {
+                    "name": "p",
+                    "description": "",
+                    "type": "Vector"
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 295,
+            "itemtype": "method",
+            "name": "dot",
+            "params": [
+                {
+                    "name": "v",
+                    "description": "",
+                    "type": "Vector"
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 303,
+            "itemtype": "method",
+            "name": "getAngleBetween",
+            "params": [
+                {
+                    "name": "v",
+                    "description": "",
+                    "type": "Vector"
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 315,
+            "itemtype": "method",
+            "name": "add",
+            "params": [
+                {
+                    "name": "v",
+                    "description": "",
+                    "type": "Vector"
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 325,
+            "itemtype": "method",
+            "name": "sub",
+            "params": [
+                {
+                    "name": "v",
+                    "description": "",
+                    "type": "Vector"
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 335,
+            "itemtype": "method",
+            "name": "mult",
+            "params": [
+                {
+                    "name": "m",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 345,
+            "itemtype": "method",
+            "name": "div",
+            "params": [
+                {
+                    "name": "m",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 355,
+            "itemtype": "method",
+            "name": "getOffsetTo",
+            "params": [
+                {
+                    "name": "v",
+                    "description": "",
+                    "type": "Vector"
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 363,
+            "itemtype": "method",
+            "name": "getAngle",
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 370,
+            "itemtype": "method",
+            "name": "rotate",
+            "params": [
+                {
+                    "name": "theta",
+                    "description": ""
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 383,
+            "description": "Lerp a vector!",
+            "itemtype": "method",
+            "name": "lerp",
+            "params": [
+                {
+                    "name": "otherVector",
+                    "description": "",
+                    "type": "Vector"
+                },
+                {
+                    "name": "percent",
+                    "description": ""
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 394,
+            "itemtype": "method",
+            "name": "isValid",
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 401,
+            "description": "method translateTo",
+            "params": [
+                {
+                    "name": "g",
+                    "description": ""
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 409,
+            "description": "method bezier",
+            "params": [
+                {
+                    "name": "g",
+                    "description": ""
+                },
+                {
+                    "name": "c0",
+                    "description": ""
+                },
+                {
+                    "name": "c1",
+                    "description": ""
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 419,
+            "description": "method bezierTo",
+            "params": [
+                {
+                    "name": "g",
+                    "description": ""
+                },
+                {
+                    "name": "c0",
+                    "description": ""
+                },
+                {
+                    "name": "c1",
+                    "description": ""
+                },
+                {
+                    "name": "p",
+                    "description": ""
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 430,
+            "description": "method bezierWithRelativeControlPoints",
+            "params": [
+                {
+                    "name": "g",
+                    "description": ""
+                },
+                {
+                    "name": "p",
+                    "description": ""
+                },
+                {
+                    "name": "c0",
+                    "description": ""
+                },
+                {
+                    "name": "c1",
+                    "description": ""
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 442,
+            "itemtype": "method",
+            "name": "vertex",
+            "params": [
+                {
+                    "name": "g",
+                    "description": ""
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 450,
+            "itemtype": "method",
+            "name": "offsetVertex",
+            "params": [
+                {
+                    "name": "g",
+                    "description": ""
+                },
+                {
+                    "name": "offset",
+                    "description": ""
+                },
+                {
+                    "name": "m",
+                    "description": ""
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 462,
+            "itemtype": "method",
+            "name": "drawCircle",
+            "params": [
+                {
+                    "name": "g",
+                    "description": ""
+                },
+                {
+                    "name": "radius",
+                    "description": ""
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 471,
+            "itemtype": "method",
+            "name": "drawLineTo",
+            "params": [
+                {
+                    "name": "g",
+                    "description": ""
+                },
+                {
+                    "name": "v",
+                    "description": "",
+                    "type": "Vector"
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 480,
+            "itemtype": "method",
+            "name": "drawLerpedLineTo",
+            "params": [
+                {
+                    "name": "g",
+                    "description": ""
+                },
+                {
+                    "name": "v",
+                    "description": "",
+                    "type": "Vector"
+                },
+                {
+                    "name": "startLerp",
+                    "description": ""
+                },
+                {
+                    "name": "endLerp",
+                    "description": ""
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 494,
+            "itemtype": "method",
+            "name": "drawAngle",
+            "params": [
+                {
+                    "name": "g",
+                    "description": ""
+                },
+                {
+                    "name": "v",
+                    "description": "",
+                    "type": "Vector"
+                },
+                {
+                    "name": "m",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 504,
+            "itemtype": "method",
+            "name": "drawAngle",
+            "params": [
+                {
+                    "name": "g",
+                    "description": ""
+                },
+                {
+                    "name": "r",
+                    "description": ""
+                },
+                {
+                    "name": "theta",
+                    "description": ""
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 514,
+            "itemtype": "method",
+            "name": "drawAngleBall",
+            "params": [
+                {
+                    "name": "g",
+                    "description": ""
+                },
+                {
+                    "name": "r",
+                    "description": ""
+                },
+                {
+                    "name": "theta",
+                    "description": ""
+                },
+                {
+                    "name": "radius",
+                    "description": ""
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 525,
+            "itemtype": "method",
+            "name": "drawArc",
+            "params": [
+                {
+                    "name": "g",
+                    "description": ""
+                },
+                {
+                    "name": "r",
+                    "description": ""
+                },
+                {
+                    "name": "theta0",
+                    "description": ""
+                },
+                {
+                    "name": "theta1",
+                    "description": ""
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 541,
+            "itemtype": "method",
+            "name": "drawText",
+            "params": [
+                {
+                    "name": "g",
+                    "description": ""
+                },
+                {
+                    "name": "s",
+                    "description": ""
+                },
+                {
+                    "name": "xOffset",
+                    "description": ""
+                },
+                {
+                    "name": "yOffset",
+                    "description": ""
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 552,
+            "itemtype": "method",
+            "name": "toThreeVector",
+            "return": {
+                "description": "",
+                "type": "THREE.Vector3"
+            },
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 560,
+            "itemtype": "method",
+            "name": "toSVG",
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 567,
+            "itemtype": "method",
+            "name": "toB2D",
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 574,
+            "itemtype": "method",
+            "name": "toString",
+            "params": [
+                {
+                    "name": "precision",
+                    "description": "",
+                    "type": "Number",
+                    "optional": true,
+                    "optdefault": "2"
+                }
+            ],
+            "class": "Vector"
+        },
+        {
+            "file": "BotsEvolved/js/modules/shared/common/vector.js",
+            "line": 585,
+            "itemtype": "method",
+            "name": "invalidToString",
+            "class": "Vector"
         },
         {
             "file": "BotsEvolved/js/modules/shared/evo/evoSim.js",
@@ -5937,6 +7243,22 @@
         {
             "message": "Missing item type",
             "line": " BotsEvolved/js/modules/shared/common/vector.js:1"
+        },
+        {
+            "message": "Missing item type\nmethod translateTo",
+            "line": " BotsEvolved/js/modules/shared/common/vector.js:401"
+        },
+        {
+            "message": "Missing item type\nmethod bezier",
+            "line": " BotsEvolved/js/modules/shared/common/vector.js:409"
+        },
+        {
+            "message": "Missing item type\nmethod bezierTo",
+            "line": " BotsEvolved/js/modules/shared/common/vector.js:419"
+        },
+        {
+            "message": "Missing item type\nmethod bezierWithRelativeControlPoints",
+            "line": " BotsEvolved/js/modules/shared/common/vector.js:430"
         },
         {
             "message": "Missing item type",
