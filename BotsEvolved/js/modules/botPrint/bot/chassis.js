@@ -126,6 +126,10 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
             if (app.getOption("useTimers")) {
                 attachmentTypes.push(Attachment.Sensor.Timer), weights.push(1);
             }
+			
+			if (app.getOption("useColorLerpers")){
+				attachmentTypes.push(Attachment.Sensor.ColorLerper), weights.push(1);
+			}
 
             if (app.getOption("useSharpie")) {
                 attachmentTypes.push(Attachment.Actuator.Sharpie), weights.push(1);
