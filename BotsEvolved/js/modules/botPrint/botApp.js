@@ -136,6 +136,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.ui.addOption("logConditionTests", false);
             app.ui.addOption("logMutations", true);
             app.ui.addOption("useTimers", true);
+			app.ui.addOption("useColorLerpers", true);
             app.ui.addOption("useSharpie", false);
             app.ui.addTuningValue("unicornFluffiness", 100, 1, 700, function(key, value) {
                 // do something on change
@@ -308,7 +309,10 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 
                     if (!app.paused) {
                         app.worldTime.updateTime(g.millis() * .001);
-                        app.currentBot.update(app.worldTime.ellapsed);
+                        app.currentBot.update({
+							total: app.worldTime.total,
+							elapsed: app.worldTime.ellapsed
+							});
                     }
 
                     app.editWindow.render(function(context) {
