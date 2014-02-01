@@ -1,0 +1,89 @@
+.app_size {
+	width: 900px;
+	height: 600px;
+}
+
+#arena_UI {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+}
+
+#population_panel {
+	position: absolute;
+	width: 200px;
+	height: 500px;
+	bottom: 0px;
+	right: 0px;
+}
+
+#arena_panel {
+	position: absolute;
+	width: 200px;
+	height: 100px;
+	bottom: 0px;
+}
+
+#testing_panel {
+	position: absolute;
+	width: 200px;
+	height: 100px;
+	top: 0px;
+}
+
+.main_canvas {
+	position: absolute;
+	width: 700px;
+	height: 500px;
+}
+
+#edit_menus {
+
+	position: absolute;
+	top: 40px;
+	right: 0px;
+	width: 200px;
+	height: 600px;
+}
+
+.edit_menu {
+	perspective: 600px;
+	transition: all .2s;
+	overflow: hidden;
+	width: 95%;
+	height: 600px;
+}
+
+.edit_menu.away {
+	overflow: hidden;
+	-webkit-transform: translate(0px, 0px) rotateY(90deg) scale3d(1, 1, 1);
+	height: 600px;
+}
+
+#switch_modes {
+	position: absolute;
+	right: 0px;
+}
+
+#edit {
+	transition: all .2s;
+	-webkit-transform: translate(0px, 0px) rotateX(.01deg) scale3d(1, 1, 1);
+}
+
+#arena {
+	transition: all .2s;
+	-webkit-transform: translate(0px, 0px) rotateX(0deg) scale3d(1, 1, 1);
+}
+
+#arena.away {
+	-webkit-transform: translate(-600px, 0px) rotateY(70deg);
+}
+
+#edit.away {
+	-webkit-transform: translate(600px, 0px) rotateY(70deg);
+}
+
+.subpanel {
+	margin: 5px;
+	background: rgba(100, 110, 110, .2);
+}

@@ -1,0 +1,6 @@
+# Can ignore specific files
+.DS_Store
+*.swp
+
+# Can ignore specific files
+js/settings_local.js
