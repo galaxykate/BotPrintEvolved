@@ -95,7 +95,101 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
             g.text(this.senseValue.toFixed(2), -9, 4);
 		},
     });
+    
+    
+    /*
+	 * This sensor helps blind bots explore their environment.
+	 * The sensor pretends that the bot is initially unaware of 
+	 * how big its playpen is. As the bot explores the playpen, 
+	 * the sensor keeps track of the farthest it has gone up, down, 
+	 * left, and right, changing its opacity to indicate how 
+	 * close it is to the boundaries it has found.
+	 * 
+	 * The sensor will become more opaque as it gets closer to a 
+	 * boundary, and become more transparent as it moves away from 
+	 * one.
+	 */
+	
+    var Explorer = Sensor.extend({
+        init : function() {
+            this._super();
+            this.id = "Explorer" + this.idNumber;
+            this.maxXDist;
+            this.maxYDist;
+            this.minXDist;
+            this.minYDist;
+        },
 
+        update : function(time) {
+			var worldPos = this.getWorldTransform();
+			var xPos = worldPos.x;
+			var yPos = worldPos.y;
+			var dist;
+            
+            //initializing boundaries
+            if(typeof this.maxXDist === 'undefined')
+            	this.maxXDist = xPos;
+            if(typeof this. maxYDist === 'undefined')
+            	this.maxYDist = yPos;
+            if(typeof this. minXDist === 'undefined')
+            	this.minXDist = xPos;
+            if(typeof this.minYDist === 'undefined')
+            	this.minYDist = yPos;
+
+  			//if we've pushed the boundaries, change boundary
+  			if(yPos > this.maxYDist){	
+            	this.maxYDist = yPos;
+            }
+			if(xPos > this.maxXDist){
+				this.maxXDist = xPos;
+			}
+			if(xPos <= this.minXDist){	
+				this.minXDist = xPos;
+            }
+            if(yPos <= this.minYDist){
+            	this.minYDist = yPos;
+            }
+	
+           	//calculate distance from each boundary
+            var distFromMaxX = Math.abs(this.maxXDist - xPos);
+            var distFromMinX = Math.abs(this.minXDist - xPos);
+            var distFromMaxY = Math.abs(this.maxYDist - yPos);
+            var distFromMinY = Math.abs(this.minYDist - yPos);
+			
+			//find boundary we're closest to
+			var lowest = Math.min(distFromMaxX, distFromMinX);
+			lowest = Math.min(lowest, distFromMaxY);
+			lowest = Math.min(lowest, distFromMinY);
+
+            //calculate how close we are to that boundary as a percentage
+        	if(distFromMaxX == lowest)
+        		this.senseValue = Math.abs(xPos) / Math.abs(this.maxXDist);
+        	else if (distFromMinX == lowest)
+        		this.senseValue = Math.abs(xPos) / Math.abs(this.minXDist);
+        	else if (distFromMaxY == lowest)
+        		this.senseValue = Math.abs(yPos) / Math.abs(this.maxYDist);
+        	else if (distFromMinY == lowest)
+        		this.senseValue = Math.abs(yPos) / Math.abs(this.minYDist);
+        	
+			//in case we accidentally divided by zero
+            if (this.senseValue == Number.POSITIVE_INFINITY){
+            	this.senseValue = 1;
+            }
+        },
+        
+        renderDetails : function(context) {
+            var g = context.g;
+            var r = 10;
+
+			//create a circle with the alpha corresponding to 
+			//how close we are to a boundary
+            g.fill(1, 1, 1, this.senseValue);
+            g.ellipse(1, 3, r * 1.7, r * 1.5);
+        },
+    });
+    
+
+	Sensor.Explorer = Explorer;
     Sensor.Timer = Timer;
 	Sensor.ColorLerper = ColorLerper;
 
