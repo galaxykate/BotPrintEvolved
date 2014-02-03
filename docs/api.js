@@ -3,15 +3,19 @@ YUI.add("yuidoc-meta", function(Y) {
     "classes": [
         "App",
         "BrainEvo",
+        "Chassis",
         "Collision",
+        "Component",
         "Coords",
         "Draggable",
         "EvoSim",
         "Gridster",
+        "Pin",
         "Time",
         "Tree",
         "Utilities",
-        "Vector"
+        "Vector",
+        "Wire"
     ],
     "modules": [],
     "allModules": []

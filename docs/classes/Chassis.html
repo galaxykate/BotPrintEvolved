@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>BrainEvo - The BotPrint API</title>
+    <title>Chassis - The BotPrint API</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -110,19 +110,19 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>BrainEvo Class</h1>
+                        <h1>Chassis Class</h1>
 <div class="box meta">
     
 
     
         <div class="extends">
-            Extends <a href="../classes/EvoSim.html" class="crosslink">EvoSim</a>
+            Extends <a href="../classes/Tree.html" class="crosslink">Tree</a>
         </div>
     
 
     
         <div class="foundat">
-            Defined in: <a href="../files/BotsEvolved_js_modules_botPrint_botEvo.js.html#l23"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;botPrint&#x2F;botEvo.js:23</code></a>
+            Defined in: <a href="../files/BotsEvolved_js_modules_botPrint_bot_chassis.js.html#l12"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;botPrint&#x2F;bot&#x2F;chassis.js:12</code></a>
         </div>
     
 
@@ -162,105 +162,147 @@
                     <ul class="index-list methods extends">
                         
                             <li class="index-item method">
-                                <a href="#method_createGenome">createGenome</a>
+                                <a href="#method_clone">clone</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_createIndividual">createIndividual</a>
+                                <a href="#method_compileAttachments">compileAttachments</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_compileForces">compileForces</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method inherited">
-                                <a href="#method_createPopulation">createPopulation</a>
+                                <a href="#method_compileNodes">compileNodes</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_debugPrint">debugPrint</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_crossoverGenomes">crossoverGenomes</a>
+                                <a href="#method_generateAttachments">generateAttachments</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_generateTree">generateTree</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_evaluatePopulation">evaluatePopulation</a>
+                                <a href="#method_generateWiring">generateWiring</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_generateAction">generateAction</a>
+                                <a href="#method_getAt">getAt</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_generateCondition">generateCondition</a>
+                                <a href="#method_getBot">getBot</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_getChildren">getChildren</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_hover">hover</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
                                 <a href="#method_init">init</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
-                                <a href="#method_mutateAction">mutateAction</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_mutateCondition">mutateCondition</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_mutateGenome">mutateGenome</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_mutateNode">mutateNode</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_renderScores">renderScores</a>
+                            <li class="index-item method inherited">
+                                <a href="#method_reduceDown">reduceDown</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method inherited">
-                                <a href="#method_runGeneration">runGeneration</a>
+                                <a href="#method_removeChildren">removeChildren</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method inherited">
-                                <a href="#method_runGenerations">runGenerations</a>
+                                <a href="#method_removeParent">removeParent</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_render">render</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_setParent">setParent</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_toString">toString</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_transformToGlobal">transformToGlobal</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_update">update</a>
 
                                 
                                 
@@ -282,8 +324,8 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_createGenome" class="method item">
-    <h3 class="name"><code>createGenome</code></h3>
+                    <div id="method_clone" class="method item">
+    <h3 class="name"><code>clone</code></h3>
 
     
         <span class="paren">()</span>
@@ -291,7 +333,7 @@
 
     
         <span class="returns-inline">
-            <span class="type">DTree</span>
+            <span class="type"><a href="../classes/Chassis.html" class="crosslink">Chassis</a></span>
         </span>
     
 
@@ -318,7 +360,7 @@
             
         
         
-        <a href="../files/BotsEvolved_js_modules_botPrint_botEvo.js.html#l51"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;botPrint&#x2F;botEvo.js:51</code></a>
+        <a href="../files/BotsEvolved_js_modules_botPrint_bot_chassis.js.html#l49"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;botPrint&#x2F;bot&#x2F;chassis.js:49</code></a>
         
         </p>
 
@@ -341,9 +383,9 @@
             <div class="returns-description">
                 
                     
-                        <span class="type">DTree</span>:
+                        <span class="type"><a href="../classes/Chassis.html" class="crosslink">Chassis</a></span>:
                     
-                    <p>dtree</p>
+                    <p>newChassis</p>
 
                 
             </div>
@@ -354,8 +396,8 @@
 </div>
 
                 
-                    <div id="method_createIndividual" class="method item">
-    <h3 class="name"><code>createIndividual</code></h3>
+                    <div id="method_compileAttachments" class="method item">
+    <h3 class="name"><code>compileAttachments</code></h3>
 
     
         <div class="args">
@@ -363,7 +405,13 @@
             
                 <li class="arg">
                     
-                        <code>genome</code>
+                        <code>attachments</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>query</code>
                     
                 </li>
             
@@ -396,7 +444,7 @@
             
         
         
-        <a href="../files/BotsEvolved_js_modules_botPrint_botEvo.js.html#l98"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;botPrint&#x2F;botEvo.js:98</code></a>
+        <a href="../files/BotsEvolved_js_modules_botPrint_bot_chassis.js.html#l202"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;botPrint&#x2F;bot&#x2F;chassis.js:202</code></a>
         
         </p>
 
@@ -418,7 +466,22 @@
             
                 <li class="param">
                     
-                        <code class="param-name">genome</code>
+                        <code class="param-name">attachments</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">query</code>
                         <span class="type">Object</span>
                     
 
@@ -441,8 +504,8 @@
 </div>
 
                 
-                    <div id="method_createPopulation" class="method item inherited">
-    <h3 class="name"><code>createPopulation</code></h3>
+                    <div id="method_compileForces" class="method item">
+    <h3 class="name"><code>compileForces</code></h3>
 
     
         <div class="args">
@@ -450,116 +513,7 @@
             
                 <li class="arg">
                     
-                        <code>count</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type">Array</span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/EvoSim.html#method_createPopulation">EvoSim</a>:
-            
-        
-        
-        <a href="../files/BotsEvolved_js_modules_shared_evo_evoSim.js.html#l18"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;shared&#x2F;evo&#x2F;evoSim.js:18</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Create a population with random genomes</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">count</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">Array</span>:
-                    
-                    <p>population with count members</p>
-
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_crossoverGenomes" class="method item">
-    <h3 class="name"><code>crossoverGenomes</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>g0</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>g1</code>
+                        <code>forces</code>
                     
                 </li>
             
@@ -592,7 +546,7 @@
             
         
         
-        <a href="../files/BotsEvolved_js_modules_botPrint_botEvo.js.html#l233"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;botPrint&#x2F;botEvo.js:233</code></a>
+        <a href="../files/BotsEvolved_js_modules_botPrint_bot_chassis.js.html#l190"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;botPrint&#x2F;bot&#x2F;chassis.js:190</code></a>
         
         </p>
 
@@ -614,22 +568,7 @@
             
                 <li class="param">
                     
-                        <code class="param-name">g0</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">g1</code>
+                        <code class="param-name">forces</code>
                         <span class="type">Object</span>
                     
 
@@ -652,8 +591,8 @@
 </div>
 
                 
-                    <div id="method_evaluatePopulation" class="method item">
-    <h3 class="name"><code>evaluatePopulation</code></h3>
+                    <div id="method_compileNodes" class="method item inherited">
+    <h3 class="name"><code>compileNodes</code></h3>
 
     
         <div class="args">
@@ -661,13 +600,13 @@
             
                 <li class="arg">
                     
-                        <code>population</code>
+                        <code>list</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>callback</code>
+                        <code>query</code>
                     
                 </li>
             
@@ -692,21 +631,16 @@
     
 
     
-        <span class="flag async">async</span>
-    
 
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/Tree.html#method_compileNodes">Tree</a>:
             
         
         
-        <a href="../files/BotsEvolved_js_modules_botPrint_botEvo.js.html#l243"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;botPrint&#x2F;botEvo.js:243</code></a>
+        <a href="../files/BotsEvolved_js_modules_shared_common_tree.js.html#l24"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;shared&#x2F;common&#x2F;tree.js:24</code></a>
         
         </p>
 
@@ -717,8 +651,7 @@
     </div>
 
     <div class="description">
-        <p>Test individuals one at a time</p>
-
+        
     </div>
 
     
@@ -729,8 +662,8 @@
             
                 <li class="param">
                     
-                        <code class="param-name">population</code>
-                        <span class="type">Object</span>
+                        <code class="param-name">list</code>
+                        <span class="type">Array</span>
                     
 
                     
@@ -744,7 +677,7 @@
             
                 <li class="param">
                     
-                        <code class="param-name">callback</code>
+                        <code class="param-name">query</code>
                         <span class="type">Function</span>
                     
 
@@ -768,7 +701,7 @@
             <div class="returns-description">
                 
                     
-                    <p>Array of Objects, with properties individual:Object and avgScore:Number</p>
+                    <p>Pushes all nodes that return true to the query onto the list.</p>
 
                 
             </div>
@@ -779,8 +712,340 @@
 </div>
 
                 
-                    <div id="method_generateAction" class="method item">
-    <h3 class="name"><code>generateAction</code></h3>
+                    <div id="method_debugPrint" class="method item inherited">
+    <h3 class="name"><code>debugPrint</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Tree.html#method_debugPrint">Tree</a>:
+            
+        
+        
+        <a href="../files/BotsEvolved_js_modules_shared_common_tree.js.html#l87"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;shared&#x2F;common&#x2F;tree.js:87</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_generateAttachments" class="method item">
+    <h3 class="name"><code>generateAttachments</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/BotsEvolved_js_modules_botPrint_bot_chassis.js.html#l141"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;botPrint&#x2F;bot&#x2F;chassis.js:141</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_generateTree" class="method item inherited">
+    <h3 class="name"><code>generateTree</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>initNode</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Tree.html#method_generateTree">Tree</a>:
+            
+        
+        
+        <a href="../files/BotsEvolved_js_modules_shared_common_tree.js.html#l130"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;shared&#x2F;common&#x2F;tree.js:130</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">initNode</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_generateWiring" class="method item">
+    <h3 class="name"><code>generateWiring</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/BotsEvolved_js_modules_botPrint_bot_chassis.js.html#l85"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;botPrint&#x2F;bot&#x2F;chassis.js:85</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Here there be dragons</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_getAt" class="method item">
+    <h3 class="name"><code>getAt</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>query</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/BotsEvolved_js_modules_botPrint_bot_chassis.js.html#l232"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;botPrint&#x2F;bot&#x2F;chassis.js:232</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Get something relative to this chassis</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">query</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_getBot" class="method item">
+    <h3 class="name"><code>getBot</code></h3>
 
     
         <span class="paren">()</span>
@@ -788,7 +1053,7 @@
 
     
         <span class="returns-inline">
-            <span class="type">Action</span>
+            <span class="type">Bot</span>
         </span>
     
 
@@ -815,7 +1080,7 @@
             
         
         
-        <a href="../files/BotsEvolved_js_modules_botPrint_botEvo.js.html#l81"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;botPrint&#x2F;botEvo.js:81</code></a>
+        <a href="../files/BotsEvolved_js_modules_botPrint_bot_chassis.js.html#l62"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;botPrint&#x2F;bot&#x2F;chassis.js:62</code></a>
         
         </p>
 
@@ -838,8 +1103,10 @@
             <div class="returns-description">
                 
                     
-                        <span class="type">Action</span>:
+                        <span class="type">Bot</span>:
                     
+                    <p>returns parent&#39;s Bot, or undefined</p>
+
                 
             </div>
         </div>
@@ -849,8 +1116,8 @@
 </div>
 
                 
-                    <div id="method_generateCondition" class="method item">
-    <h3 class="name"><code>generateCondition</code></h3>
+                    <div id="method_getChildren" class="method item inherited">
+    <h3 class="name"><code>getChildren</code></h3>
 
     
         <span class="paren">()</span>
@@ -858,8 +1125,83 @@
 
     
         <span class="returns-inline">
-            <span class="type">Condition</span>
+            <span class="type">Array</span>
         </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Tree.html#method_getChildren">Tree</a>:
+            
+        
+        
+        <a href="../files/BotsEvolved_js_modules_shared_common_tree.js.html#l79"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;shared&#x2F;common&#x2F;tree.js:79</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Array</span>:
+                    
+                    <p>children</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_hover" class="method item">
+    <h3 class="name"><code>hover</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>pos</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
     
 
     
@@ -885,7 +1227,7 @@
             
         
         
-        <a href="../files/BotsEvolved_js_modules_botPrint_botEvo.js.html#l89"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;botPrint&#x2F;botEvo.js:89</code></a>
+        <a href="../files/BotsEvolved_js_modules_botPrint_bot_chassis.js.html#l291"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;botPrint&#x2F;bot&#x2F;chassis.js:291</code></a>
         
         </p>
 
@@ -900,19 +1242,30 @@
     </div>
 
     
+        <div class="params">
+            <h4>Parameters:</h4>
 
-    
-        <div class="returns">
-            <h4>Returns:</h4>
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">pos</code>
+                        <span class="type">Object</span>
+                    
 
-            <div class="returns-description">
-                
                     
-                        <span class="type">Condition</span>:
+
+                    <div class="param-description">
+                         
+                    </div>
+
                     
-                
-            </div>
+                </li>
+            
+            </ul>
         </div>
+    
+
     
 
     
@@ -923,29 +1276,7 @@
     <h3 class="name"><code>init</code></h3>
 
     
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>bot</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>task</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>arena</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
+        <span class="paren">()</span>
     
 
     
@@ -964,145 +1295,16 @@
 
     <div class="meta">
         
+            <p>Inherited from
+            <a href="../classes/Tree.html#method_init">
+                Tree
+            </a>
             
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/BotsEvolved_js_modules_botPrint_botEvo.js.html#l28"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;botPrint&#x2F;botEvo.js:28</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">bot</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">task</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">arena</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_mutateAction" class="method item">
-    <h3 class="name"><code>mutateAction</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>node</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>majorChange</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>mutationStrength</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
+            but overwritten in
             
         
         
-        <a href="../files/BotsEvolved_js_modules_botPrint_botEvo.js.html#l147"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;botPrint&#x2F;botEvo.js:147</code></a>
+        <a href="../files/BotsEvolved_js_modules_botPrint_bot_chassis.js.html#l17"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;botPrint&#x2F;bot&#x2F;chassis.js:17</code></a>
         
         </p>
 
@@ -1117,59 +1319,6 @@
     </div>
 
     
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">node</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">majorChange</code>
-                        <span class="type">Boolean</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">mutationStrength</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
 
     
 
@@ -1177,8 +1326,8 @@
 </div>
 
                 
-                    <div id="method_mutateCondition" class="method item">
-    <h3 class="name"><code>mutateCondition</code></h3>
+                    <div id="method_reduceDown" class="method item inherited">
+    <h3 class="name"><code>reduceDown</code></h3>
 
     
         <div class="args">
@@ -1186,449 +1335,13 @@
             
                 <li class="arg">
                     
-                        <code>node</code>
+                        <code>f</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>majorChange</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>mutationStrength</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/BotsEvolved_js_modules_botPrint_botEvo.js.html#l112"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;botPrint&#x2F;botEvo.js:112</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Mutate a condition with either major or minor changes</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">node</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">majorChange</code>
-                        <span class="type">Boolean</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">mutationStrength</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_mutateGenome" class="method item">
-    <h3 class="name"><code>mutateGenome</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>genome</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/BotsEvolved_js_modules_botPrint_botEvo.js.html#l200"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;botPrint&#x2F;botEvo.js:200</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">genome</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_mutateNode" class="method item">
-    <h3 class="name"><code>mutateNode</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>node</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>mutationIntensity</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/BotsEvolved_js_modules_botPrint_botEvo.js.html#l183"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;botPrint&#x2F;botEvo.js:183</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">node</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">mutationIntensity</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_renderScores" class="method item">
-    <h3 class="name"><code>renderScores</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>g</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/BotsEvolved_js_modules_botPrint_botEvo.js.html#l321"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;botPrint&#x2F;botEvo.js:321</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">g</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_runGeneration" class="method item inherited">
-    <h3 class="name"><code>runGeneration</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>evoRun</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>crossOverPct</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>generations</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>currentGeneration</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>{Number</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>population</code>
+                        <code>base</code>
                     
                 </li>
             
@@ -1654,11 +1367,11 @@
         
             
                 <p>Inherited from
-                <a href="../classes/EvoSim.html#method_runGeneration">EvoSim</a>:
+                <a href="../classes/Tree.html#method_reduceDown">Tree</a>:
             
         
         
-        <a href="../files/BotsEvolved_js_modules_shared_evo_evoSim.js.html#l55"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;shared&#x2F;evo&#x2F;evoSim.js:55</code></a>
+        <a href="../files/BotsEvolved_js_modules_shared_common_tree.js.html#l105"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;shared&#x2F;common&#x2F;tree.js:105</code></a>
         
         </p>
 
@@ -1680,85 +1393,23 @@
             
                 <li class="param">
                     
-                        <code class="param-name">evoRun</code>
+                        <code class="param-name">f</code>
+                        <span class="type">Function</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">base</code>
                         <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">crossOverPct</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>(0-1)</p>
-
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">generations</code>
-                        <span class="type">Array</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">currentGeneration</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">{Number</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>generationCount</p>
-
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">population</code>
-                        <span class="type">Array</span>
                     
 
                     
@@ -1780,8 +1431,112 @@
 </div>
 
                 
-                    <div id="method_runGenerations" class="method item inherited">
-    <h3 class="name"><code>runGenerations</code></h3>
+                    <div id="method_removeChildren" class="method item inherited">
+    <h3 class="name"><code>removeChildren</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Tree.html#method_removeChildren">Tree</a>:
+            
+        
+        
+        <a href="../files/BotsEvolved_js_modules_shared_common_tree.js.html#l41"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;shared&#x2F;common&#x2F;tree.js:41</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Severs all children from the tree, sets this.children to []</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_removeParent" class="method item inherited">
+    <h3 class="name"><code>removeParent</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Tree.html#method_removeParent">Tree</a>:
+            
+        
+        
+        <a href="../files/BotsEvolved_js_modules_shared_common_tree.js.html#l52"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;shared&#x2F;common&#x2F;tree.js:52</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Severs the node from the tree.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_render" class="method item">
+    <h3 class="name"><code>render</code></h3>
 
     
         <div class="args">
@@ -1789,7 +1544,95 @@
             
                 <li class="arg">
                     
-                        <code>generationCount</code>
+                        <code>context</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/BotsEvolved_js_modules_botPrint_bot_chassis.js.html#l247"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;botPrint&#x2F;bot&#x2F;chassis.js:247</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Render this bot in a 2D frame</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">context</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_setParent" class="method item inherited">
+    <h3 class="name"><code>setParent</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>parent</code>
                     
                 </li>
             
@@ -1815,11 +1658,11 @@
         
             
                 <p>Inherited from
-                <a href="../classes/EvoSim.html#method_runGenerations">EvoSim</a>:
+                <a href="../classes/Tree.html#method_setParent">Tree</a>:
             
         
         
-        <a href="../files/BotsEvolved_js_modules_shared_evo_evoSim.js.html#l37"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;shared&#x2F;evo&#x2F;evoSim.js:37</code></a>
+        <a href="../files/BotsEvolved_js_modules_shared_common_tree.js.html#l61"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;shared&#x2F;common&#x2F;tree.js:61</code></a>
         
         </p>
 
@@ -1841,8 +1684,254 @@
             
                 <li class="param">
                     
-                        <code class="param-name">generationCount</code>
-                        <span class="type">Number</span>
+                        <code class="param-name">parent</code>
+                        <span class="type"><a href="../classes/Tree.html" class="crosslink">Tree</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_toString" class="method item inherited">
+    <h3 class="name"><code>toString</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Tree.html#method_toString">Tree</a>:
+            
+        
+        
+        <a href="../files/BotsEvolved_js_modules_shared_common_tree.js.html#l123"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;shared&#x2F;common&#x2F;tree.js:123</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_transformToGlobal" class="method item">
+    <h3 class="name"><code>transformToGlobal</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>local</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>global</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/BotsEvolved_js_modules_botPrint_bot_chassis.js.html#l71"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;botPrint&#x2F;bot&#x2F;chassis.js:71</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">local</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">global</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_update" class="method item">
+    <h3 class="name"><code>update</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>time</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/BotsEvolved_js_modules_botPrint_bot_chassis.js.html#l219"><code>BotsEvolved&#x2F;js&#x2F;modules&#x2F;botPrint&#x2F;bot&#x2F;chassis.js:219</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">time</code>
+                        <span class="type">Object</span>
                     
 
                     

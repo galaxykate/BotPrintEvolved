@@ -45,7 +45,11 @@
             
                 <li><a href="../classes/BrainEvo.html">BrainEvo</a></li>
             
+                <li><a href="../classes/Chassis.html">Chassis</a></li>
+            
                 <li><a href="../classes/Collision.html">Collision</a></li>
+            
+                <li><a href="../classes/Component.html">Component</a></li>
             
                 <li><a href="../classes/Coords.html">Coords</a></li>
             
@@ -55,6 +59,8 @@
             
                 <li><a href="../classes/Gridster.html">Gridster</a></li>
             
+                <li><a href="../classes/Pin.html">Pin</a></li>
+            
                 <li><a href="../classes/Time.html">Time</a></li>
             
                 <li><a href="../classes/Tree.html">Tree</a></li>
@@ -62,6 +68,8 @@
                 <li><a href="../classes/Utilities.html">Utilities</a></li>
             
                 <li><a href="../classes/Vector.html">Vector</a></li>
+            
+                <li><a href="../classes/Wire.html">Wire</a></li>
             
             </ul>
 
@@ -112,7 +120,15 @@
 
 define([&quot;common&quot;, &quot;graph&quot;], function(common, Graph) {&#x27;use strict&#x27;;
     var wireCount = 0;
+    /**
+     * @class Wire
+     */
     var Wire = Class.extend({
+        /**
+         * @method init
+         * @param start
+         * @param end
+         */
         init : function(start, end) {
             this.idNumber = wireCount;
             this.idColor = common.KColor.makeIDColor(this.idNumber);
@@ -122,6 +138,10 @@ define([&quot;common&quot;, &quot;graph&quot;], function(common, Graph) {&#x27;u
             this.end = end;
         },
 
+        /**
+         * @method render
+         * @param context
+         */
         render : function(context) {
             var g = context.g;
             g.strokeWeight(1);
@@ -133,7 +153,14 @@ define([&quot;common&quot;, &quot;graph&quot;], function(common, Graph) {&#x27;u
         }
     });
 
+    /**
+     * @class Pin
+     */
     var Pin = Class.extend({
+        /**
+         * @method init
+         * @param settings
+         */
         init : function(settings) {
             this.positive = true;
             this.pct = .5;
@@ -143,6 +170,10 @@ define([&quot;common&quot;, &quot;graph&quot;], function(common, Graph) {&#x27;u
             this.wire = undefined;
         },
 
+        /**
+         * @method render
+         * @param context
+         */
         render : function(context) {
             this.edge.setToPct(this.edgePos, this.pct);
             this.edgePos.add(this.parent.center);
@@ -157,7 +188,15 @@ define([&quot;common&quot;, &quot;graph&quot;], function(common, Graph) {&#x27;u
     });
 
     var componentCount = 0;
+
+    /**
+     * @class Component
+     */
     var Component = Class.extend({
+        /**
+         * @method init
+         * @param settings
+         */
         init : function(settings) {
             // Defaults
             this.idNumber = componentCount;
@@ -183,6 +222,11 @@ define([&quot;common&quot;, &quot;graph&quot;], function(common, Graph) {&#x27;u
 
         },
 
+        /**
+         * @method compilePins
+         * @param {Array} pinList
+         * @param {Function} filter
+         */
         compilePins : function(pinList, filter) {
             $.each(this.pins, function(index, pin) {
                 if (filter(pin))
@@ -190,6 +234,10 @@ define([&quot;common&quot;, &quot;graph&quot;], function(common, Graph) {&#x27;u
             });
         },
 
+        /**
+         * @method render
+         * @param context
+         */
         render : function(context) {
             var g = context.g;
             this.idColor.fill(context.g);

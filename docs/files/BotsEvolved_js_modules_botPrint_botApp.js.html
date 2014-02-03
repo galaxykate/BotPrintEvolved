@@ -45,7 +45,11 @@
             
                 <li><a href="../classes/BrainEvo.html">BrainEvo</a></li>
             
+                <li><a href="../classes/Chassis.html">Chassis</a></li>
+            
                 <li><a href="../classes/Collision.html">Collision</a></li>
+            
+                <li><a href="../classes/Component.html">Component</a></li>
             
                 <li><a href="../classes/Coords.html">Coords</a></li>
             
@@ -55,6 +59,8 @@
             
                 <li><a href="../classes/Gridster.html">Gridster</a></li>
             
+                <li><a href="../classes/Pin.html">Pin</a></li>
+            
                 <li><a href="../classes/Time.html">Time</a></li>
             
                 <li><a href="../classes/Tree.html">Tree</a></li>
@@ -62,6 +68,8 @@
                 <li><a href="../classes/Utilities.html">Utilities</a></li>
             
                 <li><a href="../classes/Vector.html">Vector</a></li>
+            
+                <li><a href="../classes/Wire.html">Wire</a></li>
             
             </ul>
 
@@ -115,27 +123,98 @@ define([&quot;ui&quot;, &quot;./bot/bot&quot;, &quot;./physics/arena&quot;, &quo
     var BotApp = App.extend({
         init : function() {
             var app = this;
+            app.paused = false;
+            app.editChassis = false;
 
-            var w = 800;
-            var h = 600;
-            this.fullPanelDimensions = new Vector(w - 20, h - 40);
-
-            app._super(&quot;Bots&quot;, new Vector(w, h));
+            app._super(&quot;Bots&quot;, new Vector(30, 30));
 
             // app.changeMode(&quot;inspector&quot;);
-            app.editBot();
             app.arena = new Arena();
 
-            app.changeMode(&quot;arena&quot;);
+            app.currentBot = new Bot();
 
-            //   this.createAndTestNewBot();
+            $(&quot;#switch_modes&quot;).click(function() {
+                app.toggleMainMode();
+            });
+
+            $(&quot;.edit_menu&quot;).click(function() {
+                app.toggleEditMode();
+            });
+
+            app.openEditMode();
+            app.closeLoadScreen();
+        },
+
+        //=====================================================================
+        //=====================================================================
+        //=====================================================================
+        //=====================================================================
+
+        toggleMainMode : function() {
+            console.log(&quot;Toggle main mode &quot; + app.editMode);
+            if (app.editMode)
+                app.openArenaMode();
+            else
+                app.openEditMode();
+        },
+
+        openEditMode : function() {
+            app.editMode = true;
+            $(&quot;#arena&quot;).addClass(&quot;away&quot;);
+            $(&quot;#edit&quot;).removeClass(&quot;away&quot;);
+
+            // Make wiring for this bot?
+            app.currentBot.transform.setTo(0, 0, 0);
+            app.openEditChassis();
+        },
+
+        openArenaMode : function() {
+            app.editMode = false;
+            $(&quot;#edit&quot;).addClass(&quot;away&quot;);
+            $(&quot;#arena&quot;).removeClass(&quot;away&quot;);
             this.createAndTestManyBots();
+        },
+
+        //-------------------------------------------------------
+
+        toggleEditMode : function() {
+            console.log(&quot;Toggle edit mode &quot; + app.editChassis);
+            if (app.editChassis)
+                app.openEditChassis();
+            else
+                app.openEditParts();
+        },
+
+        openEditParts : function() {
+            app.editChassis = true;
+            $(&quot;#chassis_edit&quot;).addClass(&quot;away&quot;);
+            $(&quot;#parts_edit&quot;).removeClass(&quot;away&quot;);
+
+        },
+
+        openEditChassis : function() {
+            app.editChassis = false;
+            $(&quot;#chassis_edit&quot;).removeClass(&quot;away&quot;);
+            $(&quot;#parts_edit&quot;).addClass(&quot;away&quot;);
+        },
+
+        openLoadScreen : function() {
+            $(&quot;#load_screen&quot;).show();
+        },
+
+        closeLoadScreen : function() {
+            $(&quot;#load_screen&quot;).hide();
 
             $(&quot;*&quot;).click(function(evt) {
                 console.log(&quot;Clicked &quot;, this);
             });
 
         },
+
+        //=====================================================================
+        //=====================================================================
+        //=====================================================================
+        //=====================================================================
 
         createAndTestManyBots : function() {
             var task = &quot;doThing&quot;;
@@ -173,6 +252,7 @@ define([&quot;ui&quot;, &quot;./bot/bot&quot;, &quot;./physics/arena&quot;, &quo
             app.ui.addOption(&quot;logConditionTests&quot;, false);
             app.ui.addOption(&quot;logMutations&quot;, true);
             app.ui.addOption(&quot;useTimers&quot;, true);
+			app.ui.addOption(&quot;useColorLerpers&quot;, true);
             app.ui.addOption(&quot;useSharpie&quot;, false);
             app.ui.addTuningValue(&quot;unicornFluffiness&quot;, 100, 1, 700, function(key, value) {
                 // do something on change
@@ -244,51 +324,29 @@ define([&quot;ui&quot;, &quot;./bot/bot&quot;, &quot;./physics/arena&quot;, &quo
             $.each(this.modes, function(key, mode) {
                 mode.id = key;
             });
-
         },
-
         initControls : function() {
 
             // Set all the default UI controls
             app.controls = new UI.Controls($(&quot;body&quot;), {
 
                 onKeyPress : {
+
                     d : function(event) {
                         app.ui.devMode.toggle()
                     },
+
+                    space : function() {
+                        app.paused = !app.paused;
+                    }
                 },
 
             });
 
             // Make some of the windows touchable
 
-            var touchRender = app.controls.addTouchable(&quot;threeRender&quot;, $(&quot;#render_panel&quot;));
-            var touchInspector = app.controls.addTouchable(&quot;inspector&quot;, $(&quot;#inspector_canvas&quot;));
+            var touchInspector = app.controls.addTouchable(&quot;inspector&quot;, $(&quot;#edit_canvas&quot;));
             var touchArena = app.controls.addTouchable(&quot;arena&quot;, $(&quot;#arena_canvas&quot;));
-
-            // Camera Controls
-            touchRender.onDrag(function(touchwindow, p) {
-                var cam = app.threeRender.camera;
-                cam.orbit.theta = p.x * -.003;
-                cam.orbit.phi = -p.y * .004 + 1.7;
-                cam.updateOrbit();
-
-            });
-            touchRender.onUp(function(touchwindow, p) {
-                app.pauseSpinning = false;
-            });
-
-            touchRender.onDown(function(touchwindow, p) {
-                app.pauseSpinning = true;
-            });
-
-            touchRender.onScroll(function(touchwindow, delta) {
-                var cam = app.threeRender.camera;
-                cam.orbit.distance *= 1 + .03 * delta;
-                cam.orbit.distance = utilities.constrain(cam.orbit.distance, 300, 1200);
-                cam.updateOrbit();
-
-            });
 
             // Inspector controls
             touchInspector.onDrag(function(touchwindow, p) {
@@ -306,9 +364,7 @@ define([&quot;ui&quot;, &quot;./bot/bot&quot;, &quot;./physics/arena&quot;, &quo
             });
 
         },
-
         initUI : function() {
-
             $(&quot;#test_button&quot;).click(function() {
                 app.changeMode(&quot;arena&quot;);
             });
@@ -327,41 +383,7 @@ define([&quot;ui&quot;, &quot;./bot/bot&quot;, &quot;./physics/arena&quot;, &quo
                 console.log(&quot;defaultTree after: &quot;, app.currentBot.brain.defaultTree)
 
             });
-
-            $(&quot;#mutateBig&quot;).click(function() {
-                console.log(&quot;-------------------------- &quot;);
-                console.log(&quot;Mutating Generations&quot;);
-                app.evoSim.runGenerations(2);
-                /*
-                 app.currentBot.brain.defaultTree.debugPrint();
-                 for (var i = 0; i &lt; 20; i++) {
-                 app.evoSim.mutateGenome(app.currentBot.brain.defaultTree);
-                 }
-
-                 app.evoSim.treeViz.setTree(app.currentBot.brain.defaultTree);
-                 app.currentBot.brain.defaultTree.debugPrint();
-                 */
-            });
-
-            $(&quot;#spawnRelatives&quot;).click(function() {
-                console.log(&quot;Spawn relatives&quot;);
-                var bots = [];
-                // Create relatives
-                console.log(app.currentBot.clone());
-                for (var i = 0; i &lt; 10; i++) {
-                    bots[i] = app.currentBot.clone();
-                    // bots[i].mutate(.7);
-                }
-                app.arena.addPopulation(bots);
-            });
-
-            var ui = this.ui;
-
-            $(&quot;.full_canvas&quot;).css({
-                width : &quot;800px&quot;,
-                height : &quot;600px&quot;,
-            });
-
+            var ui = app.ui;
             // Create the Three scene
             app.threeRender = new threeUtils.ThreeView($(&quot;#render_panel&quot;), function() {
                 // update the camera
@@ -388,26 +410,39 @@ define([&quot;ui&quot;, &quot;./bot/bot&quot;, &quot;./physics/arena&quot;, &quo
             app.threeRender.scene.add(app.threeBotMesh);
 
             // These windows all use processing for the drawing
-            app.inspectorWindow = new UI.DrawingWindow(&quot;inspector&quot;, $(&quot;#inspector_canvas&quot;));
+            app.editWindow = new UI.DrawingWindow(&quot;edit&quot;, $(&quot;#edit_canvas&quot;));
             app.arenaWindow = new UI.DrawingWindow(&quot;arena&quot;, $(&quot;#arena_canvas&quot;));
-            app.scoreWindow = new UI.DrawingWindow(&quot;score&quot;, $(&quot;#score_canvas&quot;));
 
-            app.inspectorProcessing = ui.addProcessingWindow(app.inspectorWindow.element, function(g) {
-                app.inspectorWindow.setProcessing(g);
+            app.editorProcessing = ui.addProcessingWindow(app.editWindow.element, function(g) {
+                app.editWindow.setProcessing(g);
 
             }, function(g) {
                 // Updates
 
                 // only do if its the inspector mode
-                if (app.mode === app.modes.inspector) {
+                if (app.editMode) {
                     // Updates
 
-                    app.worldTime.updateTime(g.millis() * .001);
-                    app.currentBot.update(app.time);
+                    if (!app.paused) {
+                        app.worldTime.updateTime(g.millis() * .001);
+                        app.currentBot.update({
+							total: app.worldTime.total,
+							elapsed: app.worldTime.ellapsed
+							});
+                    }
 
-                    app.inspectorWindow.render(function(context) {
+                    app.editWindow.render(function(context) {
+
+                        var g = context.g;
+                        g.background(.8);
                         context.useChassisCurves = true;
+                        // Draw the bot
+
+                        g.fill(.8, 1, 1);
+                        g.ellipse(0, 0, 90, 90);
+
                         app.currentBot.render(context);
+
                     });
                 }
             });
@@ -416,44 +451,20 @@ define([&quot;ui&quot;, &quot;./bot/bot&quot;, &quot;./physics/arena&quot;, &quo
             app.arenaProcessing = ui.addProcessingWindow(app.arenaWindow.element, function(g) {
                 app.arenaWindow.setProcessing(g);
             }, function(g) {
-
                 // only do if its the arena mode
-                if (app.mode === app.modes.arena) {
-                    app.worldTime.updateTime(g.millis() * .001);
+                if (!app.editMode) {
 
-                    app.arena.update(app.worldTime.ellapsed);
-
+                    if (!app.paused) {
+                        app.worldTime.updateTime(g.millis() * .001);
+                        app.arena.update(app.worldTime.ellapsed);
+                    }
                     app.arenaWindow.render(function(context) {
+                        context.scale = 3;
                         app.arena.render(context);
                     });
                 }
 
             });
-
-            // Create the arena
-            app.scoreProcessing = ui.addProcessingWindow(app.scoreWindow.element, function(g) {
-                app.scoreWindow.setProcessing(g);
-            }, function(g) {
-
-                // only do if its the arena mode
-                if (app.mode === app.modes.arena &amp;&amp; app.evoSim) {
-                    g.background(.8, 1, .3);
-                    app.evoSim.renderScores(g);
-
-                }
-
-            });
-
-        },
-
-        editBot : function(bot) {
-            app.changeMode(&quot;inspector&quot;);
-
-            if (bot === undefined)
-                bot = new Bot();
-
-            app.currentBot = bot;
-            app.threeBotMesh.add(bot.createThreeMesh());
 
         },
     });

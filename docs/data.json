@@ -50,14 +50,20 @@
         "BotsEvolved/js/modules/botPrint/bot/chassis.js": {
             "name": "BotsEvolved/js/modules/botPrint/bot/chassis.js",
             "modules": {},
-            "classes": {},
+            "classes": {
+                "Chassis": 1
+            },
             "fors": {},
             "namespaces": {}
         },
         "BotsEvolved/js/modules/botPrint/bot/wiring.js": {
             "name": "BotsEvolved/js/modules/botPrint/bot/wiring.js",
             "modules": {},
-            "classes": {},
+            "classes": {
+                "Wire": 1,
+                "Pin": 1,
+                "Component": 1
+            },
             "fors": {},
             "namespaces": {}
         },
@@ -432,6 +438,51 @@
     },
     "modules": {},
     "classes": {
+        "Chassis": {
+            "name": "Chassis",
+            "shortname": "Chassis",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "BotsEvolved/js/modules/botPrint/bot/chassis.js",
+            "line": 12,
+            "extends": "Tree"
+        },
+        "Wire": {
+            "name": "Wire",
+            "shortname": "Wire",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "BotsEvolved/js/modules/botPrint/bot/wiring.js",
+            "line": 7
+        },
+        "Pin": {
+            "name": "Pin",
+            "shortname": "Pin",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "BotsEvolved/js/modules/botPrint/bot/wiring.js",
+            "line": 40
+        },
+        "Component": {
+            "name": "Component",
+            "shortname": "Component",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "BotsEvolved/js/modules/botPrint/bot/wiring.js",
+            "line": 76
+        },
         "BrainEvo": {
             "name": "BrainEvo",
             "shortname": "BrainEvo",
@@ -794,49 +845,295 @@
             "file": "BotsEvolved/js/modules/botPrint/ai/dtreeViz.js",
             "line": 1,
             "author": "Kate Compton",
-            "class": "BrainEvo"
+            "class": "Chassis"
         },
         {
             "file": "BotsEvolved/js/modules/botPrint/bot/attachment/actuator.js",
             "line": 1,
             "author": "Kate Compton",
-            "class": "BrainEvo"
+            "class": "Chassis"
         },
         {
             "file": "BotsEvolved/js/modules/botPrint/bot/attachment/attachment.js",
             "line": 1,
             "author": "Kate Compton",
-            "class": "BrainEvo"
+            "class": "Chassis"
         },
         {
             "file": "BotsEvolved/js/modules/botPrint/bot/attachment/attachments.js",
             "line": 1,
             "author": "Kate Compton",
-            "class": "BrainEvo"
+            "class": "Chassis"
         },
         {
             "file": "BotsEvolved/js/modules/botPrint/bot/attachment/sensor.js",
             "line": 1,
             "author": "Kate Compton",
-            "class": "BrainEvo"
+            "class": "Chassis"
         },
         {
             "file": "BotsEvolved/js/modules/botPrint/bot/bot.js",
             "line": 1,
             "author": "Kate Compton",
-            "class": "BrainEvo"
+            "class": "Chassis"
         },
         {
             "file": "BotsEvolved/js/modules/botPrint/bot/chassis.js",
             "line": 1,
             "author": "Kate Compton",
-            "class": "BrainEvo"
+            "class": "Chassis"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/bot/chassis.js",
+            "line": 17,
+            "itemtype": "method",
+            "name": "init",
+            "class": "Chassis"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/bot/chassis.js",
+            "line": 49,
+            "itemtype": "method",
+            "name": "clone",
+            "return": {
+                "description": "newChassis",
+                "type": "Chassis"
+            },
+            "class": "Chassis"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/bot/chassis.js",
+            "line": 62,
+            "itemtype": "method",
+            "name": "getBot",
+            "return": {
+                "description": "returns parent's Bot, or undefined",
+                "type": "Bot"
+            },
+            "class": "Chassis"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/bot/chassis.js",
+            "line": 71,
+            "itemtype": "method",
+            "name": "transformToGlobal",
+            "params": [
+                {
+                    "name": "local",
+                    "description": ""
+                },
+                {
+                    "name": "global",
+                    "description": ""
+                }
+            ],
+            "class": "Chassis"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/bot/chassis.js",
+            "line": 85,
+            "description": "Here there be dragons",
+            "itemtype": "method",
+            "name": "generateWiring",
+            "class": "Chassis"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/bot/chassis.js",
+            "line": 141,
+            "itemtype": "method",
+            "name": "generateAttachments",
+            "class": "Chassis"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/bot/chassis.js",
+            "line": 190,
+            "itemtype": "method",
+            "name": "compileForces",
+            "params": [
+                {
+                    "name": "forces",
+                    "description": ""
+                }
+            ],
+            "class": "Chassis"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/bot/chassis.js",
+            "line": 202,
+            "itemtype": "method",
+            "name": "compileAttachments",
+            "params": [
+                {
+                    "name": "attachments",
+                    "description": ""
+                },
+                {
+                    "name": "query",
+                    "description": ""
+                }
+            ],
+            "class": "Chassis"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/bot/chassis.js",
+            "line": 219,
+            "itemtype": "method",
+            "name": "update",
+            "params": [
+                {
+                    "name": "time",
+                    "description": ""
+                }
+            ],
+            "class": "Chassis"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/bot/chassis.js",
+            "line": 232,
+            "description": "Get something relative to this chassis",
+            "itemtype": "method",
+            "name": "getAt",
+            "params": [
+                {
+                    "name": "query",
+                    "description": ""
+                }
+            ],
+            "class": "Chassis"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/bot/chassis.js",
+            "line": 247,
+            "description": "Render this bot in a 2D frame",
+            "itemtype": "method",
+            "name": "render",
+            "params": [
+                {
+                    "name": "context",
+                    "description": ""
+                }
+            ],
+            "class": "Chassis"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/bot/chassis.js",
+            "line": 291,
+            "itemtype": "method",
+            "name": "hover",
+            "params": [
+                {
+                    "name": "pos",
+                    "description": ""
+                }
+            ],
+            "class": "Chassis"
         },
         {
             "file": "BotsEvolved/js/modules/botPrint/bot/wiring.js",
             "line": 1,
             "author": "Kate Compton",
-            "class": "BrainEvo"
+            "class": "Wire"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/bot/wiring.js",
+            "line": 11,
+            "itemtype": "method",
+            "name": "init",
+            "params": [
+                {
+                    "name": "start",
+                    "description": ""
+                },
+                {
+                    "name": "end",
+                    "description": ""
+                }
+            ],
+            "class": "Wire"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/bot/wiring.js",
+            "line": 25,
+            "itemtype": "method",
+            "name": "render",
+            "params": [
+                {
+                    "name": "context",
+                    "description": ""
+                }
+            ],
+            "class": "Wire"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/bot/wiring.js",
+            "line": 44,
+            "itemtype": "method",
+            "name": "init",
+            "params": [
+                {
+                    "name": "settings",
+                    "description": ""
+                }
+            ],
+            "class": "Pin"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/bot/wiring.js",
+            "line": 57,
+            "itemtype": "method",
+            "name": "render",
+            "params": [
+                {
+                    "name": "context",
+                    "description": ""
+                }
+            ],
+            "class": "Pin"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/bot/wiring.js",
+            "line": 80,
+            "itemtype": "method",
+            "name": "init",
+            "params": [
+                {
+                    "name": "settings",
+                    "description": ""
+                }
+            ],
+            "class": "Component"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/bot/wiring.js",
+            "line": 109,
+            "itemtype": "method",
+            "name": "compilePins",
+            "params": [
+                {
+                    "name": "pinList",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "filter",
+                    "description": "",
+                    "type": "Function"
+                }
+            ],
+            "class": "Component"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/bot/wiring.js",
+            "line": 121,
+            "itemtype": "method",
+            "name": "render",
+            "params": [
+                {
+                    "name": "context",
+                    "description": ""
+                }
+            ],
+            "class": "Component"
         },
         {
             "file": "BotsEvolved/js/modules/botPrint/physics/arena.js",

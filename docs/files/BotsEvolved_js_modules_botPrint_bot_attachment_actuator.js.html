@@ -45,7 +45,11 @@
             
                 <li><a href="../classes/BrainEvo.html">BrainEvo</a></li>
             
+                <li><a href="../classes/Chassis.html">Chassis</a></li>
+            
                 <li><a href="../classes/Collision.html">Collision</a></li>
+            
+                <li><a href="../classes/Component.html">Component</a></li>
             
                 <li><a href="../classes/Coords.html">Coords</a></li>
             
@@ -55,6 +59,8 @@
             
                 <li><a href="../classes/Gridster.html">Gridster</a></li>
             
+                <li><a href="../classes/Pin.html">Pin</a></li>
+            
                 <li><a href="../classes/Time.html">Time</a></li>
             
                 <li><a href="../classes/Tree.html">Tree</a></li>
@@ -62,6 +68,8 @@
                 <li><a href="../classes/Utilities.html">Utilities</a></li>
             
                 <li><a href="../classes/Vector.html">Vector</a></li>
+            
+                <li><a href="../classes/Wire.html">Wire</a></li>
             
             </ul>
 
@@ -224,7 +232,46 @@ define([&quot;common&quot;, &quot;./attachment&quot;], function(common, Attachme
         },
     });
 
+    var DiscoLight = Actuator.extend({
+
+        init : function() {
+            this._super();
+
+            this.color = new common.KColor(Math.random(), 1, 1);
+            this.blinkOffset = 0;
+        },
+
+        update : function(time) {
+            this.blinkOffset = time.total;
+        },
+
+        getForce : function() {
+            return undefined;
+        },
+
+        renderDetails : function(context) {
+            var g = context.g;
+            var r = 10
+            g.noStroke();
+            g.fill(0, 0, 0, .3);
+            g.ellipse(0, 0, 25, 25);
+            g.ellipse(0, 0, 15, 15);
+            
+            for (var i = 0; i &lt; 10; i++) {
+                this.color.fill(g, i*.1, -.5);
+                var r = 30 * utilities.noise(5*i + this.blinkOffset);
+                var theta = i + this.blinkOffset;
+                g.ellipse(r * Math.cos(theta), r * Math.sin(theta), 6, 6);
+
+            }
+
+            g.text(this.idNumber, -3, 5);
+
+        },
+    });
+
     Actuator.Sharpie = Sharpie;
+    Actuator.DiscoLight = DiscoLight;
 
     return Actuator;
 });

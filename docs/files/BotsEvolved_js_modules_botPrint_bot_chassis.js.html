@@ -45,7 +45,11 @@
             
                 <li><a href="../classes/BrainEvo.html">BrainEvo</a></li>
             
+                <li><a href="../classes/Chassis.html">Chassis</a></li>
+            
                 <li><a href="../classes/Collision.html">Collision</a></li>
+            
+                <li><a href="../classes/Component.html">Component</a></li>
             
                 <li><a href="../classes/Coords.html">Coords</a></li>
             
@@ -55,6 +59,8 @@
             
                 <li><a href="../classes/Gridster.html">Gridster</a></li>
             
+                <li><a href="../classes/Pin.html">Pin</a></li>
+            
                 <li><a href="../classes/Time.html">Time</a></li>
             
                 <li><a href="../classes/Tree.html">Tree</a></li>
@@ -62,6 +68,8 @@
                 <li><a href="../classes/Utilities.html">Utilities</a></li>
             
                 <li><a href="../classes/Vector.html">Vector</a></li>
+            
+                <li><a href="../classes/Wire.html">Wire</a></li>
             
             </ul>
 
@@ -117,7 +125,14 @@ define([&quot;common&quot;, &quot;graph&quot;, &quot;./wiring&quot;, &quot;./att
     // var CylinderGeometry = new
     //  IO.saveFile(&quot;test&quot;, &quot;txt&quot;, &quot;M 100 100 L 300 100 L 200 300 z&quot;);
 
+    /**
+     * @class Chassis
+     * @extends Tree
+     */
     var Chassis = common.Tree.extend({
+        /**
+         * @method init
+         */
         init : function() {
             this._super();
 
@@ -147,6 +162,10 @@ define([&quot;common&quot;, &quot;graph&quot;, &quot;./wiring&quot;, &quot;./att
         //======================================================================================
         // Cloning + modification
 
+        /**
+         * @method clone
+         * @return {Chassis} newChassis
+         */
         clone : function() {
             return new Chassis();
         },
@@ -156,13 +175,21 @@ define([&quot;common&quot;, &quot;graph&quot;, &quot;./wiring&quot;, &quot;./att
         //======================================================================================
         // Transformation
 
+        /**
+         * @method getBot
+         * @return {Bot} returns parent&#x27;s Bot, or undefined
+         */
         getBot : function() {
             if (this.parent !== undefined)
                 return this.parent.getBot();
         },
 
+        /**
+         * @method transformToGlobal
+         * @param local
+         * @param global
+         */
         transformToGlobal : function(local, global) {
-
             if (this.parent !== undefined)
                 this.parent.transformToGlobal(local, global);
         },
@@ -171,6 +198,10 @@ define([&quot;common&quot;, &quot;graph&quot;, &quot;./wiring&quot;, &quot;./att
         //======================================================================================
         //======================================================================================
         // Wiring
+        /**
+         * Here there be dragons
+         * @method generateWiring
+         */
         generateWiring : function() {
             var chassis = this;
             // Create components
@@ -223,24 +254,35 @@ define([&quot;common&quot;, &quot;graph&quot;, &quot;./wiring&quot;, &quot;./att
         //======================================================================================
         // Attachments
 
+        /**
+         * @method generateAttachments
+         */
         generateAttachments : function() {
             this.attachments = [];
             this.attachPoints = [];
 
             // Weights and attachment types: there should be the same number in each array, please!
-            var weights = [.3, 1];
+            var weights = [.3, .6];
             var attachmentTypes = [Attachment.Sensor, Attachment.Actuator];
 
             if (app.getOption(&quot;useTimers&quot;)) {
                 attachmentTypes.push(Attachment.Sensor.Timer), weights.push(1);
             }
 
+			if (app.getOption(&quot;useColorLerpers&quot;)){
+				attachmentTypes.push(Attachment.Sensor.ColorLerper), weights.push(1);
+			}
+
             if (app.getOption(&quot;useSharpie&quot;)) {
                 attachmentTypes.push(Attachment.Actuator.Sharpie), weights.push(1);
             }
 
+            attachmentTypes.push(Attachment.Actuator.DiscoLight), weights.push(1);
+
+
+
             // How many attachments to generate
-            var count = 15;
+            var count = 4;
 
             for (var i = 0; i &lt; count; i++) {
                 // Create some random point around the path to attach this to.
@@ -261,6 +303,10 @@ define([&quot;common&quot;, &quot;graph&quot;, &quot;./wiring&quot;, &quot;./att
             }
         },
 
+        /**
+         * @method compileForces
+         * @param forces
+         */
         compileForces : function(forces) {
             $.each(this.attachments, function(index, attachment) {
                 var f = attachment.getForce();
@@ -269,6 +315,11 @@ define([&quot;common&quot;, &quot;graph&quot;, &quot;./wiring&quot;, &quot;./att
             });
         },
 
+        /**
+         * @method compileAttachments
+         * @param attachments
+         * @param query
+         */
         compileAttachments : function(attachments, query) {
             $.each(this.attachments, function(index, attachment) {
                 if (query(attachment)) {
@@ -281,6 +332,10 @@ define([&quot;common&quot;, &quot;graph&quot;, &quot;./wiring&quot;, &quot;./att
         //==========================================
         // Updates
 
+        /**
+         * @method update
+         * @param time
+         */
         update : function(time) {
             var chassis = this;
 
@@ -290,7 +345,11 @@ define([&quot;common&quot;, &quot;graph&quot;, &quot;./wiring&quot;, &quot;./att
 
         },
 
-        // Get something relative to this chassis
+        /**
+         * Get something relative to this chassis
+         * @method getAt
+         * @param query
+         */
         getAt : function(query) {
 
             app.moveLog(&quot;Get at &quot; + query.screenPos);
@@ -300,8 +359,12 @@ define([&quot;common&quot;, &quot;graph&quot;, &quot;./wiring&quot;, &quot;./att
 
         //-------------------------------------------
         // View stuff - will probably end up in it&#x27;s own file
-        // render this bot in a 2D frame
 
+        /**
+         * Render this bot in a 2D frame
+         * @method render
+         * @param context
+         */
         render : function(context) {
             var bot = this.getBot();
             var g = context.g;
@@ -340,6 +403,11 @@ define([&quot;common&quot;, &quot;graph&quot;, &quot;./wiring&quot;, &quot;./att
             });
 
         },
+
+        /**
+         * @method hover
+         * @param pos
+         */
         hover : function(pos) {
 
         },
