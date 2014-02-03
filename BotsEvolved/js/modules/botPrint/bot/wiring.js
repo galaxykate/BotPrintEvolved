@@ -37,7 +37,7 @@ define(["common", "graph"], function(common, Graph) {'use strict';
     var Pin = Class.extend({
         init : function(settings) {
             this.positive = true;
-            this.pct = .5;
+            //this.pct = .5;
             _.extend(this, settings);
             this.pos = new Vector();
 			this.pos.add(this.parent.attachPoint);

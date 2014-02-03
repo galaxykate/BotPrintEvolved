@@ -39,6 +39,7 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
 
                 this.path.addEdgeTo(pt);
             }
+            
             this.generateAttachments();
             this.generateWiring();
         },
@@ -75,35 +76,42 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
         generateWiring : function() {
             var chassis = this;
             // Create components
-/*
+
             this.components = [];
-            for (var i = 0; i < 5; i++) {
-                var volume = Math.random() * 850 + 400;
-                var aspectRatio = Math.random() * 1 + .5;
+            for (var i = 0; i < 1; i++) {
 
                 var component = new Component({
                     name : "obj " + i,
-                    width : Math.sqrt(volume) * aspectRatio,
-                    height : Math.sqrt(volume) / aspectRatio,
-                    attachPoint : new Vector(300 * (Math.random() - .5), 300 * (Math.random() - .5)),
+                    //attachPoint : new Vector(300 * (Math.random() - .5), 300 * (Math.random() - .5)),
                 });
-
+				var p = new common.Transform();
+				
+				
+				if(p === undefined){
+					chassislog("Attach Point Undefined");
+				}
+				
+				component.place(this, p);
+                component.addPins();
+                
                 this.components.push(component);
-            }*/
+            }
 
             // Connect the components
 
             var inPins = [];
             var outPins = [];
-            /*
+
+            
             $.each(this.components, function(index, component) {
-                            component.compilePins(inPins, function(pin) {
-                                return pin.positive;
-                            });
-                            component.compilePins(outPins, function(pin) {
-                                return !pin.positive;
-                            });
-                        });*/
+            	component.compilePins(inPins, function(pin) {
+                	return pin.positive;
+                });
+                component.compilePins(outPins, function(pin) {
+                    return !pin.positive;
+                });
+            });
+
             
 
 			$.each(this.attachments, function(index, attachment){ 
@@ -188,12 +196,14 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
                 var attachPoint = edge.getTracer(pct, -3);
                 if (!attachPoint || !attachPoint.isValid())
                     throw "Found invalid attach point: " + attachPoint + " edge: " + edge + " pct: " + pct;
+                
                 // Create an attachment of some random type
                 var typeIndex = utilities.getWeightedRandomIndex(weights);
                 var attachment = new attachmentTypes[typeIndex]();
 
                 attachment.attachTo(this, attachPoint);
-                attachment.compileShape();
+                attachment.addPins();
+                
                 this.attachments.push(attachment);
                 this.attachPoints.push(attachPoint);
             }

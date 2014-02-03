@@ -45,7 +45,6 @@ define(["common", "graph", "./attachment", "../wiring"], function(common, Graph,
 
             g.fill(1, 0, 1, .7);
             g.text(this.idNumber, -3, 5);
-
         },
 
         toString : function() {

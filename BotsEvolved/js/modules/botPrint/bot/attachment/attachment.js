@@ -10,7 +10,6 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             attachmentCount++;
             
             this.pins = [];
-            this.subParts = [];
         },
 
         getForce : function() {
@@ -48,7 +47,6 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
 
         //========================================================
         //
-
         attachTo : function(parent, attachPoint) {
             this.parent = parent;
             
@@ -60,20 +58,16 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
         },
 
 		//========================================================
-		// Build subparts
-		
-		compileShape : function() {
-			var r = 10;
-            
-        	this.subParts.push(Graph.makeRectangle(this.attachPoint, (r / 2), r * 3));
-        	
+		// add pins
+		addPins : function() {
+			            
         	//add pins
         	// each component gets three snap points randomly distributed
             // TODO: extend this generic component for both the Baby Orangatang (sp?) and the battery pack
             for (var i = 0; i < 3; i++) {
                 var pin = new Wiring.Pin({
-                    edge : this.subParts[0].getRandomEdge(),
-                    pct : (i + .5) / 6,
+                    //edge : this.subParts[0].getRandomEdge(),
+                    //pct : (i + .5) / 6,
                     positive : Math.random() > .5,
                     parent : this,
                 });
@@ -93,17 +87,7 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             g.fill(.7, 1, 1);
             g.stroke(0);
             g.ellipse(0, 0, r * 1.4, r * 1.4);
-            //g.rect(0, -r / 2, -r * 3, r);
-            
-            //render subparts
-            $.each(this.subParts, function(index, part){
-            	part.draw(context);
-            });
-            
-            //render pins
-            $.each(this.pins, function(index, pin) {
-                pin.render(context);
-            });
+            g.rect(0, -r / 2, -r * 3, r);
         },
 
         render : function(context) {
@@ -113,9 +97,13 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             this.attachPoint.applyTransform(g);
 			
             this.renderDetails(context);
-
+            
             g.popMatrix();
-
+            
+            //render pins
+            $.each(this.pins, function(index, pin) {
+                pin.render(context);
+            });
         },
         
         //===========================================================
