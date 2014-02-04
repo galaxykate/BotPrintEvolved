@@ -128,7 +128,6 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
 					chassislog("Attach Point Undefined");
 				}
 				
-				
 				component.place(this, p);
                 component.addPins();
                 
