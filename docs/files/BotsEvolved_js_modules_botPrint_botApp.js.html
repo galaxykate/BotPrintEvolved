@@ -43,6 +43,8 @@
             
                 <li><a href="../classes/App.html">App</a></li>
             
+                <li><a href="../classes/BotApp.html">BotApp</a></li>
+            
                 <li><a href="../classes/BrainEvo.html">BrainEvo</a></li>
             
                 <li><a href="../classes/Chassis.html">Chassis</a></li>
@@ -120,7 +122,14 @@
 
 define([&quot;ui&quot;, &quot;./bot/bot&quot;, &quot;./physics/arena&quot;, &quot;threeUtils&quot;, &quot;./botEvo&quot;, &quot;app&quot;, &quot;common&quot;], function(UI, Bot, Arena, threeUtils, BotEvo, App, common) {
 
+    /**
+     * @class BotApp
+     * @extends App
+     */
     var BotApp = App.extend({
+        /**
+         * @method init
+         */
         init : function() {
             var app = this;
             app.paused = false;
@@ -150,6 +159,9 @@ define([&quot;ui&quot;, &quot;./bot/bot&quot;, &quot;./physics/arena&quot;, &quo
         //=====================================================================
         //=====================================================================
 
+        /**
+         * @method toggleMainMode
+         */
         toggleMainMode : function() {
             console.log(&quot;Toggle main mode &quot; + app.editMode);
             if (app.editMode)
@@ -158,6 +170,9 @@ define([&quot;ui&quot;, &quot;./bot/bot&quot;, &quot;./physics/arena&quot;, &quo
                 app.openEditMode();
         },
 
+        /**
+         * @method openEditMode
+         */
         openEditMode : function() {
             app.editMode = true;
             $(&quot;#arena&quot;).addClass(&quot;away&quot;);
@@ -168,6 +183,9 @@ define([&quot;ui&quot;, &quot;./bot/bot&quot;, &quot;./physics/arena&quot;, &quo
             app.openEditChassis();
         },
 
+        /**
+         * @method openArenaMode
+         */
         openArenaMode : function() {
             app.editMode = false;
             $(&quot;#edit&quot;).addClass(&quot;away&quot;);
@@ -176,7 +194,9 @@ define([&quot;ui&quot;, &quot;./bot/bot&quot;, &quot;./physics/arena&quot;, &quo
         },
 
         //-------------------------------------------------------
-
+        /**
+         * @method toggleEditMode
+         */
         toggleEditMode : function() {
             console.log(&quot;Toggle edit mode &quot; + app.editChassis);
             if (app.editChassis)
@@ -185,6 +205,9 @@ define([&quot;ui&quot;, &quot;./bot/bot&quot;, &quot;./physics/arena&quot;, &quo
                 app.openEditParts();
         },
 
+        /**
+         * @method openEditParts
+         */
         openEditParts : function() {
             app.editChassis = true;
             $(&quot;#chassis_edit&quot;).addClass(&quot;away&quot;);
@@ -192,16 +215,25 @@ define([&quot;ui&quot;, &quot;./bot/bot&quot;, &quot;./physics/arena&quot;, &quo
 
         },
 
+        /**
+         * @method openEditChassis
+         */
         openEditChassis : function() {
             app.editChassis = false;
             $(&quot;#chassis_edit&quot;).removeClass(&quot;away&quot;);
             $(&quot;#parts_edit&quot;).addClass(&quot;away&quot;);
         },
 
+        /**
+         * @method openLoadScreen
+         */
         openLoadScreen : function() {
             $(&quot;#load_screen&quot;).show();
         },
 
+        /**
+         * @method closeLoadScreen
+         */
         closeLoadScreen : function() {
             $(&quot;#load_screen&quot;).hide();
 
@@ -216,6 +248,9 @@ define([&quot;ui&quot;, &quot;./bot/bot&quot;, &quot;./physics/arena&quot;, &quo
         //=====================================================================
         //=====================================================================
 
+        /**
+         * @method createAndTestManyBots
+         */
         createAndTestManyBots : function() {
             var task = &quot;doThing&quot;;
             var bots = [];
@@ -230,6 +265,9 @@ define([&quot;ui&quot;, &quot;./bot/bot&quot;, &quot;./physics/arena&quot;, &quo
 
         },
 
+        /**
+         * @method createAndTestNewBot
+         */
         createAndTestNewBot : function() {
             var task = &quot;doThing&quot;;
 
@@ -243,6 +281,9 @@ define([&quot;ui&quot;, &quot;./bot/bot&quot;, &quot;./physics/arena&quot;, &quo
             app.evoSim.treeViz.setTree(testBrain);
         },
 
+        /**
+         * @method initModes
+         */
         initModes : function() {
 
             var ui = app.ui;
@@ -257,7 +298,7 @@ define([&quot;ui&quot;, &quot;./bot/bot&quot;, &quot;./physics/arena&quot;, &quo
             app.ui.addTuningValue(&quot;unicornFluffiness&quot;, 100, 1, 700, function(key, value) {
                 // do something on change
             });
-            
+
             ui.addPanel({
                 id : &quot;arena&quot;,
                 div : $(&quot;#arena_panel&quot;),
@@ -325,6 +366,10 @@ define([&quot;ui&quot;, &quot;./bot/bot&quot;, &quot;./physics/arena&quot;, &quo
                 mode.id = key;
             });
         },
+
+        /**
+         * @method initControls
+         */
         initControls : function() {
 
             // Set all the default UI controls
@@ -364,6 +409,10 @@ define([&quot;ui&quot;, &quot;./bot/bot&quot;, &quot;./physics/arena&quot;, &quo
             });
 
         },
+
+        /**
+         * @method initUI
+         */
         initUI : function() {
             $(&quot;#test_button&quot;).click(function() {
                 app.changeMode(&quot;arena&quot;);

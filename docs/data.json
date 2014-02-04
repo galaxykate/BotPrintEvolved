@@ -91,7 +91,9 @@
         "BotsEvolved/js/modules/botPrint/botApp.js": {
             "name": "BotsEvolved/js/modules/botPrint/botApp.js",
             "modules": {},
-            "classes": {},
+            "classes": {
+                "BotApp": 1
+            },
             "fors": {},
             "namespaces": {}
         },
@@ -482,6 +484,18 @@
             "extension_for": [],
             "file": "BotsEvolved/js/modules/botPrint/bot/wiring.js",
             "line": 76
+        },
+        "BotApp": {
+            "name": "BotApp",
+            "shortname": "BotApp",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "BotsEvolved/js/modules/botPrint/botApp.js",
+            "line": 7,
+            "extends": "App"
         },
         "BrainEvo": {
             "name": "BrainEvo",
@@ -1139,25 +1153,123 @@
             "file": "BotsEvolved/js/modules/botPrint/physics/arena.js",
             "line": 1,
             "author": "Kate Compton",
-            "class": "BrainEvo"
+            "class": "BotApp"
         },
         {
             "file": "BotsEvolved/js/modules/botPrint/physics/boxDebugDraw.js",
             "line": 1,
             "author": "Kate Compton\nModified from https://github.com/kripken/box2d.js/",
-            "class": "BrainEvo"
+            "class": "BotApp"
         },
         {
             "file": "BotsEvolved/js/modules/botPrint/physics/boxWorld.js",
             "line": 1,
             "author": "Kate Compton",
-            "class": "BrainEvo"
+            "class": "BotApp"
         },
         {
             "file": "BotsEvolved/js/modules/botPrint/botApp.js",
             "line": 1,
             "author": "Kate Compton",
-            "class": "BrainEvo"
+            "class": "BotApp"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/botApp.js",
+            "line": 12,
+            "itemtype": "method",
+            "name": "init",
+            "class": "BotApp"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/botApp.js",
+            "line": 44,
+            "itemtype": "method",
+            "name": "toggleMainMode",
+            "class": "BotApp"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/botApp.js",
+            "line": 55,
+            "itemtype": "method",
+            "name": "openEditMode",
+            "class": "BotApp"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/botApp.js",
+            "line": 68,
+            "itemtype": "method",
+            "name": "openArenaMode",
+            "class": "BotApp"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/botApp.js",
+            "line": 79,
+            "itemtype": "method",
+            "name": "toggleEditMode",
+            "class": "BotApp"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/botApp.js",
+            "line": 90,
+            "itemtype": "method",
+            "name": "openEditParts",
+            "class": "BotApp"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/botApp.js",
+            "line": 100,
+            "itemtype": "method",
+            "name": "openEditChassis",
+            "class": "BotApp"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/botApp.js",
+            "line": 109,
+            "itemtype": "method",
+            "name": "openLoadScreen",
+            "class": "BotApp"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/botApp.js",
+            "line": 116,
+            "itemtype": "method",
+            "name": "closeLoadScreen",
+            "class": "BotApp"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/botApp.js",
+            "line": 133,
+            "itemtype": "method",
+            "name": "createAndTestManyBots",
+            "class": "BotApp"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/botApp.js",
+            "line": 150,
+            "itemtype": "method",
+            "name": "createAndTestNewBot",
+            "class": "BotApp"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/botApp.js",
+            "line": 166,
+            "itemtype": "method",
+            "name": "initModes",
+            "class": "BotApp"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/botApp.js",
+            "line": 252,
+            "itemtype": "method",
+            "name": "initControls",
+            "class": "BotApp"
+        },
+        {
+            "file": "BotsEvolved/js/modules/botPrint/botApp.js",
+            "line": 295,
+            "itemtype": "method",
+            "name": "initUI",
+            "class": "BotApp"
         },
         {
             "file": "BotsEvolved/js/modules/botPrint/botEvo.js",
