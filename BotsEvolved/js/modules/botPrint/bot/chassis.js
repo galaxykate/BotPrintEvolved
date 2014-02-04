@@ -29,7 +29,8 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
 
             this.idColor = new common.KColor((.2813 * this.idNumber + .23) % 1, 1, 1);
 
-            this.center = new Vector(0, 0);
+            this.center = new Vector(0,0);
+            
             var pointCount = 5;
 
             for (var i = 0; i < pointCount; i++) {
@@ -78,18 +79,55 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             // Create components
 
             this.components = [];
-            for (var i = 0; i < 1; i++) {
+            for (var i = 0; i < 2; i++) {
 
                 var component = new Component({
-                    name : "obj " + i,
+                    name : "component " + i,
                     //attachPoint : new Vector(300 * (Math.random() - .5), 300 * (Math.random() - .5)),
                 });
-				var p = new common.Transform();
+				var p = undefined;
 				
+				//FIXME: weird to have to stretch the bbox here...
+				this.path.expandBoxToFit(this.path.boundingBox);
 				
+				//TODO: hacking together a way to place multipule components (BOXES YEAH) on the chassis
+				var box = this.path.boundingBox;
+				
+				var corners = box.getCorners(false);
+				
+				var minX;
+				var maxX;
+				var minY;
+				var maxY;
+					
+				if(corners[0].x < corners[2].x){
+					minX = corners[0].x;
+					maxX = corners[2].x;
+				}else{
+					minX = corners[2].x;
+					maxX = corners[0].x;
+				}
+
+				if(corners[0].y < corners[2].y){
+					minY = corners[0].y;
+					maxY = corners[2].y;
+				}else{
+					minY = corners[2].y;
+					maxY = corners[0].y;
+				}
+				
+				chassislog("Bounding vals: (" + minX + ", " + minY + ")" + "\n "
+							+ "(" + maxX + ", " + maxY + ")" + "\n ");
+							
+				p = new common.Transform(0,0,0);
+				p.setTo(utilities.random(minX, maxX), utilities.random(minY, maxY), 0);
+				
+				chassislog("attachPoint: (" + p.x + ", " + p.y + ")");
+							
 				if(p === undefined){
 					chassislog("Attach Point Undefined");
 				}
+				
 				
 				component.place(this, p);
                 component.addPins();
@@ -98,7 +136,6 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             }
 
             // Connect the components
-
             var inPins = [];
             var outPins = [];
 

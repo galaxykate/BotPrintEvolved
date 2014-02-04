@@ -181,7 +181,6 @@ define(["common", "./edge", "threeUtils", "./graph"], function(common, Edge, thr
                     count++;
                 }
             });
-
             // Cut out the intersecting edges
             edge0.removeFromNodes();
             edge1.removeFromNodes();
