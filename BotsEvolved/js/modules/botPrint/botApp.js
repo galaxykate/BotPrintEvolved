@@ -175,6 +175,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.ui.addOption("logConditionTests", false);
             app.ui.addOption("logMutations", true);
             app.ui.addOption("useTimers", true);
+            app.ui.addOption("useExplorer", true);
 			app.ui.addOption("useColorLerpers", true);
             app.ui.addOption("useSharpie", false);
             app.ui.addTuningValue("unicornFluffiness", 100, 1, 700, function(key, value) {
