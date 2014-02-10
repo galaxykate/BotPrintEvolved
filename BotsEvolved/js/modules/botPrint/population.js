@@ -2,6 +2,8 @@
  * @author Kate Compton
  */
 define(["common"], function(common) {'use strict';
+    var MAX_BOTS = 6;
+    var MIN_BOTS = 5;
 
     var Population = Class.extend({
 
@@ -19,6 +21,15 @@ define(["common"], function(common) {'use strict';
 
         add : function(bot) {
             this.bots.push(bot);
+        },
+
+        fillToMin : function() {
+            var count = MIN_BOTS - this.bots.length;
+            for (var i = 0; i < count; i++) {
+                var b = app.createBot();
+                this.add(b);
+            }
+
         },
 
         //============================================================
@@ -96,13 +107,18 @@ define(["common"], function(common) {'use strict';
         },
 
         addChild : function(bot) {
-            var child = {
-                parent : bot,
-                mutationLevel : 0,
-            };
+            if (this.nextGeneration.length < MAX_BOTS) {
+                var child = {
+                    parent : bot,
+                    mutationLevel : 0,
+                };
 
-            this.nextGeneration.push(child);
-            this.addChildHTML(child);
+                this.nextGeneration.push(child);
+                this.addChildHTML(child);
+            }
+
+            console.log("Can't add " + bot + " to next generation, already have " + MAX_BOTS + " bots");
+
         },
 
         // Add all these bots to the current population ui
@@ -172,6 +188,8 @@ define(["common"], function(common) {'use strict';
                 var child = instructions.parent.createChild(instructions);
                 population.add(child);
             });
+
+            population.fillToMin();
 
             population.nextGeneration = this.nextGeneration;
             return population;
