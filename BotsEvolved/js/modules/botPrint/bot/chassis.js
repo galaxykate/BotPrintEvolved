@@ -30,6 +30,8 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             this.idColor = new common.KColor((.2813 * this.idNumber + .23) % 1, 1, 1);
 
             this.center = new Vector(0,0);
+            this.transCenter = new common.Transform();
+            this.transCenter.setTo(0,0,0);
             
             var pointCount = 5;
 
@@ -172,29 +174,29 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
                 if (outPins[index].wire === undefined) {
                     chassis.wires.push(new Wiring.Wire(inPins[startIndex], outPins[index]));
                 }
-
             });
             
 			// Log the locations of the in-pins
 
 			// chassislog("In pin inital locations: ");
-			$.each(inPins, function(index, pin) {
-				chassislog(pin.pos.x + ", " + pin.pos.y);
-			});
+			//$.each(inPins, function(index, pin) {
+				//chassislog(pin.pos.x + ", " + pin.pos.y);
+			//});
  			
 			// Log the locations of the out-pins
-			chassislog("Out pin inital locations: ");
-			$.each(outPins, function(index, pin) {
-				 chassislog(pin.pos.x + ", " + pin.pos.y);
-			});
+			//chassislog("Out pin inital locations: ");
+			//$.each(outPins, function(index, pin) {
+				 //chassislog(pin.pos.x + ", " + pin.pos.y);
+			//});
 
 			
 			// log wiring locations
-			chassislog("Wiring inital location: ");
-			$.each(chassis.wires, function(index, wire){
-				chassislog(wire.start.pos.x + ", " + wire.start.pos.y + " | " + wire.end.pos.x + ", " + wire.end.pos.y);
-			});
+			//chassislog("Wiring inital location: ");
+			//$.each(chassis.wires, function(index, wire){
+				//chassislog(wire.start.pos.x + ", " + wire.start.pos.y + " | " + wire.end.pos.x + ", " + wire.end.pos.y);
+			//});
         },
+        
         //======================================================================================
         //======================================================================================
         //======================================================================================
@@ -313,10 +315,10 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
                         component.render(context);
                     });
                 }
-
+                
                 if (app.getOption("drawWiring")) {
-                    $.each(this.wires, function(index, wire) {
-                        wire.render(context);
+                    $.each(this.wires, function(index, wire) {               	
+                    	wire.render(context);
                     });
                 }
             }

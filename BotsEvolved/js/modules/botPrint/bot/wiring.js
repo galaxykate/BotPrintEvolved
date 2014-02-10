@@ -25,11 +25,16 @@ define(["common", "graph"], function(common, Graph) {'use strict';
 
         render : function(context) {
             var g = context.g;
+            
             g.strokeWeight(1);
             this.idColor.stroke(g);
+            
             var p0 = this.start.pos;
             var p1 = this.end.pos;
 
+			//p0.toWorld(p0, this.start.parent.attachPoint);
+			//p1.toWorld(p1, this.end.parent.attachPoint);
+			
             g.line(p0.x, p0.y, p1.x, p1.y);
         }
     });
@@ -39,19 +44,31 @@ define(["common", "graph"], function(common, Graph) {'use strict';
             this.positive = true;
             //this.pct = .5;
             _.extend(this, settings);
-            this.pos = new Vector();
-			this.pos.add(this.parent.attachPoint);
+            this.pos = new common.Transform();
+            
+            //TODO: right now, pins sit on a random edge from their parent
+            //or the attach point.
+            
+            if(this.edge === undefined){
+            	this.pos.add(this.parent.attachPoint);
+            }else{
+            	var pct  = Math.random();
+            
+				this.pos.add(this.edge.getTracer(pct, -3));
+            }
+            
             this.wire = undefined;
         },
 
         render : function(context) {
             //this.edge.setToPct(this.edgePos, this.pct);  
             var g = context.g;
+            
             g.fill(0, 0, 0);
             if (this.positive)
                 g.fill(0, 1, 1);
 
-            g.ellipse(this.pos.x, this.pos.y, 5, 5);
+            g.ellipse(this.pos.x, this.pos.y, 3, 3);
         }
     });
 
