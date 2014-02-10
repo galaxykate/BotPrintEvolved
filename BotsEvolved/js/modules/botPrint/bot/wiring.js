@@ -7,6 +7,15 @@ define(["common", "graph"], function(common, Graph) {'use strict';
     /**
      * @class Wire
      */
+    //log various details about wiring
+    var wireLog = "";
+    function wirelog(s){
+    	if(app.getOption("logWiring"))
+    		console.log(s);
+    	wireLog += (s + " <br>");
+    	
+    }
+
     var Wire = Class.extend({
         /**
          * @method init
@@ -28,11 +37,16 @@ define(["common", "graph"], function(common, Graph) {'use strict';
          */
         render : function(context) {
             var g = context.g;
+            
             g.strokeWeight(1);
             this.idColor.stroke(g);
-            var p0 = this.start.edgePos;
-            var p1 = this.end.edgePos;
+            
+            var p0 = this.start.pos;
+            var p1 = this.end.pos;
 
+			//p0.toWorld(p0, this.start.parent.attachPoint);
+			//p1.toWorld(p1, this.end.parent.attachPoint);
+			
             g.line(p0.x, p0.y, p1.x, p1.y);
         }
     });
@@ -47,10 +61,21 @@ define(["common", "graph"], function(common, Graph) {'use strict';
          */
         init : function(settings) {
             this.positive = true;
-            this.pct = .5;
+            //this.pct = .5;
             _.extend(this, settings);
-            this.edgePos = new Vector();
-
+            this.pos = new common.Transform();
+            
+            //TODO: right now, pins sit on a random edge from their parent
+            //or the attach point.
+            
+            if(this.edge === undefined){
+            	this.pos.add(this.parent.attachPoint);
+            }else{
+            	var pct  = Math.random();
+            
+				this.pos.add(this.edge.getTracer(pct, -3));
+            }
+            
             this.wire = undefined;
         },
 
@@ -59,10 +84,9 @@ define(["common", "graph"], function(common, Graph) {'use strict';
          * @param context
          */
         render : function(context) {
-            this.edge.setToPct(this.edgePos, this.pct);
-            this.edgePos.add(this.parent.center);
-
+            //this.edge.setToPct(this.edgePos, this.pct);  
             var g = context.g;
+            
             g.fill(0, 0, 0);
             if (this.positive)
                 g.fill(0, 1, 1);
@@ -129,13 +153,14 @@ define(["common", "graph"], function(common, Graph) {'use strict';
             $.each(this.pins, function(index, pin) {
                 pin.render(context);
             });
-
+            
+            g.ellipse(this.pos.x, this.pos.y, 3, 3);
         }
     });
 
     var Wiring = {
         Wire : Wire,
-        Component : Component,
+        Pin : Pin,
     };
 
     return Wiring;

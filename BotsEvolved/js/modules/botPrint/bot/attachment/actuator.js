@@ -2,7 +2,7 @@
  * @author Kate Compton
  */
 
-define(["common", "./attachment"], function(common, Attachment) {'use strict';
+define(["common", "graph", "./attachment", "../wiring"], function(common, Graph, Attachment, Wiring) {'use strict';
 
     var Actuator = Attachment.extend({
         init : function() {
@@ -53,7 +53,6 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
 
             g.fill(1, 0, 1, .7);
             g.text(this.idNumber, -3, 5);
-
         },
 
         toString : function() {
@@ -97,7 +96,7 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
 
         renderDetails : function(context) {
             var g = context.g;
-            var r = 10
+            var r = 10;
             g.fill(0);
             g.noStroke();
             g.ellipse(r / 2, 0, r * 1.2, r * 1.2);

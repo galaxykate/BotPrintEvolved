@@ -170,8 +170,10 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 
             var ui = app.ui;
 
-            app.ui.addOption("drawWiring", false);
-            app.ui.addOption("drawComponents", false);
+			app.ui.addOption("logWiring", true);
+			app.ui.addOption("logChassis", true);
+            app.ui.addOption("drawWiring", true);
+            app.ui.addOption("drawComponents", true);
             app.ui.addOption("logConditionTests", false);
             app.ui.addOption("logMutations", true);
             app.ui.addOption("useTimers", true);
