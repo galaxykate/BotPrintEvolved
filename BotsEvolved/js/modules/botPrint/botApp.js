@@ -2,11 +2,11 @@
  * @author Kate Compton
  */
 
-define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "common"], function(UI, Bot, Arena, threeUtils, BotEvo, App, common) {
+define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "common", "./population"], function(UI, Bot, Arena, threeUtils, BotEvo, App, common, Population) {
 
     var BotApp = App.extend({
         init : function() {
-            var app = this;
+            app = this;
             app.width = 900;
             app.height = 600;
             app.botCard = {
@@ -33,9 +33,13 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
                 app.toggleEditMode();
             });
 
-            app.openEditMode();
             app.closeLoadScreen();
             app.createEmptyBotCard($("#app"));
+
+            app.setPopulation(new Population(5));
+
+            app.openArenaMode();
+
         },
 
         //=====================================================================
@@ -43,39 +47,12 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         //=====================================================================
         //=====================================================================
 
+        highlightBot : function(bot) {
+          //  console.log("Highlighting " + bot);
+        },
+
         // Create a bot card and attach it here
         createEmptyBotCard : function(parentHolder) {
-            var botCard = {
-                mainDiv : $("<div/>", {
-                    "class" : "bot_card"
-                }),
-                thumbnail : $("<div/>", {
-                    "class" : "bot_thumbnail"
-                }),
-
-                title : $("<div/>", {
-                    html : "unknown bot",
-                    "class" : "bot_title"
-                }),
-                botName : $("<span/>", {
-                    html : "unknown author",
-                    "class" : "bot_name"
-                }),
-                owner : $("<span/>", {
-                    html : "unknown author",
-                    "class" : "bot_owner"
-                }),
-                details : $("<div/>", {
-                    html : "bot info here...",
-                    "class" : "bot_details"
-                }),
-
-            };
-            parentHolder.append(botCard.mainDiv);
-
-            botCard.mainDiv.append(botCard.title);
-            botCard.mainDiv.append(botCard.thumbnail);
-            botCard.mainDiv.append(botCard.details);
 
         },
 
@@ -107,12 +84,23 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.editMode = false;
             $("#edit").addClass("away");
             $("#arena").removeClass("away");
-            this.createAndTestManyBots();
 
             var p = new Vector(app.width - bc.width - (bc.border * 2), app.height - bc.height - (bc.border * 2));
             $(".bot_card").css({
                 "-webkit-transform" : "translate(" + p.x + "px, " + p.y + "px) rotateX(.01deg) scale3d(1, 1, 1)",
-            })
+            });
+
+            app.population.updateUI();
+
+        },
+
+        createBot : function() {
+            return new Bot();
+        },
+
+        editBot : function(bot) {
+            this.currentBot = bot;
+            app.openEditMode();
         },
 
         //-------------------------------------------------------
@@ -141,30 +129,14 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         closeLoadScreen : function() {
             $("#load_screen").hide();
 
-            $("*").click(function(evt) {
-                console.log("Clicked ", this);
-            });
+          
 
         },
 
         //=====================================================================
         //=====================================================================
-        //=====================================================================
-        //=====================================================================
+        // Arena control
 
-        createAndTestManyBots : function() {
-            var task = "doThing";
-            var bots = [];
-            var count = 5;
-            for (var i = 0; i < count; i++) {
-                var bot = new Bot();
-                bots[i] = bot;
-            }
-            app.currentBot = bots[0];
-
-            app.arena.addPopulation(bots);
-
-        },
         createAndTestNewBot : function() {
             var task = "doThing";
 
@@ -177,6 +149,23 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 
             app.evoSim.treeViz.setTree(testBrain);
         },
+
+        spawnNextGeneration : function() {
+            app.setPopulation(app.population.createNextGeneration());
+        },
+
+        setPopulation : function(pop) {
+            console.log("Set population: " + pop);
+            app.population = pop;
+            app.arena.reset();
+            app.arena.addPopulation(app.population.bots);
+
+            app.population.updateUI();
+
+        },
+        //=====================================================================
+        //=====================================================================
+
         initModes : function() {
 
             var ui = app.ui;
@@ -298,25 +287,13 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 
         },
         initUI : function() {
-            $("#test_button").click(function() {
-                app.changeMode("arena");
-            });
 
-            $("#reset_arena").click(function() {
-                app.createAndTestNewBot();
-            });
-
-            $("#mutate").click(function() {
-                console.log("-------------------------- ");
-                console.log("Mutating ");
-                app.currentBot.brain.defaultTree.debugPrint();
-                app.evoSim.mutateGenome(app.currentBot.brain.defaultTree);
-
-                app.evoSim.treeViz.setTree(app.currentBot.brain.defaultTree);
-                console.log("defaultTree after: ", app.currentBot.brain.defaultTree)
-
-            });
             var ui = app.ui;
+
+            $("#next_generation").click(function() {
+                app.spawnNextGeneration();
+            });
+
             // Create the Three scene
             app.threeRender = new threeUtils.ThreeView($("#render_panel"), function() {
                 // update the camera

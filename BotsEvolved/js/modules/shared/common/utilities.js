@@ -16,6 +16,10 @@ define([], function() {
             }
         },
 
+        capitaliseFirstLetter : function(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        },
+
         arrayToString : function(array) {
             var s = "";
             $.each(array, function(index, obj) {
@@ -25,18 +29,15 @@ define([], function() {
             });
             return s;
         },
-
         inSquareBrackets : function(s) {
             return "[" + s + "]";
         },
-
         getSpacer : function(count) {
             var s = "";
             for (var i = 0; i < count; i++) {
                 s += " "
             }
         },
-
         sCurve : function(v, iterations) {
             if (iterations === undefined)
                 iterations = 1;
@@ -46,7 +47,6 @@ define([], function() {
             }
             return v;
         },
-
         within : function(val, min, max) {
             return (val >= min) && (val <= max);
         },
@@ -80,15 +80,12 @@ define([], function() {
         getRandom : function(array) {
             return array[Math.floor(Math.random() * array.length)];
         },
-
         getRandomIndex : function(array) {
             return Math.floor(Math.random() * Math.round(array.length - 1));
         },
-
         getRandomKey : function(obj) {
             return this.getRandom(Object.keys(obj));
         },
-
         constrain : function(val, lowerBound, upperBound) {
             if (Math.max(val, upperBound) === val)
                 return upperBound;
@@ -99,7 +96,6 @@ define([], function() {
         lerp : function(start, end, percent) {
             return (start + percent * (end - start));
         },
-
         lerpAngles : function(start, end, pct) {
             var dTheta = end - start;
         },
@@ -115,7 +111,6 @@ define([], function() {
 
             return Math.random();
         },
-
         roundNumber : function(num, places) {
             // default 2 decimal places
             if (places === undefined) {
@@ -124,7 +119,6 @@ define([], function() {
                 return parseFloat(Math.round(num * 100) / 100).toFixed(places);
             }
         },
-
         angleBetween : function(a, b) {
             var dTheta = b - a;
             dTheta = ((dTheta % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);

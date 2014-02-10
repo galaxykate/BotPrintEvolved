@@ -116,3 +116,43 @@
 	border: 1px solid white;
 	box-shadow: inset 2px 2px 15px 0px rgba(0, 0, 0, .4);
 }
+
+.population_info {
+	float: left;
+	position: relative;
+	border: 1px solid white;
+	background: rgba(200, 250, 0, .8);
+	margin: 2px;
+	padding: 4px;
+	box-shadow: 2px 2px 15px 0px rgba(0, 0, 0, .4);
+}
+
+.population_title {
+	position: relative;
+	border: 1px solid white;
+	width: 140px;
+	float: left;
+}
+
+.population_button {
+	float: left;
+	width: 15px;
+	height: 15px;
+	line-height: 1;
+	padding: 3px 3px;
+	text-align: center;
+}
+
+.population_details {
+	position: relative;
+	border: 1px solid white;
+	width: 130px;
+	float: left;
+}
+
+.population_spawnbuttons {
+	position: relative;
+	border: 1px solid white;
+	width: 30px;
+	float: right;
+}

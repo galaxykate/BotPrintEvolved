@@ -266,7 +266,7 @@ define(["common", "./edge", "threeUtils", "./graph"], function(common, Edge, thr
                 $.each(this.edges, function(index, edge) {
                     edge.drawVertex(g);
                 });
-                g.endShape();
+                g.endShape(g.CLOSE);
 
             }
         },
