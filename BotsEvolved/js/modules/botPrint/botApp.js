@@ -119,9 +119,9 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         closeLoadScreen : function() {
             $("#load_screen").hide();
 
-            $("*").click(function(evt) {
+           /* $("*").click(function(evt) {
                 console.log("Clicked ", this);
-            });
+            });*/
 
         },
 
