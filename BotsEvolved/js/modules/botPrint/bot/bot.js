@@ -3,16 +3,31 @@
  */
 
 define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use strict';
+
+    var animals = "okapi pheasant cobra amoeba capybara kangaroo chicken rooster boa-constrictor nematode sheep otter quail goat agoutis zebra giraffe yak corgi pomeranian rhinocerous skunk dolphin whale duck bullfrog okapi sloth monkey orangutan grizzly-bear moose elk dikdik ibis stork robin eagle hawk iguana tortoise panther lion tiger gnu reindeer raccoon opossum camel dromedary pigeon squirrel hamster leopard panda boar squid parakeet crocodile flamingo terrier cat wallaby wombat koala orangutan bonobo lion salamander".split(" ");
+
+    var adjectives = "rampaging flying sky flanged robotic vigilant happy sorrowful sinister willful brave wild lovely endless ed silver blue obsidian black ivory steel striped iron orange cobalt golden copper ruby emerald purple violet sincere sleeping radioactive rad".split(" ");
+    var makeBotName = function() {
+        return "The " + utilities.capitaliseFirstLetter(utilities.getRandom(adjectives)) + " " + utilities.capitaliseFirstLetter(utilities.getRandom(animals));
+    };
+
     var botCount = 0;
     var Bot = Class.extend({
-        init : function() {
+        init : function(parent, mutationLevel) {
+            console.log("Create a child of " + parent + ", mutation:" + mutationLevel);
             this.idNumber = botCount;
             botCount++;
+
+            this.name = makeBotName();
             this.setMainChassis(new Chassis(this));
             this.transform = new common.Transform();
             this.compileAttachments();
         },
 
+        createChild : function(instructions) {
+            var child = new Bot(this, instructions.mutationLevel);
+            return child;
+        },
         //======================================================================================
         //======================================================================================
         //======================================================================================
@@ -189,8 +204,19 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
 
         },
         toString : function() {
-            return "Bot" + this.idNumber;
-        }
+            return name;
+        },
+
+        debugDNAOutput : function() {
+            for (var j = 0; j < DNA_LENGTH; j++) {
+                var s = 0;
+
+                for (var i = 0; i < DNA_DIMENSIONALITY; i++) {
+                    s += this.dna[i][j].toPrecision(2);
+                }
+            }
+
+        },
     });
 
     return Bot;

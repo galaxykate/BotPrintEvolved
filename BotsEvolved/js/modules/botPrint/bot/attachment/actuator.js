@@ -170,6 +170,7 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
     });
 
     Actuator.Sharpie = Sharpie;
+<<<<<<< HEAD
     Actuator.DiscoLight = DiscoLight;
 >>>>>>> master
 
@@ -217,5 +218,8 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
 
     Actuator.Sharpie = Sharpie;
 	Actuator.SuperFun = SuperFun; 
+=======
+  
+>>>>>>> master
     return Actuator;
 });

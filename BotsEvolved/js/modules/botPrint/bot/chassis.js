@@ -9,7 +9,14 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
     // var CylinderGeometry = new
     //  IO.saveFile("test", "txt", "M 100 100 L 300 100 L 200 300 z");
 
+    /**
+     * @class Chassis
+     * @extends Tree
+     */
     var Chassis = common.Tree.extend({
+        /**
+         * @method init
+         */
         init : function() {
             this._super();
 
@@ -39,6 +46,10 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
         //======================================================================================
         // Cloning + modification
 
+        /**
+         * @method clone
+         * @return {Chassis} newChassis
+         */
         clone : function() {
             return new Chassis();
         },
@@ -48,13 +59,21 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
         //======================================================================================
         // Transformation
 
+        /**
+         * @method getBot
+         * @return {Bot} returns parent's Bot, or undefined
+         */
         getBot : function() {
             if (this.parent !== undefined)
                 return this.parent.getBot();
         },
 
+        /**
+         * @method transformToGlobal
+         * @param local
+         * @param global
+         */
         transformToGlobal : function(local, global) {
-
             if (this.parent !== undefined)
                 this.parent.transformToGlobal(local, global);
         },
@@ -63,6 +82,10 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
         //======================================================================================
         //======================================================================================
         // Wiring
+        /**
+         * Here there be dragons
+         * @method generateWiring
+         */
         generateWiring : function() {
             var chassis = this;
             // Create components
@@ -115,6 +138,9 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
         //======================================================================================
         // Attachments
 
+        /**
+         * @method generateAttachments
+         */
         generateAttachments : function() {
             this.attachments = [];
             this.attachPoints = [];
@@ -127,12 +153,16 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
                 attachmentTypes.push(Attachment.Sensor.Timer), weights.push(1);
             }
 <<<<<<< HEAD
+<<<<<<< HEAD
             //I added this .- Afshin
             if (app.getOption("useHyperFun")) {
                 attachmentTypes.push(Attachment.Sensor.HyperFun), weights.push(1);
             }
 =======
 			
+=======
+
+>>>>>>> master
 			if (app.getOption("useColorLerpers")){
 				attachmentTypes.push(Attachment.Sensor.ColorLerper), weights.push(1);
 			}
@@ -146,10 +176,7 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
             	attachmentTypes.push(Attachment.Actuator.SuperFun), weights.push(1);
             }
 
-            attachmentTypes.push(Attachment.Actuator.DiscoLight), weights.push(1);
-
-
-
+        
             // How many attachments to generate
             var count = 4;
 
@@ -172,6 +199,10 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
             }
         },
 
+        /**
+         * @method compileForces
+         * @param forces
+         */
         compileForces : function(forces) {
             $.each(this.attachments, function(index, attachment) {
                 var f = attachment.getForce();
@@ -180,6 +211,11 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
             });
         },
 
+        /**
+         * @method compileAttachments
+         * @param attachments
+         * @param query
+         */
         compileAttachments : function(attachments, query) {
             $.each(this.attachments, function(index, attachment) {
                 if (query(attachment)) {
@@ -192,6 +228,10 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
         //==========================================
         // Updates
 
+        /**
+         * @method update
+         * @param time
+         */
         update : function(time) {
             var chassis = this;
 
@@ -201,7 +241,11 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
 
         },
 
-        // Get something relative to this chassis
+        /**
+         * Get something relative to this chassis
+         * @method getAt
+         * @param query
+         */
         getAt : function(query) {
 
             app.moveLog("Get at " + query.screenPos);
@@ -211,8 +255,12 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
 
         //-------------------------------------------
         // View stuff - will probably end up in it's own file
-        // render this bot in a 2D frame
 
+        /**
+         * Render this bot in a 2D frame
+         * @method render
+         * @param context
+         */
         render : function(context) {
             var bot = this.getBot();
             var g = context.g;
@@ -221,15 +269,16 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
             this.idColor.fill(g, .2, 1);
 
             this.idColor.stroke(g, -.4, 1);
+
             if (bot.selected) {
                 g.strokeWeight(5);
-                this.idColor.stroke(g, -.7, 1);
-                this.idColor.fill(g, .5, 1);
+                this.idColor.stroke(g, .7, 1);
+                this.idColor.fill(g, -.5, 1);
             }
 
             // Draw the region
             context.drawPath = true;
-            this.path.draw(context);
+            this.path.drawFilled(context);
 
             if (!context.simplifiedBots) {
 
@@ -251,6 +300,11 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
             });
 
         },
+
+        /**
+         * @method hover
+         * @param pos
+         */
         hover : function(pos) {
 
         },

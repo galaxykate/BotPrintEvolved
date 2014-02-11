@@ -256,6 +256,7 @@ define(["common", "./edge", "threeUtils", "./graph"], function(common, Edge, thr
             return this.mesh;
 
         },
+        
         drawFilled : function(context) {
             var g = context.g;
             if (this.edges.length > 0) {
@@ -265,7 +266,7 @@ define(["common", "./edge", "threeUtils", "./graph"], function(common, Edge, thr
                 $.each(this.edges, function(index, edge) {
                     edge.drawVertex(g);
                 });
-                g.endShape();
+                g.endShape(g.CLOSE);
 
             }
         },

@@ -4,7 +4,15 @@
 
 define(["common", "graph"], function(common, Graph) {'use strict';
     var wireCount = 0;
+    /**
+     * @class Wire
+     */
     var Wire = Class.extend({
+        /**
+         * @method init
+         * @param start
+         * @param end
+         */
         init : function(start, end) {
             this.idNumber = wireCount;
             this.idColor = common.KColor.makeIDColor(this.idNumber);
@@ -14,6 +22,10 @@ define(["common", "graph"], function(common, Graph) {'use strict';
             this.end = end;
         },
 
+        /**
+         * @method render
+         * @param context
+         */
         render : function(context) {
             var g = context.g;
             g.strokeWeight(1);
@@ -25,7 +37,14 @@ define(["common", "graph"], function(common, Graph) {'use strict';
         }
     });
 
+    /**
+     * @class Pin
+     */
     var Pin = Class.extend({
+        /**
+         * @method init
+         * @param settings
+         */
         init : function(settings) {
             this.positive = true;
             this.pct = .5;
@@ -35,6 +54,10 @@ define(["common", "graph"], function(common, Graph) {'use strict';
             this.wire = undefined;
         },
 
+        /**
+         * @method render
+         * @param context
+         */
         render : function(context) {
             this.edge.setToPct(this.edgePos, this.pct);
             this.edgePos.add(this.parent.center);
@@ -49,7 +72,15 @@ define(["common", "graph"], function(common, Graph) {'use strict';
     });
 
     var componentCount = 0;
+
+    /**
+     * @class Component
+     */
     var Component = Class.extend({
+        /**
+         * @method init
+         * @param settings
+         */
         init : function(settings) {
             // Defaults
             this.idNumber = componentCount;
@@ -75,6 +106,11 @@ define(["common", "graph"], function(common, Graph) {'use strict';
 
         },
 
+        /**
+         * @method compilePins
+         * @param {Array} pinList
+         * @param {Function} filter
+         */
         compilePins : function(pinList, filter) {
             $.each(this.pins, function(index, pin) {
                 if (filter(pin))
@@ -82,6 +118,10 @@ define(["common", "graph"], function(common, Graph) {'use strict';
             });
         },
 
+        /**
+         * @method render
+         * @param context
+         */
         render : function(context) {
             var g = context.g;
             this.idColor.fill(context.g);

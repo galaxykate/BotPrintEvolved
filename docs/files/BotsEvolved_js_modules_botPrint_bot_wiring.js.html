@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>BotsEvolved/js/modules/botPrint/bot/wiring.js - The BotPrint API</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title="The BotPrint API"></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.0.1</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/App.html">App</a></li>
+            
+                <li><a href="../classes/BotApp.html">BotApp</a></li>
+            
+                <li><a href="../classes/BrainEvo.html">BrainEvo</a></li>
+            
+                <li><a href="../classes/Chassis.html">Chassis</a></li>
+            
+                <li><a href="../classes/Collision.html">Collision</a></li>
+            
+                <li><a href="../classes/Component.html">Component</a></li>
+            
+                <li><a href="../classes/Coords.html">Coords</a></li>
+            
+                <li><a href="../classes/Draggable.html">Draggable</a></li>
+            
+                <li><a href="../classes/EvoSim.html">EvoSim</a></li>
+            
+                <li><a href="../classes/Gridster.html">Gridster</a></li>
+            
+                <li><a href="../classes/Pin.html">Pin</a></li>
+            
+                <li><a href="../classes/Time.html">Time</a></li>
+            
+                <li><a href="../classes/Tree.html">Tree</a></li>
+            
+                <li><a href="../classes/Utilities.html">Utilities</a></li>
+            
+                <li><a href="../classes/Vector.html">Vector</a></li>
+            
+                <li><a href="../classes/Wire.html">Wire</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: BotsEvolved/js/modules/botPrint/bot/wiring.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ * @author Kate Compton
+ */
+
+define([&quot;common&quot;, &quot;graph&quot;], function(common, Graph) {&#x27;use strict&#x27;;
+    var wireCount = 0;
+    /**
+     * @class Wire
+     */
+    var Wire = Class.extend({
+        /**
+         * @method init
+         * @param start
+         * @param end
+         */
+        init : function(start, end) {
+            this.idNumber = wireCount;
+            this.idColor = common.KColor.makeIDColor(this.idNumber);
+            wireCount++;
+
+            this.start = start;
+            this.end = end;
+        },
+
+        /**
+         * @method render
+         * @param context
+         */
+        render : function(context) {
+            var g = context.g;
+            g.strokeWeight(1);
+            this.idColor.stroke(g);
+            var p0 = this.start.edgePos;
+            var p1 = this.end.edgePos;
+
+            g.line(p0.x, p0.y, p1.x, p1.y);
+        }
+    });
+
+    /**
+     * @class Pin
+     */
+    var Pin = Class.extend({
+        /**
+         * @method init
+         * @param settings
+         */
+        init : function(settings) {
+            this.positive = true;
+            this.pct = .5;
+            _.extend(this, settings);
+            this.edgePos = new Vector();
+
+            this.wire = undefined;
+        },
+
+        /**
+         * @method render
+         * @param context
+         */
+        render : function(context) {
+            this.edge.setToPct(this.edgePos, this.pct);
+            this.edgePos.add(this.parent.center);
+
+            var g = context.g;
+            g.fill(0, 0, 0);
+            if (this.positive)
+                g.fill(0, 1, 1);
+
+            g.ellipse(this.edgePos.x, this.edgePos.y, 5, 5);
+        }
+    });
+
+    var componentCount = 0;
+
+    /**
+     * @class Component
+     */
+    var Component = Class.extend({
+        /**
+         * @method init
+         * @param settings
+         */
+        init : function(settings) {
+            // Defaults
+            this.idNumber = componentCount;
+            this.idColor = common.KColor.makeIDColor(this.idNumber);
+            componentCount++;
+            this.pins = [];
+
+            _.extend(this, settings);
+
+            this.region = Graph.makeRectangle(this.center, this.width, this.height);
+
+            // construct snap points
+            for (var i = 0; i &lt; 3; i++) {
+
+                var pin = new Pin({
+                    edge : this.region.getRandomEdge(),
+                    pct : (i + .5) / 6,
+                    positive : Math.random() &gt; .5,
+                    parent : this,
+                });
+                this.pins.push(pin);
+            }
+
+        },
+
+        /**
+         * @method compilePins
+         * @param {Array} pinList
+         * @param {Function} filter
+         */
+        compilePins : function(pinList, filter) {
+            $.each(this.pins, function(index, pin) {
+                if (filter(pin))
+                    pinList.push(pin);
+            });
+        },
+
+        /**
+         * @method render
+         * @param context
+         */
+        render : function(context) {
+            var g = context.g;
+            this.idColor.fill(context.g);
+            this.region.render(context);
+            $.each(this.pins, function(index, pin) {
+                pin.render(context);
+            });
+
+        }
+    });
+
+    var Wiring = {
+        Wire : Wire,
+        Component : Component,
+    };
+
+    return Wiring;
+
+});
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

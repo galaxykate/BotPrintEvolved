@@ -118,7 +118,7 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
 			var g = context.g;
             var r = 10;
             g.strokeWeight(1);
-            g.fill(this.senseValue, 1, .85);
+            g.fill(utilities.constrain(this.senseValue,0,1), 1, .85);
             g.stroke(0);
             g.ellipse(0, 0, r * 1.2, r * 1.2);
 
