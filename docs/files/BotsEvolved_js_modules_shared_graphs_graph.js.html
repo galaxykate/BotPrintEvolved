@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>BotsEvolved/js/modules/shared/graphs/graph.js - The BotPrint API</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title="The BotPrint API"></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.0.1</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/App.html">App</a></li>
+            
+                <li><a href="../classes/BotApp.html">BotApp</a></li>
+            
+                <li><a href="../classes/BrainEvo.html">BrainEvo</a></li>
+            
+                <li><a href="../classes/Chassis.html">Chassis</a></li>
+            
+                <li><a href="../classes/Collision.html">Collision</a></li>
+            
+                <li><a href="../classes/Component.html">Component</a></li>
+            
+                <li><a href="../classes/Coords.html">Coords</a></li>
+            
+                <li><a href="../classes/Draggable.html">Draggable</a></li>
+            
+                <li><a href="../classes/EvoSim.html">EvoSim</a></li>
+            
+                <li><a href="../classes/Gridster.html">Gridster</a></li>
+            
+                <li><a href="../classes/Pin.html">Pin</a></li>
+            
+                <li><a href="../classes/Time.html">Time</a></li>
+            
+                <li><a href="../classes/Tree.html">Tree</a></li>
+            
+                <li><a href="../classes/Utilities.html">Utilities</a></li>
+            
+                <li><a href="../classes/Vector.html">Vector</a></li>
+            
+                <li><a href="../classes/Wire.html">Wire</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: BotsEvolved/js/modules/shared/graphs/graph.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ * @author Kate Compton
+ */
+define([&quot;common&quot;, &quot;./edge&quot;, &quot;threeUtils&quot;], function(common, Edge, threeUtils) {&#x27;use strict&#x27;;
+
+    var touchableFxns = {
+        select : function() {
+            this.selected = true;
+        },
+        deselect : function() {
+            this.selected = false;
+        },
+    };
+
+    var upgradeToTouchable = function(p) {
+        p.touchable = true;
+        _.extend(p, touchableFxns);
+    };
+
+    // Rad hack from: http://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-nodes-are-in-clockwise-order
+    // &quot;Sum over the edges, (x2-x1)(y2+y1).
+    //  If the result is positive the curve is clockwise, if it&#x27;s negative the curve is counter-clockwise.
+    // (The result is twice the enclosed area, with a +/- convention.)&quot;
+
+    var calculatePathArea = function(cycle) {
+        var total = 0;
+        $.each(cycle, function(index, edge) {
+            total += (edge.end.x - edge.start.x) / (edge.end.y + edge.start.y);
+        });
+
+        return total / 2;
+    };
+
+    var graphCount = 0;
+
+    // A graph is a collection of edges
+    var Graph = Class.extend({
+        init : function(name) {
+            this.name = name;
+            this.idNumber = graphCount;
+            graphCount++;
+
+            this.clear();
+
+            this.testPoints = [];
+            this.boundingBox = new common.Rect();
+            this.transform = new common.Transform();
+        },
+
+        clear : function() {
+            this.edges = [];
+            this.nodes = [];
+            this.paths = [];
+        },
+
+        loftPaths : function() {
+            console.log(&quot;Loft &quot; + this);
+            if (this.paths !== undefined) {
+                $.each(this.paths, function(index, path) {
+                    path.loft();
+                });
+            }
+
+        },
+
+        // Min box to hold all nodes and their control nodes
+        expandBoxToFit : function(box) {
+
+            if (this.paths !== undefined) {
+                $.each(this.paths, function(index, path) {
+                    path.expandBoxToFit(box);
+                });
+            }
+
+            $.each(this.nodes, function(index, pt) {
+                box.stretchToContainPoint(pt);
+            });
+        },
+
+        addPath : function(path) {
+            path.finish();
+
+            this.paths.push(path);
+            //  path.debugOutput();
+        },
+
+        getRandomEdge : function() {
+            return this.edges[Math.floor(Math.random() * this.edges.length)];
+        },
+
+        getRandomNode : function() {
+            return this.nodes[Math.floor(Math.random() * this.nodes.length)];
+        },
+
+        findClosest : function(query) {
+
+            var localTarget = new Vector(query.target);
+            this.transform.toLocal(query.target, localTarget);
+            if (query.closest === undefined) {
+                query.closest = {
+                    d : query.minDistance,
+                    obj : undefined,
+                };
+            }
+
+            $.each(this.nodes, function(index, node) {
+                if (query.filter === undefined || query.filter(node)) {
+                    var d = node.getDistanceTo(localTarget);
+
+                    if (d &lt; query.closest.d) {
+                        query.closest.d = d;
+                        query.closest.obj = node;
+                    }
+                }
+            });
+
+            if (this.paths) {
+
+                query.target = localTarget;
+                $.each(this.paths, function(index, path) {
+                    path.findClosest(query);
+
+                });
+            }
+
+            return query.closest;
+        },
+
+        //======================================================
+        //======================================================
+        //======================================================
+        //======================================================
+        // Post-creation
+
+        finish : function() {
+            this.setIndices();
+            this.verify();
+            this.calculateAngles();
+        },
+
+        findIntersections : function() {
+            var count = this.edges.length;
+            var intersections = [];
+            for (var i = 0; i &lt; count; i++) {
+                var u = this.edges[i];
+                for (var j = i + 2; j &lt; count; j++) {
+                    var v = this.edges[j];
+                    var intersection = u.computeIntersection(v);
+                    if (intersection.onEdges()) {
+                        this.testPoints.push(intersection.position);
+                        intersections.push(intersection);
+                    }
+                }
+            }
+            return intersections;
+        },
+
+        // Test that all the nodes are valid and all the edges are correct
+        verify : function(consoleOutput) {
+            if (consoleOutput)
+                console.log(&quot;Verify &quot; + this);
+            var graph = this;
+            $.each(this.nodes, function(index, pt) {
+                if (!pt.isValid()) {
+                    throw (&quot;Point &quot; + index + &quot; of &quot; + graph + &quot; is invalid: &quot; + pt);
+                }
+            });
+
+            var s = &quot;&quot;;
+            $.each(this.edges, function(index, edge) {
+                // Are all the edges in a loop?
+                s += &quot; &quot; + edge.start.graphIndex + &quot; &quot; + edge + &quot; &quot; + edge.end.graphIndex;
+            });
+            if (consoleOutput)
+                console.log(s);
+
+            // Verify that this edge is or is not a cycle or a path
+            var isPath = true;
+            $.each(this.edges, function(index, edge) {
+                // Are all the edges in a loop?
+                s += &quot; &quot; + edge;
+            });
+            var isCycle = false;
+            if (this.edges.length &gt; 1)
+                isCycle = this.edges[0].start === this.edges[this.edges.length - 1].end;
+
+            if (consoleOutput) {
+                console.log(&quot;REPORT FOR &quot; + this);
+                console.log(&quot;   isPath: &quot; + isPath);
+                console.log(&quot;   isCycle: &quot; + isCycle);
+
+                console.log(&quot;Verified &quot; + graph);
+            }
+        },
+
+        markAllUnvisited : function() {
+            $.each(this.nodes, function(index, node) {
+                node.visited = false;
+                node.visitedDepth = -1;
+                node.visitedParent = undefined;
+            });
+        },
+
+        // Merge any close enough nodes
+        mergePoints : function() {
+
+        },
+
+        setIndices : function() {
+            var graph = this;
+            $.each(this.nodes, function(index, node) {
+                node.graph = graph;
+                node.graphIndex = index;
+
+                // Just in case this node isn&#x27;t a node yet
+                Edge.upgradeToNode(node);
+            });
+
+            $.each(this.edges, function(index, edge) {
+                edge.graph = graph;
+                edge.graphIndex = index;
+            });
+        },
+
+        makeAllTouchable : function() {
+            console.log(&quot;Make &quot; + this + &quot; touchable&quot;);
+
+            $.each(this.paths, function() {
+                this.makeAllTouchable();
+            });
+            $.each(this.nodes, function() {
+                upgradeToTouchable(this);
+            });
+        },
+
+        calculateAngles : function() {
+            $.each(this.nodes, function() {
+                this.calculateAngles();
+            })
+        },
+
+        centerBoundingBox : function() {
+            var graph = this;
+            graph.expandBoxToFit(graph.boundingBox);
+
+            // Center around the bounding box
+            var box = graph.boundingBox;
+            graph.transform.setTo(-box.x - box.w / 2, -box.y - box.h / 2);
+        },
+
+        reverseEdges : function() {
+            $.each(this.edges, function(index, edge) {
+                edge.reverse();
+            });
+
+        },
+
+        //======================================================
+        //======================================================
+        //======================================================
+        //======================================================
+
+        addPoint : function(pt) {
+
+            this.nodes.push(pt);
+        },
+
+        addEdge : function(edge) {
+
+            this.edges.push(edge);
+        },
+
+        // Make copies of all the original graph&#x27;s nodes and edges
+        importGraph : function(original) {
+            var graph = this;
+
+            var currentPointIndex = this.nodes.length;
+            $.each(original.nodes, function(index, pt) {
+                if (isNaN(pt.graphIndex)) {
+                    throw (&quot;Attempting to copy a graph with unset graph indices, use &#x27;finish&#x27; first&quot;);
+                }
+                var ptIndex = pt.graphIndex + currentPointIndex;
+                var pt2 = new Vector(pt);
+                pt2.parent = pt;
+                graph.addPoint(pt2);
+            });
+
+            $.each(original.edges, function(index, edge) {
+                // Make a new edge from nodes with the same index
+                var start = graph.nodes[edge.start.graphIndex + currentPointIndex];
+                var end = graph.nodes[edge.end.graphIndex + currentPointIndex]
+                var edge2 = new Edge(start, end);
+                edge2.copyHandles(edge);
+                edge2.parent = edge;
+                graph.addEdge(edge2);
+            });
+
+            console.log(&quot;Finished importing &quot; + original + &quot; into &quot; + this);
+        },
+
+        // From http://stackoverflow.com/questions/12367801/finding-all-Paths-in-undirected-graphs
+        /*
+
+         &quot;An outer loop scans all nodes of the graph and starts a search from every node.
+         Node neighbours (according to the list of edges) are added to the Path path.
+         Recursion ends if no more non-visited neighbours can be added.
+         A new Path is found if the path is longer than two nodes and the next neighbour is the start of the path.
+         To avoid duplicate Paths, the Paths are normalized by rotating the smallest node to the start.
+         Paths in inverted ordering are also taken into account.&quot;
+         */
+        findAllPaths : function() {
+            this.markAllUnvisited();
+
+            // Create all the junctions
+
+            $.each(this.junctions, function(index, node) {
+                // Try expanding
+            });
+
+        },
+
+        // Expand this path by one
+        expandPath : function(Path, edge, direction) {
+
+        },
+
+        drawDetails : function(context) {
+            var g = context.g;
+            var graph = this;
+            $.each(this.nodes, function(index, node) {
+                g.noStroke();
+
+                // Draw special selected stuff
+                if (context.drawHandles) {
+                    g.fill(1, 0, 1, .5);
+                    $.each(node.edges.outbound, function() {
+                        if (this.handles) {
+                            this.handles[0].draw(g);
+                        }
+                    });
+                    $.each(node.edges.inbound, function() {
+                        if (this.handles) {
+                            this.handles[1].draw(g);
+                        }
+                    });
+                }
+
+                if (node.selected) {
+                    g.strokeWeight(4)
+                    g.stroke(.56, 1, 1);
+                    $.each(node.edges.outbound, function() {
+                        this.draw(g);
+
+                    });
+                    g.stroke(.86, 1, 1);
+                    $.each(node.edges.inbound, function() {
+                        this.draw(g);
+
+                    });
+                }
+
+                g.fill(.3 + .2 * graph.idNumber, 1, 1);
+                g.fill(.9, 1, .4);
+                if (node.isSmooth)
+                    g.fill(.6, 1, .4);
+
+                if (node.testColor)
+                    node.testColor.fill(g);
+                if (node.touchable)
+                    node.drawCircle(g, 4);
+                else
+                    node.drawCircle(g, 2);
+
+                if (graph.debugDraw) {
+                    g.strokeWeight(2);
+                    g.stroke(0);
+                    node.drawAngle(g, 30, node.normalAngle);
+                    g.stroke(.8, 1, 1);
+                    node.drawAngle(g, 30, node.inAngle);
+                    g.stroke(.55, 1, 1);
+                    node.drawAngle(g, 30, node.outAngle);
+                }
+            });
+        },
+
+        // Draw all the edges and any current markup stuff
+        draw : function(context) {
+            var graph = this;
+            var g = context.g;
+
+            g.pushMatrix();
+            this.transform.applyTransform(g);
+
+            if (context.drawBoundingBox || app.getOption(&quot;drawBoundingBox&quot;)) {
+                g.fill(1, 0, 1, .5);
+                this.boundingBox.draw(g);
+            }
+
+            // Draw subpaths
+            if (this.paths !== undefined) {
+                $.each(this.paths, function(index, path) {
+                    path.draw(context);
+                });
+            }
+
+            this.drawDetails(context);
+
+            // draw bounding box
+            g.popMatrix();
+
+        },
+        debugOutput : function() {
+            $.each(this.nodes, function(index, node) {
+                console.log(index + &quot;: &quot; + node + &quot;(&quot; + node.graphIndex + &quot;)&quot;);
+            });
+
+            $.each(this.edges, function(index, edge) {
+                console.log(index + &quot;: &quot; + edge + &quot;(&quot; + edge.start.graphIndex + &quot;-&quot; + edge.end.graphIndex + &quot;)&quot;);
+            });
+
+            $.each(this.paths, function(index, path) {
+                path.debugOutput();
+            })
+        },
+        toString : function() {
+            return this.name + &quot;(&quot; + this.nodes.length + &quot; nodes, &quot; + this.edges.length + &quot; edges)&quot;;
+        },
+    });
+
+    Graph.Edge = Edge;
+
+    return Graph;
+
+});
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

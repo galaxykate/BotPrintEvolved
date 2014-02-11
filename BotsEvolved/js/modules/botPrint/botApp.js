@@ -4,7 +4,14 @@
 
 define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "common", "./population"], function(UI, Bot, Arena, threeUtils, BotEvo, App, common, Population) {
 
+    /**
+     * @class BotApp
+     * @extends App
+     */
     var BotApp = App.extend({
+        /**
+         * @method init
+         */
         init : function() {
             app = this;
             app.width = 900;
@@ -48,13 +55,17 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         //=====================================================================
 
         highlightBot : function(bot) {
-          //  console.log("Highlighting " + bot);
+            //  console.log("Highlighting " + bot);
         },
 
         // Create a bot card and attach it here
         createEmptyBotCard : function(parentHolder) {
 
         },
+
+        /**
+         * @method toggleMainMode
+         */
 
         toggleMainMode : function() {
             console.log("Toggle main mode " + app.editMode);
@@ -64,6 +75,9 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
                 app.openEditMode();
         },
 
+        /**
+         * @method openEditMode
+         */
         openEditMode : function() {
             app.editMode = true;
             $("#arena").addClass("away");
@@ -79,6 +93,9 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             });
         },
 
+        /**
+         * @method openArenaMode
+         */
         openArenaMode : function() {
             var bc = app.botCard;
             app.editMode = false;
@@ -104,7 +121,9 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         },
 
         //-------------------------------------------------------
-
+        /**
+         * @method toggleEditMode
+         */
         toggleEditMode : function() {
             console.log("Toggle edit mode " + app.editChassis);
             if (app.editChassis)
@@ -112,31 +131,79 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             else
                 app.openEditParts();
         },
+
+        /**
+         * @method openEditParts
+         */
         openEditParts : function() {
             app.editChassis = true;
             $("#chassis_edit").addClass("away");
             $("#parts_edit").removeClass("away");
 
         },
+
+        /**
+         * @method openEditChassis
+         */
+
         openEditChassis : function() {
             app.editChassis = false;
             $("#chassis_edit").removeClass("away");
             $("#parts_edit").addClass("away");
         },
+
         openLoadScreen : function() {
             $("#load_screen").show();
         },
         closeLoadScreen : function() {
             $("#load_screen").hide();
+        },
 
-          
+        /**
+         * @method openLoadScreen
+         */
+        openLoadScreen : function() {
+            $("#load_screen").show();
+        },
+
+        /**
+         * @method closeLoadScreen
+         */
+        closeLoadScreen : function() {
+            $("#load_screen").hide();
+
+            /* $("*").click(function(evt) {
+             console.log("Clicked ", this);
+             });*/
 
         },
 
         //=====================================================================
         //=====================================================================
-        // Arena control
 
+        //=====================================================================
+        //=====================================================================
+
+        /**
+         * @method createAndTestManyBots
+         */
+        createAndTestManyBots : function() {
+            var task = "doThing";
+            var bots = [];
+            var count = 5;
+            for (var i = 0; i < count; i++) {
+                var bot = new Bot();
+                bots[i] = bot;
+            }
+            app.currentBot = bots[0];
+
+            app.arena.addPopulation(bots);
+
+        },
+
+        /**
+         * @method createAndTestNewBot
+         */
         createAndTestNewBot : function() {
             var task = "doThing";
 
@@ -166,6 +233,10 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         //=====================================================================
         //=====================================================================
 
+        /**
+         * @method initModes
+         */
+
         initModes : function() {
 
             var ui = app.ui;
@@ -175,6 +246,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.ui.addOption("logConditionTests", false);
             app.ui.addOption("logMutations", true);
             app.ui.addOption("useTimers", true);
+            app.ui.addOption("useColorLerpers", true);
             app.ui.addOption("useSharpie", false);
             app.ui.addTuningValue("unicornFluffiness", 100, 1, 700, function(key, value) {
                 // do something on change
@@ -247,6 +319,10 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
                 mode.id = key;
             });
         },
+
+        /**
+         * @method initControls
+         */
         initControls : function() {
 
             // Set all the default UI controls
@@ -286,6 +362,10 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             });
 
         },
+
+        /**
+         * @method initUI
+         */
         initUI : function() {
 
             var ui = app.ui;
@@ -335,7 +415,10 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 
                     if (!app.paused) {
                         app.worldTime.updateTime(g.millis() * .001);
-                        app.currentBot.update(app.worldTime.ellapsed);
+                        app.currentBot.update({
+                            total : app.worldTime.total,
+                            elapsed : app.worldTime.ellapsed
+                        });
                     }
 
                     app.editWindow.render(function(context) {

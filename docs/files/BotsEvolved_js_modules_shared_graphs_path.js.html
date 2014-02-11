@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>BotsEvolved/js/modules/shared/graphs/path.js - The BotPrint API</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title="The BotPrint API"></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.0.1</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/App.html">App</a></li>
+            
+                <li><a href="../classes/BotApp.html">BotApp</a></li>
+            
+                <li><a href="../classes/BrainEvo.html">BrainEvo</a></li>
+            
+                <li><a href="../classes/Chassis.html">Chassis</a></li>
+            
+                <li><a href="../classes/Collision.html">Collision</a></li>
+            
+                <li><a href="../classes/Component.html">Component</a></li>
+            
+                <li><a href="../classes/Coords.html">Coords</a></li>
+            
+                <li><a href="../classes/Draggable.html">Draggable</a></li>
+            
+                <li><a href="../classes/EvoSim.html">EvoSim</a></li>
+            
+                <li><a href="../classes/Gridster.html">Gridster</a></li>
+            
+                <li><a href="../classes/Pin.html">Pin</a></li>
+            
+                <li><a href="../classes/Time.html">Time</a></li>
+            
+                <li><a href="../classes/Tree.html">Tree</a></li>
+            
+                <li><a href="../classes/Utilities.html">Utilities</a></li>
+            
+                <li><a href="../classes/Vector.html">Vector</a></li>
+            
+                <li><a href="../classes/Wire.html">Wire</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: BotsEvolved/js/modules/shared/graphs/path.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ * @author Kate Compton
+ */
+define([&quot;common&quot;, &quot;./edge&quot;, &quot;threeUtils&quot;, &quot;./graph&quot;], function(common, Edge, threeUtils, Graph) {&#x27;use strict&#x27;;
+
+    var getAbsoluteAngle = function(theta) {
+        return (Math.abs(theta) % (Math.PI * 2));
+    };
+
+    var setMeshFromPoints = function(pathContext) {
+
+        var nodes = pathContext.nodes;
+        var geo = pathContext.geometry;
+        geo.modSideVertices(function(v, context) {
+
+            var pt = nodes[context.side];
+
+            var z = pathContext.height * context.lengthPct - pathContext.height / 2;
+            if (isNaN(z)) {
+                throw &quot;Cannot set mesh from points: height is unset: &quot; + pathContext.height;
+            }
+
+            context.pt = pt;
+            var pt = nodes[context.side];
+            v.setTo(pt.x, pt.y, z);
+
+            if (pathContext.scale)
+                v.mult(pathContext.scale);
+
+            if (pathContext.offset)
+                v.add(pathContext.offset);
+
+        });
+
+        geo.modTopVertices(function(v, context) {
+            var pt = nodes[context.side];
+
+            var h = pathContext.height;
+            var z = -h / 2 + h * 1 + 5 * Math.sin(context.radiusPct * Math.PI);
+            var outPct = 1 - .3 * (1 - context.radiusPct);
+            v.setTo(pt.x * outPct, pt.y * outPct, z);
+
+            if (pathContext.scale)
+                v.mult(pathContext.scale);
+            if (pathContext.offset)
+                v.add(pathContext.offset);
+
+        });
+    };
+
+    // A closed loop of edges
+    var Path = Graph.extend({
+        init : function(name) {
+            this._super(name);
+            this.closed = false;
+        },
+        getFirstNode : function() {
+            return this.nodes[0];
+        },
+
+        close : function() {
+            var edge = new Edge(this.nodes[this.nodes.length - 1], this.nodes[0]);
+            this.addEdge(edge);
+            this.closed = true;
+        },
+
+        loft : function() {
+            console.log(&quot;Loft &quot; + this);
+            this.contours = [];
+            var basePath = this.createLinearApproximation();
+            var layers = 1;
+            this.contours.push(basePath);
+            for (var i = 0; i &lt; layers; i++) {
+                console.log(&quot;Create contour &quot; + i);
+                var offsetAmt = -(i + 1) * 45;
+                var contour = basePath.createOffsetPath(i, offsetAmt);
+                this.contours.push(contour);
+                this.paths.push(contour);
+            }
+        },
+        
+        createLinearApproximation : function() {
+            var path = new Path(&quot;Approx of &quot; + this.name);
+
+            // Copy the start and upgrade it to a node
+            var start = new Vector(this.nodes[0]);
+            Edge.upgradeToNode(start);
+            start.copyAngles(this.nodes[0]);
+            path.addPoint(start);
+
+            $.each(this.edges, function(index, edge) {
+
+                // how many times should we split this edge to get a good approximation? Dunno.
+                var subdivisions = edge.getSubdivisions();
+
+                $.each(subdivisions, function(index, pt) {
+                    path.addEdgeTo(pt);
+                });
+
+            });
+            path.finish();
+            return path;
+        },
+
+        // Create a new path
+        createOffsetPath : function(index, offsetAmt) {
+            var path = new Path(&quot;Contour&quot; + index);
+            path.importGraph(this);
+            path.verify();
+
+            // Move all the nodes correctly, the edges will follow
+            $.each(this.nodes, function(index, pt) {
+                // In a path, each pt has at most one inbound and one outbound edge
+
+                var theta = pt.normalAngle;
+                var amt = offsetAmt;
+                if (!pt.isSmooth) {
+                    var delta = getAbsoluteAngle(pt.dTheta);
+                    amt = offsetAmt / Math.sin(delta / 2);
+                }
+                path.nodes[index].addPolar(amt, theta);
+
+            });
+            path.splitAtIntersections();
+
+            return path;
+        },
+        splitAtIntersections : function() {
+            console.log(&quot;Split at intersections&quot;)
+            var intersections = this.findIntersections();
+            this.splitAtIntersection(intersections[0]);
+
+        },
+
+        getHull : function() {
+            return this.nodes;
+        },
+
+        // Split into two paths
+        splitAtIntersection : function(intersection) {
+            // Split this graph into two at the intersection
+            var edge0 = intersection.edges[0];
+            var edge1 = intersection.edges[1];
+            var count = 0;
+
+            var hueStart = 0;
+
+            var start0 = edge0.start;
+            var end0 = edge0.end;
+
+            var start1 = edge1.start;
+            var end1 = edge1.end;
+            // shortcutting segments
+            var segment0 = [edge0.start, new Vector(intersection.position), edge1.end];
+            var segment1 = [edge1.start, new Vector(intersection.position), edge0.end];
+
+            // Build a new graph by follw
+            var loop0 = new Path(&quot;splitLoop&quot;);
+            var loop1 = new Path(&quot;splitLoop&quot;);
+
+            edge0.end.getSubpath({
+                graph : loop0,
+
+                edgeEndCondition : function(edge) {
+                    return edge === edge1;
+                }
+            });
+
+            var loop1 = edge1.end.getSubpath({
+                graph : loop1,
+
+                edgeEndCondition : function(edge) {
+                    return edge === edge1;
+                }
+            });
+
+            var count = 0;
+            loop0.getFirstNode().followLoop({
+                onEdge : function(edge) {
+                    //  edge.testColor = new common.KColor(.3 + .01 * count, 1, 1);
+                    count++;
+                }
+            });
+
+            // Cut out the intersecting edges
+            edge0.removeFromNodes();
+            edge1.removeFromNodes();
+            console.log(edge1.start.edges);
+            console.log(edge1.end.edges);
+
+            loop0.spliceIn(segment0);
+            loop1.spliceIn(segment1);
+
+            this.clear();
+            loop0.makeAllTouchable();
+            loop1.makeAllTouchable();
+            this.addPath(loop0);
+            this.addPath(loop1);
+
+        },
+        addEdgeTo : function(pt) {
+            var edge;
+            // Make an edge
+            var last = this.nodes[this.nodes.length - 1];
+
+            this.addPoint(pt);
+            if (last !== undefined) {
+                edge = new Edge(last, pt);
+                this.addEdge(edge);
+            } else {
+                //      console.log(&quot;Can&#x27;t make an edge with no pre-existing nodes &quot; + this.nodes.length);
+            }
+
+            return edge;
+        },
+      
+        createPoints : function(subdivisions) {
+            var pts = [];
+            $.each(this.edges, function(index, edge) {
+                for (var i = 0; i &lt; subdivisions; i++) {
+                    var pt = edge.getSubdivisionPoint(i / subdivisions);
+                    pts.push(pt);
+                }
+            });
+            return pts;
+        },
+
+        // Add a chain of edges from the first node in the list,
+        //    passing through the middle ones, and ending at the last one
+        spliceIn : function(nodes) {
+            var last = nodes[0];
+            for (var i = 1; i &lt; nodes.length; i++) {
+
+                var current = nodes[i];
+
+                // Don&#x27;t add the last point, it should already be in the graph
+                if (i &lt;= nodes.length - 2)
+                    this.addPoint(current);
+                this.addEdge(new Edge(last, current));
+
+                last = current;
+            }
+        },
+
+        createThreeMesh : function(context) {
+            this.finish();
+            this.meshPoints = this.createPoints(3);
+            console.log(utilities.arrayToString(this.meshPoints));
+            context.nodes = this.meshPoints;
+
+            this.geometry = new threeUtils.ModGeo.Cylinder(this.meshPoints.length, context.rings, context.capRings);
+            context.geometry = this.geometry;
+            this.mesh = this.geometry.createMesh();
+
+            setMeshFromPoints(context);
+            return this.mesh;
+
+        },
+        drawFilled : function(context) {
+            var g = context.g;
+            if (this.edges.length &gt; 0) {
+                g.beginShape();
+                this.edges[0].start.vertex(g);
+                var g = context.g;
+                $.each(this.edges, function(index, edge) {
+                    edge.drawVertex(g);
+                });
+                g.endShape();
+
+            }
+        },
+        drawDetails : function(context) {
+
+            this._super(context);
+
+            var g = context.g;
+
+            var hue = (.167 * this.idNumber + .6) % 1;
+
+            // Draw the filled shape
+            g.stroke(1);
+            g.strokeWeight(1);
+            g.fill(hue, 1, 1, .4);
+            this.drawFilled(context);
+
+            // Draw contours
+            if (this.contours) {
+
+                $.each(this.contours, function(index, contour) {
+                    contour.draw(context);
+                });
+            }
+
+            $.each(this.edges, function(index, edge) {
+                if (edge.testColor) {
+                    edge.testColor.stroke(g);
+                    g.strokeWeight(4);
+                    edge.draw(g);
+                }
+            });
+
+            $.each(this.nodes, function(index, point) {
+                if (point.parent) {
+                    g.stroke(1);
+                    g.strokeWeight(1);
+
+                    //  point.drawLineTo(g, point.parent);
+
+                }
+
+            });
+
+            $.each(this.testPoints, function(index, point) {
+                g.stroke(0);
+                g.fill(.1, 1, 1);
+                point.drawCircle(g, 3);
+            });
+
+        }
+    });
+
+    return Path;
+
+});
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

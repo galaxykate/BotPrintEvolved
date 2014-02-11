@@ -5,7 +5,13 @@
 define(["common"], function(common) {
     var nodeCount = 0;
 
+    /**
+     * @class Tree
+     */
     var Tree = Class.extend({
+        /**
+         * @method init
+         */
         init : function() {
             // Set the depth if there's a parent
             this.depth = 0;
@@ -15,6 +21,12 @@ define(["common"], function(common) {
             nodeCount++;
         },
 
+        /**
+         * @method compileNodes
+         * @param {Array} list
+         * @param {Function} query
+         * @return Pushes all nodes that return true to the query onto the list.
+         */
         compileNodes : function(list, query) {
 
             if (query(this))
@@ -26,6 +38,10 @@ define(["common"], function(common) {
             }
         },
 
+        /**
+         * Severs all children from the tree, sets this.children to []
+         * @method removeChildren
+         */
         removeChildren : function() {
             $.each(this.children, function(index, child) {
                 child.removeParent();
@@ -33,11 +49,19 @@ define(["common"], function(common) {
             this.children = [];
         },
 
+        /**
+         * Severs the node from the tree.
+         * @method removeParent
+         */
         removeParent : function() {
             this.parent = undefined;
             this.depth = 0;
         },
 
+        /**
+         * @method setParent
+         * @param {Tree} parent
+         */
         setParent : function(parent) {
 
             this.parent = parent;
@@ -52,10 +76,17 @@ define(["common"], function(common) {
             }
         },
 
+        /**
+         * @method getChildren
+         * @return {Array} children
+         */
         getChildren : function() {
             return this.children;
         },
 
+        /**
+         * @method debugPrint
+         */
         debugPrint : function() {
             var spacer = "";
             for (var i = 0; i < this.depth; i++) {
@@ -71,6 +102,11 @@ define(["common"], function(common) {
             }
         },
 
+        /**
+         * @method reduceDown
+         * @param {Function} f
+         * @param base
+         */
         reduceDown : function(f, base) {
             console.log(this.depth + " Reduce down " + this);
             base = f(base, this);
@@ -84,10 +120,17 @@ define(["common"], function(common) {
             return base;
         },
 
+        /**
+         * @method toString
+         */
         toString : function() {
             return "Node" + this.idNumber;
         },
 
+        /**
+         * @method generateTree
+         * @param initNode
+         */
         generateTree : function(initNode) {
             initNode(this);
             var children = this.getChildren();
