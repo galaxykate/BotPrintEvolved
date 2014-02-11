@@ -154,7 +154,6 @@ define(["common", "graph", "./attachment", "../wiring"], function(common, Graph,
     });
 
     Actuator.Sharpie = Sharpie;
-    Actuator.DiscoLight = DiscoLight;
-
+  
     return Actuator;
 });

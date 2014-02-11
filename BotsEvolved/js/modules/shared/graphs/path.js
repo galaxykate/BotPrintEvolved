@@ -78,7 +78,7 @@ define(["common", "./edge", "threeUtils", "./graph"], function(common, Edge, thr
                 this.paths.push(contour);
             }
         },
-        
+
         createLinearApproximation : function() {
             var path = new Path("Approx of " + this.name);
 
@@ -212,7 +212,7 @@ define(["common", "./edge", "threeUtils", "./graph"], function(common, Edge, thr
 
             return edge;
         },
-      
+
         createPoints : function(subdivisions) {
             var pts = [];
             $.each(this.edges, function(index, edge) {
@@ -255,19 +255,32 @@ define(["common", "./edge", "threeUtils", "./graph"], function(common, Edge, thr
             return this.mesh;
 
         },
+
         drawFilled : function(context) {
             var g = context.g;
-            if (this.edges.length > 0) {
-                g.beginShape();
-                this.edges[0].start.vertex(g);
-                var g = context.g;
-                $.each(this.edges, function(index, edge) {
-                    edge.drawVertex(g);
-                });
-                g.endShape();
 
-            }
+            // Just use the nodes to draw this outline, the edges might not be set
+            g.beginShape();
+            $.each(this.nodes, function(index, node) {
+                node.vertex(g);
+            });
+            g.endShape(g.CLOSE);
+
+            /*
+             if (this.edges.length > 0) {
+             g.beginShape();
+             this.edges[0].start.vertex(g);
+             var g = context.g;
+             $.each(this.edges, function(index, edge) {
+             edge.drawVertex(g);
+             });
+             g.endShape(g.CLOSE);
+
+             }
+             */
+
         },
+
         drawDetails : function(context) {
 
             this._super(context);

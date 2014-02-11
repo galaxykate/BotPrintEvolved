@@ -409,6 +409,7 @@ define(["common", "./edge", "threeUtils"], function(common, Edge, threeUtils) {'
             g.popMatrix();
 
         },
+        
         debugOutput : function() {
             $.each(this.nodes, function(index, node) {
                 console.log(index + ": " + node + "(" + node.graphIndex + ")");

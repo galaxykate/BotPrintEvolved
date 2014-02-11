@@ -84,7 +84,7 @@ define(["common", "graph", "./attachment", "../wiring"], function(common, Graph,
 			var g = context.g;
             var r = 10;
             g.strokeWeight(1);
-            g.fill(this.senseValue, 1, .85);
+            g.fill(utilities.constrain(this.senseValue,0,1), 1, .85);
             g.stroke(0);
             g.ellipse(0, 0, r * 1.2, r * 1.2);
 
