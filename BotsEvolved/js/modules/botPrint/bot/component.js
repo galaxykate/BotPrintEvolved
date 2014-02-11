@@ -104,6 +104,31 @@ define(["common", "graph", "./wiring"], function(common, Graph, Wiring) {'use st
             });
         }
     });
-
+	
+	
+	//TODO: actually create the core component
+	/*
+	var Core = Component.extend({
+		init : function(){
+            this._super();
+            this.id = "CoreComponent " + this.idNumber;
+		},
+		
+		//build the actual shape of the core component block
+		buildDetails : function (){
+			
+		},
+		
+		//add pins for wire-related things
+		addPins : function (){
+			
+		},
+		
+		//we don't need to override the render details, because it just draws the shapes we throw at it.  Ballin'
+	});
+	
+	Component.Core = coreComponents;
+	*/
+	
 	return Component;
  });	
