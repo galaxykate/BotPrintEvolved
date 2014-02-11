@@ -30,7 +30,6 @@ define(["common", "processing", prefix + "panel", prefix + "controls", prefix + 
         else
             step = 1;
 
-      
         slider.appendTo(optionDiv);
         slider.slider({
             range : "min",
@@ -129,17 +128,17 @@ define(["common", "processing", prefix + "panel", prefix + "controls", prefix + 
             if (parentDiv !== undefined) {
                 var slidersDiv = $("<div/>", {
                     id : "dev_sliders",
-                    "class" : "panel text_panel"
+                    "class" : "panel devDropDown"
                 });
 
                 var optionsDiv = $("<div/>", {
                     id : "dev_options",
-                    "class" : "panel text_panel"
+                    "class" : "panel devDropDown"
                 });
 
                 var outputDiv = $("<div/>", {
                     id : "dev_output",
-                    "class" : "panel text_panel"
+                    "class" : "panel devDropDown"
                 });
 
                 parentDiv.append(slidersDiv);
@@ -162,7 +161,7 @@ define(["common", "processing", prefix + "panel", prefix + "controls", prefix + 
                 devOutput : new Panel({
                     title : "Dev Output",
                     div : $("#dev_output"),
-                    dimensions : new Vector(w, h),
+
                     side : "top",
                     sidePos : (w + spacing) * 2 + offset,
                 }),
@@ -170,7 +169,7 @@ define(["common", "processing", prefix + "panel", prefix + "controls", prefix + 
                 devOptions : new Panel({
                     title : "Dev Options",
                     div : $("#dev_options"),
-                    dimensions : new Vector(w, h),
+
                     side : "top",
                     sidePos : (w + spacing) * 0 + offset,
                 }),
@@ -178,7 +177,7 @@ define(["common", "processing", prefix + "panel", prefix + "controls", prefix + 
                 devSliders : new Panel({
                     title : "Dev Tuning Values",
                     div : $("#dev_sliders"),
-                    dimensions : new Vector(w, h),
+
                     side : "top",
                     sidePos : (w + spacing) * 1 + offset,
                 }),

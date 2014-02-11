@@ -34,6 +34,10 @@ define([], function() {
             }
         },
 
+        capitaliseFirstLetter : function(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        },
+
         /**
          * @method arrayToString
          * @param array
@@ -46,6 +50,10 @@ define([], function() {
                 s += obj;
             });
             return s;
+        },
+
+        inSquareBrackets : function(s) {
+            return "[" + s + "]";
         },
 
         /**
@@ -131,6 +139,13 @@ define([], function() {
          */
         getRandom : function(array) {
             return array[Math.floor(Math.random() * array.length)];
+        },
+
+        getRandomIndex : function(array) {
+            return Math.floor(Math.random() * Math.round(array.length - 1));
+        },
+        getRandomKey : function(obj) {
+            return this.getRandom(Object.keys(obj));
         },
 
         /**

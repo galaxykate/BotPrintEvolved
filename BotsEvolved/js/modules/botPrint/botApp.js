@@ -2,7 +2,7 @@
  * @author Kate Compton
  */
 
-define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "common"], function(UI, Bot, Arena, threeUtils, BotEvo, App, common) {
+define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "common", "./population"], function(UI, Bot, Arena, threeUtils, BotEvo, App, common, Population) {
 
     /**
      * @class BotApp
@@ -13,7 +13,15 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
          * @method init
          */
         init : function() {
-            var app = this;
+            app = this;
+            app.width = 900;
+            app.height = 600;
+            app.botCard = {
+                width : 150,
+                height : 220,
+                border : 20,
+            }
+
             app.paused = false;
             app.editChassis = false;
 
@@ -32,8 +40,13 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
                 app.toggleEditMode();
             });
 
-            app.openEditMode();
             app.closeLoadScreen();
+            app.createEmptyBotCard($("#app"));
+
+            app.setPopulation(new Population(5));
+
+            app.openArenaMode();
+
         },
 
         //=====================================================================
@@ -41,9 +54,19 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         //=====================================================================
         //=====================================================================
 
+        highlightBot : function(bot) {
+            //  console.log("Highlighting " + bot);
+        },
+
+        // Create a bot card and attach it here
+        createEmptyBotCard : function(parentHolder) {
+
+        },
+
         /**
          * @method toggleMainMode
          */
+
         toggleMainMode : function() {
             console.log("Toggle main mode " + app.editMode);
             if (app.editMode)
@@ -63,16 +86,38 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             // Make wiring for this bot?
             app.currentBot.transform.setTo(0, 0, 0);
             app.openEditChassis();
+
+            var p = new Vector();
+            $(".bot_card").css({
+                "-webkit-transform" : "translate(" + p.x + "px, " + p.y + "px) rotateX(360deg) scale3d(1, 1, 1)",
+            });
         },
 
         /**
          * @method openArenaMode
          */
         openArenaMode : function() {
+            var bc = app.botCard;
             app.editMode = false;
             $("#edit").addClass("away");
             $("#arena").removeClass("away");
-            this.createAndTestManyBots();
+
+            var p = new Vector(app.width - bc.width - (bc.border * 2), app.height - bc.height - (bc.border * 2));
+            $(".bot_card").css({
+                "-webkit-transform" : "translate(" + p.x + "px, " + p.y + "px) rotateX(.01deg) scale3d(1, 1, 1)",
+            });
+
+            app.population.updateUI();
+
+        },
+
+        createBot : function() {
+            return new Bot();
+        },
+
+        editBot : function(bot) {
+            this.currentBot = bot;
+            app.openEditMode();
         },
 
         //-------------------------------------------------------
@@ -100,10 +145,18 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         /**
          * @method openEditChassis
          */
+
         openEditChassis : function() {
             app.editChassis = false;
             $("#chassis_edit").removeClass("away");
             $("#parts_edit").addClass("away");
+        },
+
+        openLoadScreen : function() {
+            $("#load_screen").show();
+        },
+        closeLoadScreen : function() {
+            $("#load_screen").hide();
         },
 
         /**
@@ -119,14 +172,15 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         closeLoadScreen : function() {
             $("#load_screen").hide();
 
-           /* $("*").click(function(evt) {
-                console.log("Clicked ", this);
-            });*/
+            /* $("*").click(function(evt) {
+             console.log("Clicked ", this);
+             });*/
 
         },
 
         //=====================================================================
         //=====================================================================
+
         //=====================================================================
         //=====================================================================
 
@@ -163,9 +217,26 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.evoSim.treeViz.setTree(testBrain);
         },
 
+        spawnNextGeneration : function() {
+            app.setPopulation(app.population.createNextGeneration());
+        },
+
+        setPopulation : function(pop) {
+            console.log("Set population: " + pop);
+            app.population = pop;
+            app.arena.reset();
+            app.arena.addPopulation(app.population.bots);
+
+            app.population.updateUI();
+
+        },
+        //=====================================================================
+        //=====================================================================
+
         /**
          * @method initModes
          */
+
         initModes : function() {
 
             var ui = app.ui;
@@ -175,7 +246,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.ui.addOption("logConditionTests", false);
             app.ui.addOption("logMutations", true);
             app.ui.addOption("useTimers", true);
-			app.ui.addOption("useColorLerpers", true);
+            app.ui.addOption("useColorLerpers", true);
             app.ui.addOption("useSharpie", false);
             app.ui.addTuningValue("unicornFluffiness", 100, 1, 700, function(key, value) {
                 // do something on change
@@ -296,25 +367,13 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
          * @method initUI
          */
         initUI : function() {
-            $("#test_button").click(function() {
-                app.changeMode("arena");
-            });
 
-            $("#reset_arena").click(function() {
-                app.createAndTestNewBot();
-            });
-
-            $("#mutate").click(function() {
-                console.log("-------------------------- ");
-                console.log("Mutating ");
-                app.currentBot.brain.defaultTree.debugPrint();
-                app.evoSim.mutateGenome(app.currentBot.brain.defaultTree);
-
-                app.evoSim.treeViz.setTree(app.currentBot.brain.defaultTree);
-                console.log("defaultTree after: ", app.currentBot.brain.defaultTree)
-
-            });
             var ui = app.ui;
+
+            $("#next_generation").click(function() {
+                app.spawnNextGeneration();
+            });
+
             // Create the Three scene
             app.threeRender = new threeUtils.ThreeView($("#render_panel"), function() {
                 // update the camera
@@ -357,9 +416,9 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
                     if (!app.paused) {
                         app.worldTime.updateTime(g.millis() * .001);
                         app.currentBot.update({
-							total: app.worldTime.total,
-							elapsed: app.worldTime.ellapsed
-							});
+                            total : app.worldTime.total,
+                            elapsed : app.worldTime.ellapsed
+                        });
                     }
 
                     app.editWindow.render(function(context) {

@@ -277,14 +277,16 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
                 this.createDrawingMap(g);
             }
 
-            //  g.image(this.lightMap, -g.width / 2, -g.height / 2);
-            g.image(this.drawingMap, -g.width / 2, -g.height / 2);
+            g.image(this.lightMap, -g.width / 2, -g.height / 2);
+            //g.image(this.drawingMap, -g.width / 2, -g.height / 2);
 
             // Draw the edges
             var arenaColor = new common.KColor(.2, .6, .2);
             g.strokeWeight(3);
-            arenaColor.stroke(g, .3, -.5);
-            arenaColor.fill(g, .5, -.85);
+            arenaColor.stroke(g, .3, .5);
+            arenaColor.fill(g, .5, .85);
+           
+           
             this.border.draw(context);
 
             context.simplifiedBots = true;

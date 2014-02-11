@@ -155,7 +155,6 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
     });
 
     Actuator.Sharpie = Sharpie;
-    Actuator.DiscoLight = DiscoLight;
-
+  
     return Actuator;
 });

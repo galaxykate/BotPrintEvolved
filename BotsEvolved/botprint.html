@@ -45,20 +45,27 @@
 						<div id="population_next" class="subpanel">
 							Next population
 						</div>
-					</div>
-					<div id="arena_panel" class="panel">
-						Arena Settings
-					</div>
-					<div id="testing_panel" class="panel">
-						Test Results
-						<select>
-							<option>Distance Total</option>
-							<option>Turn Left</option>
-							<option>Turn Right</option>
-						</select>
-						<button>
-							Run test
+
+						<button id="next_generation">
+							generate!
 						</button>
+					</div>
+
+					<div id="arena_bar">
+						<div id="arena_panel" class="panel">
+							Arena Settings
+						</div>
+						<div id="testing_panel" class="panel">
+							Test Results
+							<select>
+								<option>Distance Total</option>
+								<option>Turn Left</option>
+								<option>Turn Right</option>
+							</select>
+							<button>
+								Run test
+							</button>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -81,8 +88,6 @@
 			</div>
 
 			<div id="ui" class="app_size app_overlay">
-
-				<div id="bot_card"></div>
 
 				<div id="load_screen">
 					<button>
