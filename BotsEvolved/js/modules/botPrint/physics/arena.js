@@ -285,9 +285,9 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
             g.strokeWeight(3);
             arenaColor.stroke(g, .3, .5);
             arenaColor.fill(g, .5, .85);
-           
-           
-            this.border.draw(context);
+            
+
+          this.border.drawFilled(context);
 
             context.simplifiedBots = true;
             $.each(this.bots, function(index, bot) {
