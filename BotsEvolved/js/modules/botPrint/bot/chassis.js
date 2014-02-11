@@ -248,10 +248,7 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
                 attachmentTypes.push(Attachment.Actuator.Sharpie), weights.push(1);
             }
 
-            attachmentTypes.push(Attachment.Actuator.DiscoLight), weights.push(1);
-
-
-
+        
             // How many attachments to generate
             var count = 4;
 
@@ -347,15 +344,16 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             this.idColor.fill(g, .2, 1);
 
             this.idColor.stroke(g, -.4, 1);
+
             if (bot.selected) {
                 g.strokeWeight(5);
-                this.idColor.stroke(g, -.7, 1);
-                this.idColor.fill(g, .5, 1);
+                this.idColor.stroke(g, .7, 1);
+                this.idColor.fill(g, -.5, 1);
             }
 
             // Draw the region
             context.drawPath = true;
-            this.path.draw(context);
+            this.path.drawFilled(context);
 
 			context.simlifiedBots = false;
 			
