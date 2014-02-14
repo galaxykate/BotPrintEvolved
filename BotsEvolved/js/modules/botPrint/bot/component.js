@@ -107,7 +107,6 @@ define(["common", "graph", "./wiring"], function(common, Graph, Wiring) {'use st
 	
 	
 	//TODO: actually create the core component
-	/*
 	var Core = Component.extend({
 		init : function(){
             this._super();
@@ -116,7 +115,10 @@ define(["common", "graph", "./wiring"], function(common, Graph, Wiring) {'use st
 		
 		//build the actual shape of the core component block
 		buildDetails : function (){
-			
+			this.path = Graph.makeRectangle(this.attachPoint, 10, 14);
+			var pt = this.attachPoint;
+			pt.setTo(this.attachPoint + 10, this.attachPoint);
+			this.path.spliceIn(Graph.makeRectangle(pt, 5, 5));
 		},
 		
 		//add pins for wire-related things
@@ -128,7 +130,6 @@ define(["common", "graph", "./wiring"], function(common, Graph, Wiring) {'use st
 	});
 	
 	Component.Core = coreComponents;
-	*/
 	
 	return Component;
  });	

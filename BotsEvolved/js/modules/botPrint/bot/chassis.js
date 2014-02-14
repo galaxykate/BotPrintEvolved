@@ -95,6 +95,7 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
         //======================================================================================
         //======================================================================================
         // Wiring
+        
         /**
          * Here there be dragons
          * @method generateWiring
@@ -212,26 +213,6 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
                     chassis.wires.push(new Wiring.Wire(inPins[startIndex], outPins[index]));
                 }
             });
-            
-			// Log the locations of the in-pins
-
-			// chassislog("In pin inital locations: ");
-			//$.each(inPins, function(index, pin) {
-				//chassislog(pin.pos.x + ", " + pin.pos.y);
-			//});
- 			
-			// Log the locations of the out-pins
-			//chassislog("Out pin inital locations: ");
-			//$.each(outPins, function(index, pin) {
-				 //chassislog(pin.pos.x + ", " + pin.pos.y);
-			//});
-
-			
-			// log wiring locations
-			//chassislog("Wiring inital location: ");
-			//$.each(chassis.wires, function(index, wire){
-				//chassislog(wire.start.pos.x + ", " + wire.start.pos.y + " | " + wire.end.pos.x + ", " + wire.end.pos.y);
-			//});
         },
         
         //======================================================================================
