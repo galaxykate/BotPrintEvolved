@@ -246,27 +246,12 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.ui.addOption("logConditionTests", false);
             app.ui.addOption("logMutations", true);
             app.ui.addOption("useTimers", true);
-<<<<<<< HEAD
-<<<<<<< HEAD
-            app.ui.addOption("useSharpie", true);
-            app.ui.addOption("useSuperFun", true);
-            app.ui.addOption("useHyperFun",true);
-
-=======
-			app.ui.addOption("useColorLerpers", true);
-=======
             app.ui.addOption("useColorLerpers", true);
->>>>>>> master
             app.ui.addOption("useSharpie", false);
             app.ui.addTuningValue("unicornFluffiness", 100, 1, 700, function(key, value) {
                 // do something on change
             });
-<<<<<<< HEAD
-            
->>>>>>> master
-=======
 
->>>>>>> master
             ui.addPanel({
                 id : "arena",
                 div : $("#arena_panel"),
