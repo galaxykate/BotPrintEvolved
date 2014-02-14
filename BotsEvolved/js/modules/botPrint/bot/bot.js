@@ -19,7 +19,9 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
             botCount++;
 
             this.name = makeBotName();
-            this.setMainChassis(new Chassis(this));
+            this.setMainChassis(new Chassis(this, {
+                pointCount:10
+            }));
             this.transform = new common.Transform();
             this.compileAttachments();
         },
