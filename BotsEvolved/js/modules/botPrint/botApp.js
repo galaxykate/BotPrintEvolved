@@ -28,7 +28,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app._super("Bots", new Vector(30, 30));
 
             // app.changeMode("inspector");
-            app.arena = new Arena();
+            app.arena = new Arena("rectangle");
 
             app.currentBot = new Bot();
 
