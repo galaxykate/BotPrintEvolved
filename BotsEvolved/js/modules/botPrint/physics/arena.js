@@ -5,7 +5,7 @@
 define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'use strict';
 
     var Arena = Class.extend({
-        init : function() {
+        init : function(shapeType) {
             this.border = new Graph.Path();
             this.bots = [];
 
@@ -13,12 +13,14 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
 
             var sides = 8;
             for (var i = 0; i < sides; i++) {
-                var r = 200 + Math.random() * 130;
+                var r = 5 + Math.random() * 230;
                 var theta = i * Math.PI * 2 / sides;
                 var p = common.Vector.polar(r, theta);
                 this.border.addPoint(p);
             }
-            var ground = this.boxWorld.makeEdgeRing(this.border.nodes);
+            
+            
+           var ground = this.boxWorld.makeEdgeRing(this.border.nodes);
             ground.isTerrain = true;
         },
 
