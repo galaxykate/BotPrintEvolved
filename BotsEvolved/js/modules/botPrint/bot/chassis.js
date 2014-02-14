@@ -147,34 +147,29 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
 				
 				//Use ray tracing (from http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html) to see if the point is inside
 				//the chassis
-				var valid = true;
+				var valid = false;
 				
-				while(valid != true){
-					p.setTo(utilities.random(minX, maxX), utilities.random(minY, maxY), 0);
+				while(!valid){
+				p.setTo(utilities.random(minX, maxX), utilities.random(minY, maxY), 0);
 				
-					//chassislog("attachPoint: (" + p.x + ", " + p.y + ")");
+					chassislog("attachPoint: (" + p.x + ", " + p.y + ")");
 							
 					if(p === undefined){
 						chassislog("Attach Point Undefined");
 					}else{
-						var i,j;
-						var vertexes = this.path.getHull;
-						j = vertexes.length - 1;
-						 
-						for(i = 0; i < vertexes.length; i++){
-							j = i;
-							if( ((vertexes[i].y > p.y) != (vertexes[j].y > p.y)) && 
-								(p.x < (vertexes[j].x - vertexes[i].x) * (p.y - vertexes[i].y) / (vertexes[j].y - vertexes[i].y) + vertexes[i].x)){
-									valid = !valid;
+						var k,j;
+						var vertexes = this.path.getHull();
+						for(k = 0, j = vertexes.length - 1; k < vertexes.length; j = k++){
+							if(((vertexes[k].y > p.y) != (vertexes[j].y > p.y)) && 
+								(p.x < (vertexes[j].x - vertexes[k].x) * (p.y - vertexes[k].y) / (vertexes[j].y - vertexes[k].y) + vertexes[k].x)){
+								valid = !valid;
 							}
 						}	
 					}
 				}
 				
 				component.place(this, p);
-				
                 component.addPins();
-                
                 this.components.push(component);
             }
 
