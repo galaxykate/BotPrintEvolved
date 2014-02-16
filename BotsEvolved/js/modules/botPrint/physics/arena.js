@@ -13,7 +13,7 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
 
             var sides = 8;
             for (var i = 0; i < sides; i++) {
-                var r = 5 + Math.random() * 230;
+                var r = 225 + Math.random() * 130;
                 var theta = i * Math.PI * 2 / sides;
                 var p = common.Vector.polar(r, theta);
                 this.border.addPoint(p);
@@ -171,7 +171,6 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
             var arena = this;
             $.each(this.bots, function(index, bot) {
                 arena.scores[index].total = arena.getLightMapAt(bot.transform);
-                app.log(index + ": score " + arena.scores[index].total);
             });
         },
 
