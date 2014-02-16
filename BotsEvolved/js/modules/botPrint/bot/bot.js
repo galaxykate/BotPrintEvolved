@@ -18,16 +18,19 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
             botCount++;
 
             this.name = makeBotName();
-            this.setMainChassis(new Chassis(this));
             this.transform = new common.Transform();
-            this.compileAttachments();
-
+        
             // Create DNA for the bot
             if (parent)
                 this.dna = parent.dna.createMutant(mutationLevel);
             else
-                this.dna = new DNA(10, 2);
-        },
+                this.dna = new DNA(10, 3);
+
+            var colorGene = this.dna.genes[0];
+            this.idColor = new common.KColor(colorGene[0], colorGene[1] * .4 + .6, colorGene[2]);
+            this.setMainChassis(new Chassis(this));
+           this.compileAttachments();
+ },
 
         createChild : function(instructions) {
             var child = new Bot(this, instructions.mutationLevel);

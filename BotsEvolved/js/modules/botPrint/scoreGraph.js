@@ -8,16 +8,29 @@ define(["common"], function(common) {'use strict';
 
         init : function(parent) {
             var graph = this;
-            this.createWindow(parent);
             this.slots = 5;
             this.timesteps = 20;
             this.currentTimestep = 0;
             this.height = 90;
             this.width = 430;
+            this.createWindow(parent);
             this.range = new common.Range({
                 min : 0,
                 max : 100,
             });
+
+            setInterval(function() {
+                for (var i = 0; i < graph.slots; i++) {
+                    graph.updateValue(i, graph.currentTimestep, 50 * (1 + utilities.noise(i * 20 + .2 * graph.currentTimestep)));
+                }
+                graph.currentTimestep++;
+
+            }, 100);
+        },
+
+        setCompetitors : function(competitors) {
+            this.competitors = competitors;
+            this.slots = this.competitors.length;
 
             this.values = [];
             for (var i = 0; i < this.slots; i++) {
@@ -26,17 +39,10 @@ define(["common"], function(common) {'use strict';
                     this.values[i][j] = undefined;
                 }
             }
-
-            setInterval(function() {
-                for (var i = 0; i < graph.slots; i++) {
-                    graph.updateValue(i, graph.currentTimestep, 50 * (1 + utilities.noise(i * 20 + .02 * graph.currentTimestep)));
-                }
-                graph.currentTimestep++;
-
-            }, 100);
         },
 
         createWindow : function(parent) {
+            console.log("Create window " + this.width + "  " + this.height);
             var canvas = $("<canvas/>", {
                 width : this.width + "px",
                 height : this.height + "px",
@@ -74,7 +80,7 @@ define(["common"], function(common) {'use strict';
         },
 
         getX : function(t) {
-            var steps = Math.max(30, this.currentTimestep);
+            var steps = Math.min(30, this.currentTimestep);
             var start = this.currentTimestep - steps;
             var pct = (t - start) / steps;
             return pct * this.width;
@@ -90,9 +96,9 @@ define(["common"], function(common) {'use strict';
             var t = this.currentTimestep - 1;
 
             for (var i = 0; i < this.slots; i++) {
-                var h = (.156 * i) % 1;
+                var idColor = this.competitors[i].idColor;
                 g.noFill();
-                g.stroke(h, 1, 1);
+                idColor.stroke(g);
                 g.beginShape();
 
                 var pastSteps = 30;
@@ -102,9 +108,10 @@ define(["common"], function(common) {'use strict';
                 }
                 g.endShape();
 
-                g.fill(h, 1, 1);
+                idColor.fill(g);
                 var v = this.values[i][t];
-                g.ellipse(t * spacing, v, 20, 20);
+
+                g.ellipse(this.getX(t), this.getY(v), 20, 20);
 
                 //           console.log(i + ": " + t + " " + v);
             }

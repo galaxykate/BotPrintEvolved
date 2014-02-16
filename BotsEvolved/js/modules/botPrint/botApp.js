@@ -188,12 +188,13 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         spawnNextGeneration : function() {
             app.setPopulation(app.population.createNextGeneration());
         },
+
         setPopulation : function(pop) {
             console.log("Set population: " + pop);
             app.population = pop;
             app.arena.reset();
             app.arena.addPopulation(app.population.bots);
-
+            app.scoreGraph.setCompetitors(app.population.bots);
             app.population.updateUI();
 
         },
