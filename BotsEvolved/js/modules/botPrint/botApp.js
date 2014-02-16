@@ -276,6 +276,10 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
                 app.spawnNextGeneration();
             });
 
+            $("#start_test").click(function() {
+                console.log("Start test");
+            });
+
             // Add the score graph
             app.scoreGraph = new ScoreGraph.BarGraph($("#testing_panel"));
 
