@@ -2,7 +2,7 @@
  * @author Kate Compton
  */
 
-define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "common", "./population", "./scoreGraph"], function(UI, Bot, Arena, threeUtils, BotEvo, App, common, Population, ScoreGraph) {
+define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "common", "./population", "./scoreGraph", "./heuristic"], function(UI, Bot, Arena, threeUtils, BotEvo, App, common, Population, ScoreGraph, Heuristic) {
 
     /**
      * @class BotApp
@@ -270,6 +270,8 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         initUI : function() {
 
             var ui = app.ui;
+
+            Heuristic.makeHeuristicMenu();
 
             // Add functionality for some buttons
             $("#next_generation").click(function() {

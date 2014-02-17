@@ -36,6 +36,7 @@ define(["common"], function(common) {'use strict';
             for (var i = 0; i < this.geneCount; i++) {
                 var mutLevel = .2 * mutateFloat(mutationLevel, .5);
                 for (var j = 0; j < this.geneLength; j++) {
+
                     if (Math.random() > .3)
                         this.genes[i][j] = mutateFloat(this.genes[i][j], mutLevel);
                 }

@@ -110,8 +110,9 @@ define(["common"], function(common) {'use strict';
             console.log(winners);
             this.clearNextGeneration();
             for (var i = 0; i < MAX_BOTS; i++) {
-                console.log("Create child of winner " + winners[0].bot.name);
-                this.addChild(winners[0].bot, i % 3);
+                var which = Math.floor((.06 + .1*Math.random()) * Math.pow(i + 1, 2));
+                console.log("Create child of winner " + which + " " + winners[which].bot.name);
+                this.addChild(winners[which].bot, i % 3);
             }
             app.spawnNextGeneration();
         },

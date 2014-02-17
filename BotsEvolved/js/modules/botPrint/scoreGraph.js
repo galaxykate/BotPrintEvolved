@@ -4,27 +4,7 @@
 
 define(["common"], function(common) {'use strict';
 
-    var heuristics = {
-        x : {
-            range : new common.Range({
-                min : -300,
-                max : 300,
-            }),
-            evaluate : function(bot) {
-                return bot.transform.x;
-            },
-        },
 
-        angularVelocity : {
-            range : new common.Range({
-                min : -3,
-                max : 3,
-            }),
-            evaluate : function(bot) {
-                return bot.angularVelocity;
-            },
-        }
-    }
 
     var BarGraph = Class.extend({
 
@@ -36,7 +16,7 @@ define(["common"], function(common) {'use strict';
             this.height = 90;
             this.width = 430;
             this.createWindow(parent);
-            this.heuristic = heuristics.angularVelocity;
+           
             this.updateCount = 0;
 
             /*
@@ -128,7 +108,7 @@ define(["common"], function(common) {'use strict';
                 var s = this.currentTimestep + ": ";
 
                 for (var i = 0; i < this.slots; i++) {
-                    var v = this.heuristic.evaluate(this.competitors[i]);
+                    var v = app.heuristic.evaluate(this.competitors[i]);
                     this.updateValue(i, this.currentTimestep, v);
                     s += v + " ";
                 }
@@ -148,7 +128,7 @@ define(["common"], function(common) {'use strict';
         },
 
         getY : function(value) {
-            var yPct = this.heuristic.range.getPct(value);
+            var yPct = app.heuristic.range.getPct(value);
             return yPct * this.height;
         },
 
