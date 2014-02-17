@@ -324,7 +324,7 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
             var arenaColor = new common.KColor(.2, .6, .2);
             g.strokeWeight(3);
             arenaColor.stroke(g, .3, .5);
-            arenaColor.fill(g, .5, .85);
+            arenaColor.fill(g, .7, .85);
             
 
           this.border.drawFilled(context);
