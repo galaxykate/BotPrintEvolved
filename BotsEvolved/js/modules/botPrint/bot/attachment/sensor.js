@@ -67,8 +67,7 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
 
         },
     });
-	
-	
+
     var ColorLerper = Sensor.extend({
         init : function() {
             this._super();
@@ -95,6 +94,7 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
             g.text(this.senseValue.toFixed(2), -9, 4);
 		},
     });
+
 
     Sensor.Timer = Timer;
 	Sensor.ColorLerper = ColorLerper;

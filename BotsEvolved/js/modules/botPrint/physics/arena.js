@@ -5,25 +5,67 @@
 define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'use strict';
 
     var Arena = Class.extend({
-        init : function(shapeType) {
+
+        init : function(shape) {
+
             this.border = new Graph.Path();
             this.bots = [];
 
             this.boxWorld = new BoxWorld(0);
 
             var sides = 8;
-            for (var i = 0; i < sides; i++) {
-                var r = 225 + Math.random() * 130;
-                var theta = i * Math.PI * 2 / sides;
-                var p = common.Vector.polar(r, theta);
-                this.border.addPoint(p);
+
+            switch (shape) {
+                case "rectangle":
+                    //still need to change this to consider the screen width and the camera
+                    var width = 600;
+                    var height = 400;
+                    var center = new Vector(0, 0);
+
+                    this.border.addPoint(new Vector(center.x - width / 2, center.y - height / 2));
+                    //topLeft point
+                    this.border.addPoint(new Vector(center.x - width / 2, center.y + height / 2));
+                    //bottom left
+                    this.border.addPoint(new Vector(center.x + width / 2, center.y + height / 2));
+                    //bottom right
+                    this.border.addPoint(new Vector(center.x + width / 2, center.y - height / 2));
+                    //top right
+                    break;
+                case "hexagon":
+                    var sides = 5;
+                    var r = 250;
+                    for (var i = 0; i < sides; i++) {
+                        //the .95 fixes the default rotation
+                        var theta = (i * Math.PI * 2 / sides) + .95;
+                        var p = common.Vector.polar(r, theta);
+                        this.border.addPoint(p);
+                    }
+                    break;
+                case "circle":
+                    var sides = 16;
+                    var r = 250;
+                    for (var i = 0; i < sides; i++) {
+                        //the .95 fixes the default rotation
+                        var theta = (i * Math.PI * 2 / sides) + .95;
+                        var p = common.Vector.polar(r, theta);
+                        this.border.addPoint(p);
+                    }
+                    break;
+
+                //this gets called when nothing is passed in the init() parameter
+                default:
+                    for (var i = 0; i < sides; i++) {
+                        var r = 200 + Math.random() * 130;
+                        var theta = i * Math.PI * 2 / sides;
+                        var p = common.Vector.polar(r, theta);
+                        this.border.addPoint(p);
+                    }
             }
-            
-            
-           var ground = this.boxWorld.makeEdgeRing(this.border.nodes);
+
+            var ground = this.boxWorld.makeEdgeRing(this.border.nodes);
+
             ground.isTerrain = true;
         },
-
         reset : function() {
             this.time = 0;
             this.resetDrawing();
@@ -286,9 +328,8 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
             g.strokeWeight(3);
             arenaColor.stroke(g, .3, .5);
             arenaColor.fill(g, .5, .85);
-            
 
-          this.border.drawFilled(context);
+            this.border.drawFilled(context);
 
             context.simplifiedBots = true;
             $.each(this.bots, function(index, bot) {
