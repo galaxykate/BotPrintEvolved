@@ -107,7 +107,6 @@ define(["common"], function(common) {'use strict';
         },
 
         createNextGenerationFromWinners : function(winners) {
-            console.log(winners);
             this.clearNextGeneration();
             for (var i = 0; i < MAX_BOTS; i++) {
                 var which = Math.floor((.06 + .1*Math.random()) * Math.pow(i + 1, 2));

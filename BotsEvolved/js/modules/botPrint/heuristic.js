@@ -32,7 +32,6 @@ define(["common"], function(common) {'use strict';
             evaluate : function(bot) {
                 var dblue = Math.abs(0.6 - bot.idColor.h);
                 dblue = dblue % 1;
-                console.log(bot.idColor.h + ": " + dblue);
                 return (.5 - dblue) * bot.idColor.b * bot.idColor.s;
             },
         }

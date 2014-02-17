@@ -48,7 +48,7 @@ define(["common"], function(common) {'use strict';
 
             winners.sort(compare);
             for (var i = 0; i < winners.length; i++) {
-                console.log(i + ": " + winners[i].score + " " + winners[i].bot.name);
+             //   console.log(i + ": " + winners[i].score + " " + winners[i].bot.name);
 
             }
             return winners;
@@ -68,7 +68,6 @@ define(["common"], function(common) {'use strict';
         },
 
         createWindow : function(parent) {
-            console.log("Create window " + this.width + "  " + this.height);
             var canvas = $("<canvas/>", {
                 width : this.width + "px",
                 height : this.height + "px",
@@ -112,8 +111,7 @@ define(["common"], function(common) {'use strict';
                     this.updateValue(i, this.currentTimestep, v);
                     s += v + " ";
                 }
-                //  console.log(s);
-            }
+             }
         },
 
         updateValue : function(index, time, value) {
@@ -154,8 +152,7 @@ define(["common"], function(common) {'use strict';
 
                 g.ellipse(this.getX(t), this.getY(v), 20, 20);
 
-                //           console.log(i + ": " + t + " " + v);
-            }
+               }
         },
     });
 
