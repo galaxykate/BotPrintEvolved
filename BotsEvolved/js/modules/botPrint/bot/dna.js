@@ -19,7 +19,7 @@ define(["common"], function(common) {'use strict';
 
                 }
             }
-            this.debugOutput();
+
         },
 
         clone : function(original) {
@@ -32,13 +32,15 @@ define(["common"], function(common) {'use strict';
         },
 
         mutate : function(mutationLevel) {
+            console.log("MUTATE " + mutationLevel);
             for (var i = 0; i < this.geneCount; i++) {
-                var mutLevel = .01*mutateFloat(mutationLevel, .5);
+                var mutLevel = .2 * mutateFloat(mutationLevel, .5);
                 for (var j = 0; j < this.geneLength; j++) {
-                    if (Math.random() > .6)
+                    if (Math.random() > .3)
                         this.genes[i][j] = mutateFloat(this.genes[i][j], mutLevel);
                 }
             }
+            this.debugOutput();
         },
 
         createMutant : function(mutationLevel) {

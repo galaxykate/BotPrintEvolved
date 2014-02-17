@@ -19,7 +19,8 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
 
             this.name = makeBotName();
             this.transform = new common.Transform();
-        
+            this.lastTransform = new common.Transform();
+
             // Create DNA for the bot
             if (parent)
                 this.dna = parent.dna.createMutant(mutationLevel);
@@ -29,8 +30,8 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
             var colorGene = this.dna.genes[0];
             this.idColor = new common.KColor(colorGene[0], colorGene[1] * .4 + .6, colorGene[2]);
             this.setMainChassis(new Chassis(this));
-           this.compileAttachments();
- },
+            this.compileAttachments();
+        },
 
         createChild : function(instructions) {
             var child = new Bot(this, instructions.mutationLevel);
@@ -96,7 +97,12 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
             return this.mainChassis.path.getHull();
         },
         update : function(time) {
+
             this.mainChassis.update(time);
+
+            this.angularVelocity = (this.transform.rotation - this.lastTransform.rotation) / time.ellapsed;
+
+            this.lastTransform.cloneFrom(this.transform);
 
         },
         act : function(time) {
@@ -127,36 +133,22 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
             context.useChassisCurves = true;
             this.mainChassis.render(context);
 
-            /*
-             $.each(this.attachments, function(index, attachment) {
-             var p = attachment.getBotTransform();
-             g.fill(.4, 1, 1);
-             p.drawCircle(g, 20);
-             });
-             */
-
             g.popMatrix();
-            /*
-             $.each(this.attachments, function(index, attachment) {
-             var p2 = attachment.getWorldTransform();
-             g.fill(.56, 1, 1);
-             p2.drawCircle(g, 10);
-
-             });
-             */
-
         },
+
         getForceAmt : function() {
             if (this.decisionTree === undefined)
                 return Math.max(100000 * Math.sin(this.arena.time + this.idNumber), 0);
             else
                 return this.decisionTree.makeDecision();
         },
+
         getForces : function() {
             var forces = [];
             this.mainChassis.compileForces(forces);
             return forces;
         },
+
         hover : function(pos) {
             app.moveLog("Hovered " + pos);
             var pt = this.getAt({

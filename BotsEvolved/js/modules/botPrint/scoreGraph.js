@@ -4,28 +4,74 @@
 
 define(["common"], function(common) {'use strict';
 
+    var heuristics = {
+        x : {
+            range : new common.Range({
+                min : -300,
+                max : 300,
+            }),
+            evaluate : function(bot) {
+                return bot.transform.x;
+            },
+        },
+
+        angularVelocity : {
+            range : new common.Range({
+                min : -3,
+                max : 3,
+            }),
+            evaluate : function(bot) {
+                return bot.angularVelocity;
+            },
+        }
+    }
+
     var BarGraph = Class.extend({
 
         init : function(parent) {
             var graph = this;
             this.slots = 5;
-            this.timesteps = 20;
+            this.timesteps = 10;
             this.currentTimestep = 0;
             this.height = 90;
             this.width = 430;
             this.createWindow(parent);
-            this.range = new common.Range({
-                min : 0,
-                max : 100,
+            this.heuristic = heuristics.angularVelocity;
+            this.updateCount = 0;
+
+            /*
+             setInterval(function() {
+             for (var i = 0; i < graph.slots; i++) {
+             graph.updateValue(i, graph.currentTimestep, 50 * (1 + utilities.noise(i * 20 + .2 * graph.currentTimestep)));
+             }
+             graph.currentTimestep++;
+
+             }, 100);
+
+             */
+        },
+
+        getWinners : function() {
+            // Sort by
+            function compare(a, b) {
+                return a.score < b.score;
+            }
+
+            var values = this.values;
+            var t = this.currentTimestep;
+            var winners = this.competitors.map(function(bot, index) {
+                return {
+                    bot : bot,
+                    score : values[index][t],
+                }
             });
 
-            setInterval(function() {
-                for (var i = 0; i < graph.slots; i++) {
-                    graph.updateValue(i, graph.currentTimestep, 50 * (1 + utilities.noise(i * 20 + .2 * graph.currentTimestep)));
-                }
-                graph.currentTimestep++;
+            winners.sort(compare);
+            for (var i = 0; i < winners.length; i++) {
+                console.log(i + ": " + winners[i].score + " " + winners[i].bot.name);
 
-            }, 100);
+            }
+            return winners;
         },
 
         setCompetitors : function(competitors) {
@@ -52,7 +98,7 @@ define(["common"], function(common) {'use strict';
             var graph = this;
 
             var drawFunc = function(g) {
-                g.background(.8, 1, .3);
+                g.background(.8, .1, 1);
 
                 graph.draw(g);
             };
@@ -75,6 +121,21 @@ define(["common"], function(common) {'use strict';
             });
         },
 
+        update : function() {
+            this.updateCount++;
+            if (this.updateCount % 4 === 0) {
+                this.currentTimestep++;
+                var s = this.currentTimestep + ": ";
+
+                for (var i = 0; i < this.slots; i++) {
+                    var v = this.heuristic.evaluate(this.competitors[i]);
+                    this.updateValue(i, this.currentTimestep, v);
+                    s += v + " ";
+                }
+                //  console.log(s);
+            }
+        },
+
         updateValue : function(index, time, value) {
             this.values[index][time] = value;
         },
@@ -87,7 +148,7 @@ define(["common"], function(common) {'use strict';
         },
 
         getY : function(value) {
-            var yPct = this.range.getPct(value);
+            var yPct = this.heuristic.range.getPct(value);
             return yPct * this.height;
         },
 

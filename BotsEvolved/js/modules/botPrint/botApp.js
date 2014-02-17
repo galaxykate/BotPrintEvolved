@@ -276,6 +276,11 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
                 app.spawnNextGeneration();
             });
 
+            $("#select_winners").click(function() {
+                var winners = app.scoreGraph.getWinners();
+                app.population.createNextGenerationFromWinners(winners);
+            });
+
             $("#start_test").click(function() {
                 console.log("Start test");
             });
@@ -333,6 +338,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
                     if (!app.paused) {
                         app.worldTime.updateTime(g.millis() * .001);
                         app.arena.update(app.worldTime.ellapsed);
+                        app.scoreGraph.update(app.worldTime);
                     }
                     app.arenaWindow.render(function(context) {
                         context.scale = 3;
