@@ -20,7 +20,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
                 width : 150,
                 height : 220,
                 border : 20,
-            }
+            };
 
             app.paused = false;
             app.editChassis = false;
@@ -53,6 +53,16 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         //=====================================================================
         //=====================================================================
         //=====================================================================
+
+		/**
+         * @method loadNewArena
+         */
+		loadNewArena : function(shape){
+			//deletes current bots in the arena. We might want to change this.
+            app.arena.reset();
+            app.arena = new Arena(shape);
+		},
+
 
         highlightBot : function(bot) {
             //  console.log("Highlighting " + bot);

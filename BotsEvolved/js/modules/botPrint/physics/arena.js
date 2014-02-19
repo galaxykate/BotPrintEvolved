@@ -13,7 +13,6 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
 
             this.boxWorld = new BoxWorld(0);
 
-            var sides = 8;
             switch (shape){
             	case "rectangle":
             		//still need to change this to consider the screen width and the camera
@@ -46,7 +45,6 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
                 		this.border.addPoint(p);
             		}
             	break;
-            	
             	//this gets called when nothing is passed in the init() parameter
             	default:
             	for (var i = 0; i < sides; i++) {
@@ -57,9 +55,11 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
             	}
             }
             
+            //returns a Box2d body that is used for the arena collision
             var ground = this.boxWorld.makeEdgeRing(this.border.nodes);
-            ground.isTerrain = true;
+            ground.isTerrain = false;
         },
+        
         reset : function() {
             this.time = 0;
             this.resetDrawing();
@@ -164,7 +164,7 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
                 arena.scores[index] = {
                     total : 0,
                     individual : bot,
-                }
+                };
             });
 
             arena.boxWorld.addObjects(population);
@@ -184,9 +184,9 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
             var time = {
                 total : this.time,
                 ellapsed : timestep,
-            }
+            };
             app.log("Arena update: " + timestep + " time" + time.total);
-            this.time += timestep
+            this.time += timestep;
 
             $.each(this.bots, function(index, bot) {
                 bot.update(time);
