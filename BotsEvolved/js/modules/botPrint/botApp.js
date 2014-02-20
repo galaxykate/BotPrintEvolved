@@ -30,7 +30,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             // app.changeMode("inspector");
             app.arena = new Arena("rectangle");
 
-            app.setCurrentBot(new Bot());
+            //app.currentBot = new Bot();
 
             $("#switch_modes").click(function() {
                 app.toggleMainMode();
@@ -39,12 +39,12 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             $(".edit_menu").click(function() {
                 app.toggleEditMode();
             });
-
             app.closeLoadScreen();
             app.createEmptyBotCard($("#app"));
 
             app.setPopulation(new Population(5));
-
+            app.currentBot = app.population.bots[0];
+            app.initializeEditMode();
             app.openArenaMode();
 
         },
@@ -120,8 +120,48 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         },
 
         editBot : function(bot) {
-            app.setCurrentBot();
+            this.currentBot = bot;
+            app.setEditMenu();
             app.openEditMode();
+        },
+
+        //-------------------------------------------------------
+        /**
+         * @method initializeEditMode
+         */
+        initializeEditMode : function() {
+            $("#parts_edit").prepend("<b>whatever</b>");
+            $("#parts_edit").append("<hr>");
+            app.setEditMenu();
+            var ui = app.ui;
+            var partNames = new Array();
+            partNames[0] = "wheel";
+            partNames[1] = "light sensor";
+            partNames[2] = "servo";
+            for (var i = 0; i < 3; i++)
+            {
+                var myDiv = jQuery('<div/>', {
+                    id: 'part1',
+                    width: 200,
+                    height: 50,
+                });
+                myDiv.appendTo($("#parts_edit"));
+                myDiv.append("<center><b>You're not my REAL mom.</b>");
+                //Insert drag/droppable image here?
+                myDiv.append(partNames[i].concat("</center><hr>"));
+            }
+        },
+        /**
+         * @method toggleEditMode
+         */
+         
+        setEditMenu : function() {
+            $("#chassis_edit").text("");
+            $("#chassis_edit").append("<b>shut up</b><hr>");
+            nString = "<center>";
+            $("#chassis_edit").append(nString.concat(this.currentBot.name));
+            $("#chassis_edit").append("</center>");
+            
         },
 
         //-------------------------------------------------------
@@ -192,6 +232,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         setPopulation : function(pop) {
             console.log("Set population: " + pop);
             app.population = pop;
+            app.currentBot = app.population.bots[0];            
             app.arena.reset();
             app.arena.addPopulation(app.population.bots);
             app.scoreGraph.setCompetitors(app.population.bots);
