@@ -26,7 +26,7 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
             	 	this.border.addPoint(new Vector(center.x+width/2, center.y-height/2)); //top right
             	break;
             	case "hexagon":
-            		var sides = 5;
+            		var sides = 6;
             		var r = 250;
             		for (var i = 0; i < sides; i++) {
             			//the .95 fixes the default rotation
@@ -44,6 +44,20 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
                 		var p = common.Vector.polar(r, theta);
                 		this.border.addPoint(p);
             		}
+            	break;	
+            	case "random":
+            	//Arenas are random now it generates from a triangle to an icosagon (circle?). 
+            	var min = 3;
+				var max = 20;
+				var random = Math.floor(Math.random() * (max - min + 1)) + min;
+            		var sides = random;
+            		var r = 250;
+            		for (var i = 0; i < sides; i++) {
+            			//the .95 fixes the default rotation
+                		var theta = (i * Math.PI * 2 / sides)+.95;
+                		var p = common.Vector.polar(r, theta);
+                		this.border.addPoint(p);
+            		}	
             	break;
             	//this gets called when nothing is passed in the init() parameter
             	default:

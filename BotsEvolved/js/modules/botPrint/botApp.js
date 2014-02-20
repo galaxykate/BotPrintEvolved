@@ -31,7 +31,12 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.arena = new Arena("rectangle");
 
             //app.currentBot = new Bot();
-
+			
+			$("#select_arena").click(function() {
+				var arenatype = $("#arena_type_chooser").val();
+                app.loadNewArena(arenatype);
+            });
+			
             $("#switch_modes").click(function() {
                 app.toggleMainMode();
             });
@@ -66,6 +71,9 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 			//deletes current bots in the arena. We might want to change this.
             app.arena.reset();
             app.arena = new Arena(shape);
+            //This adds brand new bots. Need to change to current bots. 
+            app.setPopulation(new Population(5));
+            app.currentBot = app.population.bots[0];
 		},
 
 
