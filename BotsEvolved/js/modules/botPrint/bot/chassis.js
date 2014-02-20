@@ -34,10 +34,6 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
 
             path.addEdgeTo(pt);
         }
-        //Close the loop
-        if(chassis.pointCount > 0) {
-            path.addEdgeTo(path.edges[0].start);
-        }
 
         return path;
     }
