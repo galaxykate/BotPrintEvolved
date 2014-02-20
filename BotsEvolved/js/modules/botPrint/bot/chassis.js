@@ -107,6 +107,30 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             // Create components
 
             this.components = [];
+            //TODO: for the demo, I'm just going to place the battery pack in the center, and offset the baby orangitang
+            var battery = new Component.Battery({
+            	name : "Battery",
+            });
+            var controller = new Component.Orangutan({
+            	name : "Controller",
+            });
+            
+            battery.place(this, this.transCenter);
+            //FIXME: temp solution where we drop the parts in the center
+            var p = new common.Transform();
+            p.setTo(15,0,0);
+            
+            controller.place(this, p);
+            
+            battery.addPins();
+            controller.addPins();
+            
+            this.components.push(battery);
+            this.components.push(controller);
+            
+            //FIXME: I want to return to this later.  Right now, we're just going to place both core components, with the orangitang offset
+            //from center.
+           	/*
             // make one component
             for (var i = 0; i < 1; i++) {
 
@@ -175,7 +199,8 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
 				component.place(this, p);
                 component.addPins();
                 this.components.push(component);
-            }
+            }*/
+
 
             // Connect the components
             var inPins = [];
@@ -199,6 +224,9 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
 					return !pin.negative;
 				});
 			});
+			
+			chassislog("In pins: " + inPins.length);
+			chassislog("Out pins: " + outPins.length);
 			
             chassis.wires = [];
             // For each in pin, connect it to a random out pin

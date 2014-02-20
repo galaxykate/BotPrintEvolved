@@ -105,55 +105,71 @@ define(["common", "graph", "./wiring"], function(common, Graph, Wiring) {'use st
         }
     });
 	
-	
-	//TODO: actually create the core component
-	var Core = Component.extend({
+	var Battery = Component.extend({
 		init : function(){
             this._super();
-            this.id = "CoreComponent " + this.idNumber;
+            this.id = "Battery " + this.idNumber;
 		},
 		
 		//build the actual shape of the core component block
 		buildDetails : function (){
-			var rec1 = Graph.makeRectangle(this.attachPoint, 10, 14);
-			var pt = this.attachPoint;
-			pt.setTo(this.attachPoint.x + 10, this.attachPoint.y);
-			var rec2pts = Graph.makeRectangle(pt, 5, 5).getHull();
-			var addPts = [];
-			for(i = 0; i < rec1.getHull().length; i++){
-				var valid = false;
-				var k,j;
-				var vertexes = rec1.getHull();
-				for(k = 0, j = vertexes.length - 1; k < vertexes.length; j = k++){
-					if(((vertexes[k].y > p.y) != (vertexes[j].y > p.y)) && 
-						(p.x < (vertexes[j].x - vertexes[k].x) * (p.y - vertexes[k].y) / (vertexes[j].y - vertexes[k].y) + vertexes[k].x)){
-						valid = !valid;
-					}
-				}
-				if(valid){
-					
-				}
-			}
-			this.path.
+			this.path = Graph.makeRectangle(this.attachPoint, 10, 14);
 		},
 		
 		//add pins for wire-related things
 		addPins : function (){
-			 for (var i = 0; i < 6; i++) {
-                var pin = new Wiring.Pin({
-                    //edge : this.subParts[0].getRandomEdge(),
-                    //pct : (i + .5) / 6,
-                    positive : Math.random() > .5,
-                    parent : this,
-                });
-                this.pins.push(pin);
-            }
+            var positive = new Wiring.Pin({
+                 positive : true,
+                 parent : this,
+            });
+            
+            var negative = new Wiring.Pin({
+            	positive : false,
+            	parent : this,
+            });
+            
+        	this.pins.push(positive);
+        	this.pins.push(negative);
 		},
 		
 		//we don't need to override the render details, because it just draws the shapes we throw at it.  Ballin'
 	});
 	
-	Component.Core = Core;
+	var Orangutan = Component.extend({
+		init : function(){
+			this._super();
+			this.id = "Orangutan " + this.idNumber;
+		},
+		
+		//build the actual shape of the core component block
+		buildDetails : function(){
+			this.path = Graph.makeRectangle(this.attachPoint, 5, 5);
+		},
+		
+		//add pins for wire-related things
+		addPins : function (){
+			//positive pins
+			for(var i = 0; i < 12; i++){
+				var pin = new Wiring.Pin({
+					positive : true,
+					parent : this,
+				});
+				this.pins.push(pin);
+			}
+			
+			//negative pins
+			for(var i = 0; i < 12; i++){
+				var pin = new Wiring.Pin({
+					positive : false,
+					parent : this,
+				});
+				this.pins.push(pin);
+			}
+		}
+	});
+	
+	Component.Battery = Battery;
+	Component.Orangutan = Orangutan;
 	
 	return Component;
  });	

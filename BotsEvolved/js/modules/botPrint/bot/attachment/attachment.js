@@ -62,17 +62,19 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
 		addPins : function() {
 			            
         	//add pins
-        	// each component gets three snap points randomly distributed
-            // TODO: extend this generic component for both the Baby Orangatang (sp?) and the battery pack
-            for (var i = 0; i < 3; i++) {
-                var pin = new Wiring.Pin({
-                    //edge : this.subParts[0].getRandomEdge(),
-                    //pct : (i + .5) / 6,
-                    positive : Math.random() > .5,
-                    parent : this,
-                });
-                this.pins.push(pin);
-            }
+        	// each component (right now) gets a positive and a negative pin
+            
+             var positive = new Wiring.Pin({
+                 positive : true,
+                 parent : this,
+            });
+        	this.pins.push(positive);
+            
+            var negative = new Wiring.Pin({
+            	positive : false,
+            	parent : this,
+            });
+            this.pins.push(negative);
 		},
 		
         //========================================================
