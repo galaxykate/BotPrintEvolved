@@ -2,7 +2,7 @@
  * @author Kate Compton
  */
 
-define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "common", "./population", "./scoreGraph", "./heuristic"], function(UI, Bot, Arena, threeUtils, BotEvo, App, common, Population, ScoreGraph, Heuristic) {
+define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "common", "./population", "./scoreGraph", "./heuristic", "./bot/attachment/attachments"], function(UI, Bot, Arena, threeUtils, BotEvo, App, common, Population, ScoreGraph, Heuristic, Attachment) {
 
     /**
      * @class BotApp
@@ -130,26 +130,32 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
          * @method initializeEditMode
          */
         initializeEditMode : function() {
-            $("#parts_edit").prepend("<b>whatever</b>");
-            $("#parts_edit").append("<hr>");
+            $("#parts_edit").append("<br>");
             app.setEditMenu();
             var ui = app.ui;
             var partNames = new Array();
+            var rTest = Attachment.Sensor;
             partNames[0] = "wheel";
             partNames[1] = "light sensor";
             partNames[2] = "servo";
+            //var sampleDiv = $("#edit_item");
+            //var sDiv2 = sampleDiv.clone();
+            //sDiv2.appendTo($("#parts_edit"));
+            var sampleDiv = $("#edit_item")
             for (var i = 0; i < 3; i++)
             {
                 var myDiv = jQuery('<div/>', {
-                    id: 'part1',
-                    width: 200,
-                    height: 50,
+                    id: 'edit_item',
+                    width: 175,
+                    height: 150,
                 });
                 myDiv.appendTo($("#parts_edit"));
-                myDiv.append("<center><b>You're not my REAL mom.</b>");
+                
                 //Insert drag/droppable image here?
-                myDiv.append(partNames[i].concat("</center><hr>"));
+                myDiv.append(partNames[i]);
+                sampleDiv.clone().appendTo(myDiv);
             }
+            sampleDiv.remove();
         },
         /**
          * @method toggleEditMode
@@ -157,11 +163,10 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
          
         setEditMenu : function() {
             $("#chassis_edit").text("");
-            $("#chassis_edit").append("<b>shut up</b><hr>");
+            $("#chassis_edit").append("<hr>");
             nString = "<center>";
             $("#chassis_edit").append(nString.concat(this.currentBot.name));
             $("#chassis_edit").append("</center>");
-            
         },
 
         //-------------------------------------------------------
@@ -322,6 +327,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             $("#select_winners").click(function() {
                 var winners = app.scoreGraph.getWinners();
                 app.population.createNextGenerationFromWinners(winners);
+                app.currentBot = app.population.bots[0]; 
             });
 
             $("#start_test").click(function() {

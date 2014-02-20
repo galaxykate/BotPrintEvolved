@@ -56,6 +56,12 @@
 	-webkit-transform:translate(0px, 0px) rotateY(90deg) scale3d(1, 1, 1);
 	height:600px;
 }
+#edit_item {
+    position:relative;
+    left:2px;
+    width:95%;
+    height:50%;    
+}
 #switch_modes {
 	position:absolute;
 	right:0px;
