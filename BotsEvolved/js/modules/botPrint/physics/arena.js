@@ -59,6 +59,26 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
                 		this.border.addPoint(p);
             		}	
             	break;
+            	//An obstacle course is a rectangle arena with random smaller squares on top of it as obstacles. 
+            	//A good heuristic for tests would be measuring obstacle avoidance. 
+            	case "obstacle":
+            	//The arena is a bit larger in this instance because we want to fit obstacles in it and have the bots move around them.
+            		var width = 670;
+            		var height = 470;
+            		var center = new Vector(0,0);
+            		//These will be the reference points in which we want to put the obstacles. 
+					var minX = center.x-width/2;
+					var maxX = center.x+width/2;
+					var minY = center.y-height/2;
+					var maxY = center.y+height/2; 
+					//But first we have to generate the container. 
+            		this.border.addPoint(new Vector(minX, minY)); //topLeft point
+            	 	this.border.addPoint(new Vector(minX, maxY)); //bottom left
+            		this.border.addPoint(new Vector(maxX, maxY)); //bottom right
+            	 	this.border.addPoint(new Vector(maxX, minY)); //top right
+				 	//Now let's populate the world with obstacles. 
+				 	
+            	break;
             	//this gets called when nothing is passed in the init() parameter
             	default:
             	for (var i = 0; i < sides; i++) {
