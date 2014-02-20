@@ -105,9 +105,10 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             // Create components
 
             this.components = [];
-            for (var i = 0; i < 2; i++) {
+            // make one component
+            for (var i = 0; i < 1; i++) {
 
-                var component = new Component({
+                var component = new Component.Core({
                     name : "component " + i,
                     //attachPoint : new Vector(300 * (Math.random() - .5), 300 * (Math.random() - .5)),
                 });
@@ -187,8 +188,6 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
                     return !pin.positive;
                 });
             });
-
-            
 
 			$.each(this.attachments, function(index, attachment){ 
 				attachment.compilePins(inPins, function(pin) {

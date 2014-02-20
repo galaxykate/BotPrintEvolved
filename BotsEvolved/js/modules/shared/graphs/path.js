@@ -126,7 +126,7 @@ define(["common", "./edge", "threeUtils", "./graph"], function(common, Edge, thr
             return path;
         },
         splitAtIntersections : function() {
-            console.log("Split at intersections")
+            console.log("Split at intersections");
             var intersections = this.findIntersections();
             this.splitAtIntersection(intersections[0]);
 
