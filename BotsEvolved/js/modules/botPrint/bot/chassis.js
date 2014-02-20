@@ -260,35 +260,6 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
 				chassis.wires.push(new Wiring.Wire(this.components[0].pins[1], controllerOutPins[controllerOutPins.length - 1]));
 				chassis.wires.push(new Wiring.Wire(controllerOutPins[controllerInPins.length - 1], this.components[0].pins[0]));				
 			}
-			
-/*
-            $.each(this.components, function(index, component) {
-            	component.compilePins(inPins, function(pin) {
-                	return pin.positive;
-                });
-                component.compilePins(outPins, function(pin) {
-                    return !pin.positive;
-                });
-            });
-			
-			chassislog("In pins: " + inPins.length);
-			chassislog("Out pins: " + outPins.length);
-			
-            
-            // For each in pin, connect it to a random out pin
-            $.each(inPins, function(startIndex, pin) {
-                var tries = 0;
-                var index = Math.floor(Math.random() * outPins.length);
-                while (outPins[index].wire !== undefined && tries < outPins.length) {
-                    index = (index + 1) % 1;
-                    tries++;
-                }
-
-                if (outPins[index].wire === undefined) {
-                    chassis.wires.push(new Wiring.Wire(inPins[startIndex], outPins[index]));
-                }
-            });*/
-
         },
         
         //======================================================================================
