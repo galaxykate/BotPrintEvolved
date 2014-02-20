@@ -2,7 +2,7 @@
  * @author Kate Compton
  */
 
-define(["common", "graph", "./wiring", "./attachment/attachments"], function(common, Graph, Wiring, Attachment) {'use strict';
+define(["common", "graph", "./wiring", "./attachment/attachments", "./component"], function(common, Graph, Wiring, Attachment, Component) {'use strict';
     //Private helpers to hide some ugliness
     var getAttachmentTypes = function() {
         // Weights and attachment types: there should be the same number in each array, please!
@@ -43,6 +43,15 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
     }
 
     var chassisCount = 0;
+    //configure logging for the bot "build" process
+    var chassisLog = "";
+    function chassislog(s){
+        if(app.getOption("logChassis"))
+            console.log(s);
+        chassisLog += (s + " <br>");
+
+    }
+
     // Points MUST be coplanar
 
     // var CylinderGeometry = new
@@ -56,22 +65,52 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
         /**
          * @method init
          */
-        init : function(parent, opts) {
+        init : function(bot, opts) {
             this._super();
 
             opts = opts || {};
+            this.bot = bot;
             this.curveSubdivisions = opts.curveSubdivisions || 3;
-            this.idColor = opts.idColor || new common.KColor((.2813 * this.idNumber + .23) % 1, 1, 1);
-            this.pointCount = opts.pointCount || 4;
+            this.idColor = opts.idColor || bot.idColor;
+            this.pointCount = opts.pointCount || 5;
+
+            var chassis = this;
+            this.idColor = bot.idColor;
 
             this.path = opts.path || makePath(this);
 
             this.center = new Vector(0, 0);
 
-            this.generateWiring();
+
+
+            //FIXME: this.center() doesn't actually point to the center when all is said and done, we need to get a "visual" center
+            //to actually place the points
+            //This is done by finding the centroid of the polygon
+            //FIXME: move this over to the graph library?
+            var points = this.path.getHull();
+
+            var twiceArea = 0;
+            var x = 0; var y = 0; var numPoints = this.path.getHull().length;
+            var p1, p2, f;
+            for(var i = 0, j = numPoints - 1; i < numPoints; j = i++){
+                p1 = points[i];
+                p2 = points[j];
+                f = p1.x*p2.y - p2.x*p1.y;
+                twiceArea += f;
+                x += (p1.x + p2.x) * f;
+                y += (p1.y + p2.y) * f;
+            }
+            f = twiceArea * 3;
+
+            this.visualCenter = new common.Transform();
+            this.visualCenter.setTo((x/f), (y/f), 0);
+
             this.generateAttachments();
+            //Currently generate Wiring relies on the rest of the chassis
+            //being set and configured. Must go last.
+            this.generateWiring();
         },
-        // Cloning + modification
+             // Cloning + modification
 
              /**
               * @method clone
@@ -86,7 +125,7 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
                  c.curveSubdivisions = this.curveSubdivisions;
                  c.depth = this.depth;
                  c.idColor = JSON.parse(JSON.stringify(this.idColor));
-                 c.parent = this.parent;
+                 c.bo = this.bot;
                  c.path = JSON.parse(JSON.stringify(this.path));
                  c.wires = this.wires.slice(0);
 
@@ -104,8 +143,10 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
               * @return {Bot} returns parent's Bot, or undefined
               */
              getBot : function() {
-                 if (this.parent !== undefined)
+                 if (this.parent !== undefined) {
                      return this.parent.getBot();
+                 }
+                 return this.bot;
              },
 
              /**
@@ -118,10 +159,12 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
                      this.parent.transformToGlobal(local, global);
              },
 
+
              //======================================================================================
              //======================================================================================
              //======================================================================================
              // Wiring
+
              /**
               * Here there be dragons
               * @method generateWiring
@@ -129,50 +172,144 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
              generateWiring : function() {
                  var chassis = this;
                  // Create components
+
                  this.components = [];
-                 for (var i = 0; i < 5; i++) {
-                     var volume = Math.random() * 850 + 400;
-                     var aspectRatio = Math.random() * 1 + .5;
+                 //TODO: for the demo, I'm just going to place the battery pack in the center, and offset the baby orangitang
+                 var battery = new Component.Battery({
+                     name : "Battery",
+                 });
+                 var controller = new Component.Orangutan({
+                     name : "Controller",
+                 });
 
-                     var component = new Wiring.Component({
-                         name : "obj" + i,
-                         width : Math.sqrt(volume) * aspectRatio,
-                         height : Math.sqrt(volume) / aspectRatio,
-                         center : new Vector(300 * (Math.random() - .5), 300 * (Math.random() - .5)),
-                     });
+                 battery.place(this, this.visualCenter);
+                 //FIXME: temp solution where we drop the parts in the center
+                 var p = new common.Transform();
+                 p.setTo(this.visualCenter.x + 15, this.visualCenter.y,0);
 
-                     this.components.push(component);
+                 controller.place(this, p);
+
+                 battery.addPins();
+                 controller.addPins();
+
+                 this.components.push(battery);
+                 this.components.push(controller);
+
+                 //FIXME: I want to return to this later.  Right now, we're just going to place both core components, with the orangitang offset
+                 //from center.
+                 /*
+                 // make one component
+                 for (var i = 0; i < 1; i++) {
+
+                 var component = new Component.Core({
+                 name : "component " + i,
+                 //attachPoint : new Vector(300 * (Math.random() - .5), 300 * (Math.random() - .5)),
+                 });
+                 var p = undefined;
+
+                 //FIXME: weird to have to stretch the bbox here...
+                 this.path.expandBoxToFit(this.path.boundingBox);
+
+                 var box = this.path.boundingBox;
+
+                 var corners = box.getCorners(false);
+
+                 var minX;
+                 var maxX;
+                 var minY;
+                 var maxY;
+
+                 if(corners[0].x < corners[2].x){
+                 minX = corners[0].x;
+                 maxX = corners[2].x;
+                 }else{
+                 minX = corners[2].x;
+                 maxX = corners[0].x;
                  }
-                 // Connect the components
 
-                 var inPins = [];
-                 var outPins = [];
-                 $.each(this.components, function(index, component) {
-                     component.compilePins(inPins, function(pin) {
+                 if(corners[0].y < corners[2].y){
+                 minY = corners[0].y;
+                 maxY = corners[2].y;
+                 }else{
+                 minY = corners[2].y;
+                 maxY = corners[0].y;
+                 }
+
+                 //chassislog("Bounding vals: (" + minX + ", " + minY + ")" + "\n "
+                 //+ "(" + maxX + ", " + maxY + ")" + "\n ");
+
+                 p = new common.Transform(0,0,0);
+
+                 //Use ray tracing (from http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html) to see if the point is inside
+                 //the chassis
+                 var valid = false;
+
+                 while(!valid){
+                 p.setTo(utilities.random(minX, maxX), utilities.random(minY, maxY), 0);
+
+                 chassislog("attachPoint: (" + p.x + ", " + p.y + ")");
+
+                 if(p === undefined){
+                 chassislog("Attach Point Undefined");
+                 }else{
+                 var k,j;
+                 var vertexes = this.path.getHull();
+                 for(k = 0, j = vertexes.length - 1; k < vertexes.length; j = k++){
+                 if(((vertexes[k].y > p.y) != (vertexes[j].y > p.y)) && 
+                 (p.x < (vertexes[j].x - vertexes[k].x) * (p.y - vertexes[k].y) / (vertexes[j].y - vertexes[k].y) + vertexes[k].x)){
+                 valid = !valid;
+                 }
+                 }	
+                 }
+                 }
+
+                 component.place(this, p);
+                 component.addPins();
+                 this.components.push(component);
+                 }*/
+
+
+                 // Connect the components
+                 var attachmentInPins = [];
+                 var attachmentOutPins = [];
+                 var controllerInPins = [];
+                 var controllerOutPins = [];
+
+                 chassis.wires = [];
+
+                 //wire attachments to the controller
+                 console.log("This: ", this);
+                 $.each(this.attachments, function(index, attachment){
+                     attachment.compilePins(attachmentInPins, function(pin) {
                          return pin.positive;
                      });
-                     component.compilePins(outPins, function(pin) {
+                     attachment.compilePins(attachmentOutPins, function(pin){
                          return !pin.positive;
                      });
                  });
 
-                 chassis.wires = [];
-                 // For each in pin, connect it to a random out pin
-                 $.each(inPins, function(startIndex, pin) {
-                     var tries = 0;
-                     var index = Math.floor(Math.random() * outPins.length);
-                     while (outPins[index].wire !== undefined && tries < outPins.length) {
-                         index = (index + 1) % 1;
-                         tries++;
-                     }
-
-                     if (outPins[index].wire === undefined) {
-                         chassis.wires.push(new Wiring.Wire(inPins[startIndex], outPins[index]));
-                     }
-
+                 this.components[1].compilePins(controllerInPins, function(pin) {
+                     return pin.positive;
+                 });
+                 this.components[1].compilePins(controllerOutPins, function(pin) {
+                     return !pin.positive;
                  });
 
+                 $.each(attachmentInPins, function(index, pin) {
+                     chassis.wires.push(new Wiring.Wire(attachmentInPins[index], controllerOutPins[index]));
+                     chassis.wires.push(new Wiring.Wire(controllerInPins[index], attachmentOutPins[index]));
+                 });
+
+                 //and now just hand wire the battery pack to the microcontroller
+                 if(this.components[0].pins[0].positive === true){
+                     chassis.wires.push(new Wiring.Wire(this.components[0].pins[0], controllerOutPins[controllerOutPins.length - 1]));
+                     chassis.wires.push(new Wiring.Wire(controllerOutPins[controllerInPins.length - 1], this.components[0].pins[1]));				
+                 }else{
+                     chassis.wires.push(new Wiring.Wire(this.components[0].pins[1], controllerOutPins[controllerOutPins.length - 1]));
+                     chassis.wires.push(new Wiring.Wire(controllerOutPins[controllerInPins.length - 1], this.components[0].pins[0]));				
+                 }
              },
+
              //======================================================================================
              //======================================================================================
              //======================================================================================
@@ -193,14 +330,13 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
                      attachmentTypes.push(Attachment.Sensor.Timer), weights.push(1);
                  }
 
-                 if (app.getOption("useColorLerpers")){
+                 if (app.getOption("useColorLerpers")) {
                      attachmentTypes.push(Attachment.Sensor.ColorLerper), weights.push(1);
                  }
 
                  if (app.getOption("useSharpie")) {
                      attachmentTypes.push(Attachment.Actuator.Sharpie), weights.push(1);
                  }
-
 
                  // How many attachments to generate
                  var count = 4;
@@ -214,11 +350,14 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
                      var attachPoint = edge.getTracer(pct, -3);
                      if (!attachPoint || !attachPoint.isValid())
                          throw "Found invalid attach point: " + attachPoint + " edge: " + edge + " pct: " + pct;
+
                      // Create an attachment of some random type
                      var typeIndex = utilities.getWeightedRandomIndex(weights);
                      var attachment = new attachmentTypes[typeIndex]();
 
                      attachment.attachTo(this, attachPoint);
+                     attachment.addPins();
+
                      this.attachments.push(attachment);
                      this.attachPoints.push(attachPoint);
                  }
@@ -305,18 +444,20 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
                  context.drawPath = true;
                  this.path.drawFilled(context);
 
-                 if (!context.simplifiedBots) {
+                 context.simlifiedBots = false;
+
+                 if (context.simplifiedBots) {
 
                      if (app.getOption("drawComponents")) {
                          $.each(this.components, function(index, component) {
                              component.render(context);
-                         })
+                         });
                      }
 
                      if (app.getOption("drawWiring")) {
-                         $.each(this.wires, function(index, wire) {
+                         $.each(this.wires, function(index, wire) {               	
                              wire.render(context);
-                         })
+                         });
                      }
                  }
 
@@ -332,7 +473,7 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
               */
              hover : function(pos) {
 
-             }
+             },
     });
 
     return Chassis;

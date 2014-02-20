@@ -2,7 +2,7 @@
  * @author Kate Compton
  */
 
-define(["common", "./attachment"], function(common, Attachment) {'use strict';
+define(["common", "graph", "./attachment", "../wiring"], function(common, Graph, Attachment, Wiring) {'use strict';
 
     var Sensor = Attachment.extend({
         init : function() {
@@ -45,7 +45,6 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
 
             g.fill(1, 0, 1, .7);
             g.text(this.idNumber, -3, 5);
-
         },
 
         toString : function() {
@@ -67,8 +66,7 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
 
         },
     });
-	
-	
+
     var ColorLerper = Sensor.extend({
         init : function() {
             this._super();
@@ -95,6 +93,7 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
             g.text(this.senseValue.toFixed(2), -9, 4);
 		},
     });
+
 
     Sensor.Timer = Timer;
 	Sensor.ColorLerper = ColorLerper;

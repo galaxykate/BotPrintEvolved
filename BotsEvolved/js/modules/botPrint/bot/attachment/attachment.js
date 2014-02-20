@@ -2,12 +2,14 @@
  * @author Kate Compton
  */
 
-define(["common"], function(common) {'use strict';
+define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use strict';
     var attachmentCount = 0;
     var Attachment = Class.extend({
         init : function() {
             this.idNumber = attachmentCount;
             attachmentCount++;
+            
+            this.pins = [];
         },
 
         getForce : function() {
@@ -45,7 +47,6 @@ define(["common"], function(common) {'use strict';
 
         //========================================================
         //
-
         attachTo : function(parent, attachPoint) {
             this.parent = parent;
             
@@ -56,18 +57,39 @@ define(["common"], function(common) {'use strict';
 
         },
 
+		//========================================================
+		// add pins
+		addPins : function() {
+			            
+        	//add pins
+        	// each component (right now) gets a positive and a negative pin
+            
+             var positive = new Wiring.Pin({
+                 positive : true,
+                 parent : this,
+            });
+        	this.pins.push(positive);
+            
+            var negative = new Wiring.Pin({
+            	positive : false,
+            	parent : this,
+            });
+            this.pins.push(negative);
+		},
+		
         //========================================================
         // Rendering
+        // overloading this to also account for pin shifts
+        // TODO: not entirely happy with this impementation
 
         renderDetails : function(context) {
             var r = 10;
             var g = context.g;
-
+			        	
             g.fill(.7, 1, 1);
             g.stroke(0);
             g.ellipse(0, 0, r * 1.4, r * 1.4);
             g.rect(0, -r / 2, -r * 3, r);
-
         },
 
         render : function(context) {
@@ -75,12 +97,25 @@ define(["common"], function(common) {'use strict';
 
             g.pushMatrix();
             this.attachPoint.applyTransform(g);
-
+			
             this.renderDetails(context);
-
+            
             g.popMatrix();
-
-        }
+            
+            //render pins
+            $.each(this.pins, function(index, pin) {
+                pin.render(context);
+            });
+        },
+        
+        //===========================================================
+        // Configure Pins
+		compilePins : function(pinList, filter) {
+            $.each(this.pins, function(index, pin) {
+                if (filter(pin))
+                    pinList.push(pin);
+            });
+        }        
     });
 
     return Attachment;

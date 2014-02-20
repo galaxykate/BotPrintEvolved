@@ -5,28 +5,102 @@
 define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'use strict';
 
     var Arena = Class.extend({
-        init : function() {
+        
+
+        init : function(shape) {
             this.border = new Graph.Path();
             this.bots = [];
 
             this.boxWorld = new BoxWorld(0);
 
-            var sides = 8;
-            for (var i = 0; i < sides; i++) {
-                var r = 200 + Math.random() * 130;
-                var theta = i * Math.PI * 2 / sides;
-                var p = common.Vector.polar(r, theta);
-                this.border.addPoint(p);
+            switch (shape){
+            	case "rectangle":
+            		//still need to change this to consider the screen width and the camera
+            		var width = 600;
+            		var height = 400;
+            		var center = new Vector(0,0);
+    			
+            		this.border.addPoint(new Vector(center.x-width/2, center.y-height/2)); //topLeft point
+            	 	this.border.addPoint(new Vector(center.x-width/2, center.y+height/2)); //bottom left
+            		this.border.addPoint(new Vector(center.x+width/2, center.y+height/2)); //bottom right
+            	 	this.border.addPoint(new Vector(center.x+width/2, center.y-height/2)); //top right
+            	break;
+            	case "hexagon":
+            		var sides = 6;
+            		var r = 250;
+            		for (var i = 0; i < sides; i++) {
+            			//the .95 fixes the default rotation
+                		var theta = (i * Math.PI * 2 / sides)+.95;
+                		var p = common.Vector.polar(r, theta);
+                		this.border.addPoint(p);
+            		}
+            	break;
+            	case "circle":
+            		var sides = 16;
+            		var r = 250;
+            		for (var i = 0; i < sides; i++) {
+            			//the .95 fixes the default rotation
+                		var theta = (i * Math.PI * 2 / sides)+.95;
+                		var p = common.Vector.polar(r, theta);
+                		this.border.addPoint(p);
+            		}
+            	break;	
+            	case "random":
+            	//Arenas are random now it generates from a triangle to an icosagon (circle?). 
+            	var min = 3;
+				var max = 20;
+				var random = Math.floor(Math.random() * (max - min + 1)) + min;
+            		var sides = random;
+            		var r = 250;
+            		for (var i = 0; i < sides; i++) {
+            			//the .95 fixes the default rotation
+                		var theta = (i * Math.PI * 2 / sides)+.95;
+                		var p = common.Vector.polar(r, theta);
+                		this.border.addPoint(p);
+            		}	
+            	break;
+            	//An obstacle course is a rectangle arena with random smaller squares on top of it as obstacles. 
+            	//A good heuristic for tests would be measuring obstacle avoidance. 
+            	case "obstacle":
+            	//The arena is a bit larger in this instance because we want to fit obstacles in it and have the bots move around them.
+            		var width = 670;
+            		var height = 470;
+            		var center = new Vector(0,0);
+            		//These will be the reference points in which we want to put the obstacles. 
+					var minX = center.x-width/2;
+					var maxX = center.x+width/2;
+					var minY = center.y-height/2;
+					var maxY = center.y+height/2; 
+					//But first we have to generate the container. 
+            		this.border.addPoint(new Vector(minX, minY)); //topLeft point
+            	 	this.border.addPoint(new Vector(minX, maxY)); //bottom left
+            		this.border.addPoint(new Vector(maxX, maxY)); //bottom right
+            	 	this.border.addPoint(new Vector(maxX, minY)); //top right
+				 	//Now let's populate the world with obstacles. 
+				 	
+            	break;
+            	//this gets called when nothing is passed in the init() parameter
+            	default:
+            	for (var i = 0; i < sides; i++) {
+                	var r = 200 + Math.random() * 130;
+                	var theta = i * Math.PI * 2 / sides;
+                	var p = common.Vector.polar(r, theta);
+                	this.border.addPoint(p);
+            	}
             }
+            
+            //returns a Box2d body that is used for the arena collision
             var ground = this.boxWorld.makeEdgeRing(this.border.nodes);
-            ground.isTerrain = true;
+            ground.isTerrain = false;
         },
-
+        
         reset : function() {
             this.time = 0;
             this.resetDrawing();
             this.boxWorld.removeBodies();
         },
+
+
 
         //-------------------------------------------
         // User interaction
@@ -124,7 +198,7 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
                 arena.scores[index] = {
                     total : 0,
                     individual : bot,
-                }
+                };
             });
 
             arena.boxWorld.addObjects(population);
@@ -144,9 +218,9 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
             var time = {
                 total : this.time,
                 ellapsed : timestep,
-            }
+            };
             app.log("Arena update: " + timestep + " time" + time.total);
-            this.time += timestep
+            this.time += timestep;
 
             $.each(this.bots, function(index, bot) {
                 bot.update(time);

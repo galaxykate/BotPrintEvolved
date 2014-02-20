@@ -44,8 +44,9 @@ define(["common"], function(common) {'use strict';
             popHolder.html("");
 
             $.each(this.bots, function(index, bot) {
-                var div = $("<div/>", {
 
+                // Make various holders
+                var div = $("<div/>", {
                     "class" : "population_info"
                 });
 
@@ -85,9 +86,8 @@ define(["common"], function(common) {'use strict';
 
                 detaildiv.hide();
 
-                div.mouseover(function() {
-                    app.highlightBot(bot);
-                });
+                // Mouse interactions for this population entry:
+                //  select and deselect on entry/exit, click to edit
 
                 div.mouseenter(function() {
                     detaildiv.show();
@@ -106,18 +106,36 @@ define(["common"], function(common) {'use strict';
             });
         },
 
-        addChild : function(bot) {
+        createNextGenerationFromWinners : function(winners) {
+            this.clearNextGeneration();
+            for (var i = 0; i < MAX_BOTS; i++) {
+                var which = Math.floor((.06 + .1*Math.random()) * Math.pow(i + 1, 2));
+                console.log("Create child of winner " + which + " " + winners[which].bot.name);
+                this.addChild(winners[which].bot, i % 3);
+            }
+            app.spawnNextGeneration();
+        },
+
+        clearNextGeneration : function() {
+            var popHolder = $("#population_next");
+            popHolder.html("");
+            this.nextGeneration = [];
+        },
+
+        addChild : function(bot, mutationLevel) {
+            if (isNaN(mutationLevel))
+                mutationLevel = 0;
             if (this.nextGeneration.length < MAX_BOTS) {
                 var child = {
                     parent : bot,
-                    mutationLevel : 0,
+                    mutationLevel : mutationLevel,
                 };
 
                 this.nextGeneration.push(child);
                 this.addChildHTML(child);
-            }
+            } else
 
-            console.log("Can't add " + bot + " to next generation, already have " + MAX_BOTS + " bots");
+                console.log("Can't add " + bot + " to next generation, already have " + MAX_BOTS + " bots");
 
         },
 
@@ -147,7 +165,7 @@ define(["common"], function(common) {'use strict';
             div.append(popControlDiv);
 
             var addButton = $("<button/>", {
-                html : "0",
+                html : child.mutationLevel,
                 "class" : "population_button"
             });
 
@@ -156,7 +174,6 @@ define(["common"], function(common) {'use strict';
                 "class" : "population_button"
             });
 
-            child.mutationLevel = 0;
             addButton.click(function() {
                 child.mutationLevel = (child.mutationLevel + 1) % 4;
                 addButton.html(child.mutationLevel);
