@@ -38,36 +38,36 @@
 				ARENA CANVAS
 				<div id="arena_UI" class="app_size app_overlay">
 					<div id="population_panel" class="panel">
-						<div id="population_current" class="subpanel">
-							Current population
-						</div>
-
+						Current population
+						<div id="population_current" class="subpanel"></div>
+						Next population
 						<div id="population_next" class="subpanel">
-							Next population
-						</div>
 
+						</div>
+						<button id="select_winners">
+							generate from winners
+						</button>
 						<button id="next_generation">
 							generate!
 						</button>
+
 					</div>
 
 					<div id="arena_bar">
 						<div id="arena_panel" class="panel">
 							Arena Settings
 							<select id="arena_type_chooser">
+								<option value="rectangle">Rectangle Arena</option>
 								<option value="circle">Circle Arena</option>
-								<option value="square">Square Arena</option>
+								<option value="hexagon">Hexagon Arena</option>
+								<option value="random">Random Arena</option>
 							</select>
 							<button> Select </button>
 						</div>
 						<div id="testing_panel" class="panel">
 							Test Results
-							<select>
-								<option>Distance Total</option>
-								<option>Turn Left</option>
-								<option>Turn Right</option>
-							</select>
-							<button>
+							<div id="test_heuristic"></div>
+							<button id="start_test">
 								Run test
 							</button>
 						</div>
@@ -86,6 +86,9 @@
 					</div>
 					<div id="parts_edit" class="panel edit_menu">
 						Edit Parts
+                        <div id="edit_item" class ="panel">
+                        <canvas id="part_canvas" class="part_canvas"></canvas>
+                        </div>
 					</div>
 
 				</div>

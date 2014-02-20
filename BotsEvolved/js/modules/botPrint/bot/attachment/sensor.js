@@ -66,8 +66,7 @@ define(["common", "graph", "./attachment", "../wiring"], function(common, Graph,
 
         },
     });
-	
-	
+
     var ColorLerper = Sensor.extend({
         init : function() {
             this._super();

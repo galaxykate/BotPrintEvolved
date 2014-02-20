@@ -35,10 +35,13 @@ define(["inheritance"], function(Inheritance) {
             this.value = Math.min(this.max, Math.max(this.min, val));
         },
 
+        getPct : function(v) {
+            return (v - this.min) / (this.max - this.min);
+        },
+
         getValue : function() {
             return this.value;
         },
-
         toString : function() {
             return this.value + " [" + this.min + "-" + this.max + "]";
         },
