@@ -42,7 +42,7 @@ define(["common", "mousewheel"], function(common, MOUSEWHEEL) {'use strict';
 
             selector.mouseup(function(event) {
                 tw.deactivate();
-                 event.preventDefault();
+                event.preventDefault();
             });
 
             selector.mousemove(function(event) {
@@ -326,7 +326,7 @@ define(["common", "mousewheel"], function(common, MOUSEWHEEL) {'use strict';
             var timeDown = touch.lastUp.time - touch.lastDown.time;
 
             if (timeDown < 200 && touch.draggedDistance < 10) {
-                 controls.onTap(touch);
+                controls.onTap(touch);
             }
 
             // Set to the local position of the active element
@@ -390,7 +390,6 @@ define(["common", "mousewheel"], function(common, MOUSEWHEEL) {'use strict';
 
             var controls = this;
 
-            var mousePos = new Vector();
             var touchDiv = this.touchDiv;
 
             // Key handlers
@@ -406,6 +405,14 @@ define(["common", "mousewheel"], function(common, MOUSEWHEEL) {'use strict';
 
             });
 
+            this.setMouseResponders();
+
+        },
+
+        setMouseResponders : function() {
+            var controls = this;
+            var mousePos = new Vector();
+            var touchDiv = this.touchDiv;
             var getMousePosition = function(ev) {
 
                 var x = ev.pageX;
@@ -413,7 +420,6 @@ define(["common", "mousewheel"], function(common, MOUSEWHEEL) {'use strict';
                 mousePos.setTo(x, y);
                 return mousePos;
             };
-
             // Set up the mouse/touch controls
             // Note: these are for things which can't  be done with normal 'click' functions on divs
             //  such as clicking on things in Processing or ThreeJS
@@ -430,14 +436,16 @@ define(["common", "mousewheel"], function(common, MOUSEWHEEL) {'use strict';
 
                 var p = getMousePosition(ev);
                 controls.touchMove(p);
+
             });
 
             touchDiv.mousedown(function(ev) {
-                ev.preventDefault();
+                //  ev.preventDefault();
                 app.ui.moveOutput.clear();
 
                 var p = getMousePosition(ev);
                 controls.touchDown(p);
+
             });
 
             touchDiv.mouseup(function(ev) {
@@ -455,6 +463,7 @@ define(["common", "mousewheel"], function(common, MOUSEWHEEL) {'use strict';
 
             });
         },
+
         deactivate : function() {
 
         },

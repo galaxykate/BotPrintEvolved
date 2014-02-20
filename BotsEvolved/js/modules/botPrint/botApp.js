@@ -2,7 +2,7 @@
  * @author Kate Compton
  */
 
-define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "common", "./population"], function(UI, Bot, Arena, threeUtils, BotEvo, App, common, Population) {
+define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "common", "./population", "./scoreGraph", "./heuristic"], function(UI, Bot, Arena, threeUtils, BotEvo, App, common, Population, ScoreGraph, Heuristic) {
 
     /**
      * @class BotApp
@@ -30,7 +30,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             // app.changeMode("inspector");
             app.arena = new Arena("rectangle");
 
-            app.currentBot = new Bot();
+            app.setCurrentBot(new Bot());
 
             $("#switch_modes").click(function() {
                 app.toggleMainMode();
@@ -53,6 +53,11 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         //=====================================================================
         //=====================================================================
         //=====================================================================
+        setCurrentBot : function(bot) {
+
+            app.currentBot = bot;
+            bot.saveBot()
+        },
 
         highlightBot : function(bot) {
             //  console.log("Highlighting " + bot);
@@ -110,13 +115,12 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.population.updateUI();
 
         },
-
         createBot : function() {
             return new Bot();
         },
 
         editBot : function(bot) {
-            this.currentBot = bot;
+            app.setCurrentBot();
             app.openEditMode();
         },
 
@@ -145,13 +149,11 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         /**
          * @method openEditChassis
          */
-
         openEditChassis : function() {
             app.editChassis = false;
             $("#chassis_edit").removeClass("away");
             $("#parts_edit").addClass("away");
         },
-
         openLoadScreen : function() {
             $("#load_screen").show();
         },
@@ -182,40 +184,6 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         //=====================================================================
 
         //=====================================================================
-        //=====================================================================
-
-        /**
-         * @method createAndTestManyBots
-         */
-        createAndTestManyBots : function() {
-            var task = "doThing";
-            var bots = [];
-            var count = 5;
-            for (var i = 0; i < count; i++) {
-                var bot = new Bot();
-                bots[i] = bot;
-            }
-            app.currentBot = bots[0];
-
-            app.arena.addPopulation(bots);
-
-        },
-
-        /**
-         * @method createAndTestNewBot
-         */
-        createAndTestNewBot : function() {
-            var task = "doThing";
-
-            app.currentBot = new Bot();
-
-            app.evoSim = new BotEvo.BrainEvo(app.currentBot, task, app.arena);
-            var testBrain = app.evoSim.createIndividual(app.evoSim.createGenome());
-            app.currentBot.setBrain(testBrain);
-            app.arena.addPopulation([app.currentBot]);
-
-            app.evoSim.treeViz.setTree(testBrain);
-        },
 
         spawnNextGeneration : function() {
             app.setPopulation(app.population.createNextGeneration());
@@ -226,7 +194,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.population = pop;
             app.arena.reset();
             app.arena.addPopulation(app.population.bots);
-
+            app.scoreGraph.setCompetitors(app.population.bots);
             app.population.updateUI();
 
         },
@@ -236,7 +204,6 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         /**
          * @method initModes
          */
-
         initModes : function() {
 
             var ui = app.ui;
@@ -252,72 +219,6 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
                 // do something on change
             });
 
-            ui.addPanel({
-                id : "arena",
-                div : $("#arena_panel"),
-                title : "Arena",
-                description : "An arena to view bots in",
-                side : "right",
-                sidePos : 5,
-                dimensions : app.fullPanelDimensions
-
-            });
-
-            ui.addPanel({
-                id : "inspector",
-                div : $("#inspector_panel"),
-                title : "Inspector",
-                description : "A window to inspect and modify bots in",
-                side : "left",
-                sidePos : 5,
-                dimensions : app.fullPanelDimensions
-
-            });
-
-            ui.addPanel({
-                id : "threeRender",
-                div : $("#render_panel"),
-                title : "Render Panel",
-                description : "3D preview",
-                side : "top",
-                sidePos : 5,
-                dimensions : new Vector(200, 200),
-
-            });
-
-            ui.addPanel({
-                id : "scores",
-                div : $("#scores_panel"),
-                title : "Scores Panel",
-                description : "Current scores",
-                side : "top",
-                sidePos : 5,
-                dimensions : new Vector(400, 100),
-
-            });
-
-            // Create modes:
-            // Each mode has some panels that only appear during that mode, and
-            // Some custom control functionality
-
-            this.modes = {
-                arena : new UI.Mode({
-                    title : "arena",
-                    panels : app.ui.getPanels(["arena", "scores"]),
-
-                }),
-
-                inspector : new UI.Mode({
-                    title : "inspector",
-                    panels : app.ui.getPanels(["inspector", "threeRender"]),
-
-                }),
-
-            };
-
-            $.each(this.modes, function(key, mode) {
-                mode.id = key;
-            });
         },
 
         /**
@@ -370,34 +271,24 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 
             var ui = app.ui;
 
+            Heuristic.makeHeuristicMenu();
+
+            // Add functionality for some buttons
             $("#next_generation").click(function() {
                 app.spawnNextGeneration();
             });
 
-            // Create the Three scene
-            app.threeRender = new threeUtils.ThreeView($("#render_panel"), function() {
-                // update the camera
-
-                if (!app.pauseSpinning) {
-                    this.camera.orbit.theta += .01;
-
-                    this.camera.orbit.phi = .93;
-                }
-                // app.log(this.camera.orbit.theta);
-                this.camera.updateOrbit();
-
+            $("#select_winners").click(function() {
+                var winners = app.scoreGraph.getWinners();
+                app.population.createNextGenerationFromWinners(winners);
             });
 
-            // Initial camera settings
-            var cam = app.threeRender.camera;
-            cam.orbit.distance = 600;
-            cam.updateOrbit();
+            $("#start_test").click(function() {
+                console.log("Start test");
+            });
 
-            app.threeWindow = new UI.DrawingWindow("3D Bot View", $("#render_panel"));
-
-            //create an empty container
-            app.threeBotMesh = new THREE.Object3D();
-            app.threeRender.scene.add(app.threeBotMesh);
+            // Add the score graph
+            app.scoreGraph = new ScoreGraph.BarGraph($("#testing_panel"));
 
             // These windows all use processing for the drawing
             app.editWindow = new UI.DrawingWindow("edit", $("#edit_canvas"));
@@ -412,6 +303,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
                 // only do if its the inspector mode
                 if (app.editMode) {
                     // Updates
+                    app.ui.output.clear();
 
                     if (!app.paused) {
                         app.worldTime.updateTime(g.millis() * .001);
@@ -443,10 +335,12 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             }, function(g) {
                 // only do if its the arena mode
                 if (!app.editMode) {
+                    app.ui.output.clear();
 
                     if (!app.paused) {
                         app.worldTime.updateTime(g.millis() * .001);
                         app.arena.update(app.worldTime.ellapsed);
+                        app.scoreGraph.update(app.worldTime);
                     }
                     app.arenaWindow.render(function(context) {
                         context.scale = 3;

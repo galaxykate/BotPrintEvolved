@@ -112,12 +112,10 @@ define(["common", "processing", prefix + "panel", prefix + "controls", prefix + 
                 return ui.panels[name];
             });
 
-            console.log("Get Panels " + names + " -> " + panels);
             return panels;
         },
 
         addDevUI : function(parentDiv) {
-            console.log("Add Dev UI");
             var ui = this;
             var w = 170;
             var h = 300;

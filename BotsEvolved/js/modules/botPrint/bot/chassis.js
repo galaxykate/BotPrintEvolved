@@ -17,15 +17,15 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
         /**
          * @method init
          */
-        init : function() {
+        init : function(bot) {
             this._super();
 
             var chassis = this;
+            this.bot = bot;
+            this.idColor = bot.idColor;
 
             this.path = new Graph.Path();
             this.curveSubdivisions = 3;
-
-            this.idColor = new common.KColor((.2813 * this.idNumber + .23) % 1, 1, 1);
 
             this.center = new Vector(0, 0);
             var pointCount = 5;
@@ -153,9 +153,9 @@ define(["common", "graph", "./wiring", "./attachment/attachments"], function(com
                 attachmentTypes.push(Attachment.Sensor.Timer), weights.push(1);
             }
 
-	    if (app.getOption("useColorLerpers")){
-		attachmentTypes.push(Attachment.Sensor.ColorLerper), weights.push(1);
-	    }
+            if (app.getOption("useColorLerpers")) {
+                attachmentTypes.push(Attachment.Sensor.ColorLerper), weights.push(1);
+            }
 
             if (app.getOption("useSharpie")) {
                 attachmentTypes.push(Attachment.Actuator.Sharpie), weights.push(1);
