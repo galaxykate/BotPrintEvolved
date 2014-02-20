@@ -2,11 +2,11 @@
  * @author Kate Compton
  */
 
-define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use strict';
+define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THREE, DNA) {'use strict';
 
     var animals = "okapi pheasant cobra amoeba capybara kangaroo chicken rooster boa-constrictor nematode sheep otter quail goat agoutis zebra giraffe yak corgi pomeranian rhinocerous skunk dolphin whale duck bullfrog okapi sloth monkey orangutan grizzly-bear moose elk dikdik ibis stork robin eagle hawk iguana tortoise panther lion tiger gnu reindeer raccoon opossum camel dromedary pigeon squirrel hamster leopard panda boar squid parakeet crocodile flamingo terrier cat wallaby wombat koala orangutan bonobo lion salamander".split(" ");
 
-    var adjectives = "rampaging flying sky flanged robotic vigilant happy sorrowful sinister willful brave wild lovely endless ed silver blue obsidian black ivory steel striped iron orange cobalt golden copper ruby emerald purple violet sincere sleeping radioactive rad".split(" ");
+    var adjectives = "rampaging flying sky flanged robotic vigilant happy sorrowful sinister willful brave wild lovely endless red silver blue obsidian black ivory steel striped iron orange cobalt golden copper ruby emerald purple violet sincere sleeping radioactive rad".split(" ");
     var makeBotName = function() {
         return "The " + utilities.capitaliseFirstLetter(utilities.getRandom(adjectives)) + " " + utilities.capitaliseFirstLetter(utilities.getRandom(animals));
     };
@@ -14,13 +14,22 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
     var botCount = 0;
     var Bot = Class.extend({
         init : function(parent, mutationLevel) {
-            console.log("Create a child of " + parent + ", mutation:" + mutationLevel);
             this.idNumber = botCount;
             botCount++;
 
             this.name = makeBotName();
-            this.setMainChassis(new Chassis(this));
             this.transform = new common.Transform();
+            this.lastTransform = new common.Transform();
+
+            // Create DNA for the bot
+            if (parent)
+                this.dna = parent.dna.createMutant(mutationLevel);
+            else
+                this.dna = new DNA(10, 3);
+
+            var colorGene = this.dna.genes[0];
+            this.idColor = new common.KColor(colorGene[0], colorGene[1] * .4 + .6, colorGene[2]);
+            this.setMainChassis(new Chassis(this));
             this.compileAttachments();
         },
 
@@ -28,6 +37,7 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
             var child = new Bot(this, instructions.mutationLevel);
             return child;
         },
+
         //======================================================================================
         //======================================================================================
         //======================================================================================
@@ -87,7 +97,12 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
             return this.mainChassis.path.getHull();
         },
         update : function(time) {
+
             this.mainChassis.update(time);
+
+            this.angularVelocity = (this.transform.rotation - this.lastTransform.rotation) / time.ellapsed;
+
+            this.lastTransform.cloneFrom(this.transform);
 
         },
         act : function(time) {
@@ -118,36 +133,22 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
             context.useChassisCurves = true;
             this.mainChassis.render(context);
 
-            /*
-             $.each(this.attachments, function(index, attachment) {
-             var p = attachment.getBotTransform();
-             g.fill(.4, 1, 1);
-             p.drawCircle(g, 20);
-             });
-             */
-
             g.popMatrix();
-            /*
-             $.each(this.attachments, function(index, attachment) {
-             var p2 = attachment.getWorldTransform();
-             g.fill(.56, 1, 1);
-             p2.drawCircle(g, 10);
-
-             });
-             */
-
         },
+
         getForceAmt : function() {
             if (this.decisionTree === undefined)
                 return Math.max(100000 * Math.sin(this.arena.time + this.idNumber), 0);
             else
                 return this.decisionTree.makeDecision();
         },
+
         getForces : function() {
             var forces = [];
             this.mainChassis.compileForces(forces);
             return forces;
         },
+
         hover : function(pos) {
             app.moveLog("Hovered " + pos);
             var pt = this.getAt({
@@ -203,19 +204,27 @@ define(["common", "./chassis", "three"], function(common, Chassis, THREE) {'use 
             return this.mesh;
 
         },
+
+        //========================================================================
+        // IO
+
+        saveBot : function() {
+
+            // Save just enough to reconstruct
+            var saveObj = {
+                dna : this.dna,
+                botName : this.name,
+            };
+
+            var saveData = JSON.stringify(saveObj);
+            var lastBot = localStorage.getItem("bot");
+            console.log("Last bot: " + lastBot);
+            localStorage.setItem("bot", saveData);
+            console.log("Saving bot: " + saveData);
+
+        },
         toString : function() {
             return name;
-        },
-
-        debugDNAOutput : function() {
-            for (var j = 0; j < DNA_LENGTH; j++) {
-                var s = 0;
-
-                for (var i = 0; i < DNA_DIMENSIONALITY; i++) {
-                    s += this.dna[i][j].toPrecision(2);
-                }
-            }
-
         },
     });
 

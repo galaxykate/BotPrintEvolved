@@ -60,6 +60,7 @@ define(["common", "graph", "./attachment", "../wiring"], function(common, Graph,
         }
     });
 
+    
     var Sharpie = Actuator.extend({
 
         init : function() {
@@ -115,17 +116,31 @@ define(["common", "graph", "./attachment", "../wiring"], function(common, Graph,
         },
     });
 
-    var DiscoLight = Actuator.extend({
 
+    var DiscoLight = Actuator.extend({
         init : function() {
             this._super();
-
+            this.stamp = "";
+            this.id = "DiscoLight" + this.idNumber;
             this.color = new common.KColor(Math.random(), 1, 1);
             this.blinkOffset = 0;
         },
 
         update : function(time) {
-            this.blinkOffset = time.total;
+            var marker = this;
+            this.actuation *= Math.pow(this.decay, time.ellapsed) - .1 * this.decay * time.ellapsed;
+            this.actuation = utilities.constrain(this.actuation, 0, 1);
+            var worldPos = this.getWorldTransform();
+			this.color = new common.KColor(Math.random(1),Math.random(1),1);
+            var strength = this.actuation;
+            app.arena.drawOnto(worldPos, function(g) {
+                marker.color.fill(g, 0, -1 + 2 * strength);
+                g.rect(0, 0, 20, 20);
+
+                if (marker.stamp.length > 0)
+                    g.text(marker.stamp, -5, 0);
+            });
+
         },
 
         getForce : function() {
@@ -135,25 +150,25 @@ define(["common", "graph", "./attachment", "../wiring"], function(common, Graph,
         renderDetails : function(context) {
             var g = context.g;
             var r = 10
+            g.fill(0.5);
             g.noStroke();
-            g.fill(0, 0, 0, .3);
-            g.ellipse(0, 0, 25, 25);
-            g.ellipse(0, 0, 15, 15);
-            
-            for (var i = 0; i < 10; i++) {
-                this.color.fill(g, i*.1, -.5);
-                var r = 30 * utilities.noise(5*i + this.blinkOffset);
-                var theta = i + this.blinkOffset;
-                g.ellipse(r * Math.cos(theta), r * Math.sin(theta), 6, 6);
+            g.ellipse(r / 2, 0, r * 1.5, r * 1.5);
 
-            }
+            g.fill(0.5);
+            g.ellipse(-r * 1.5, 0, r * 2.4, r * .8);
 
+            var length = -r * 4;
+            var r2 = .2 * r;
+            this.color.fill(g);
+            g.ellipse(length, 0, r2, r2);
+
+            g.fill(1, 0, 1, .7);
             g.text(this.idNumber, -3, 5);
 
         },
     });
 
-    Actuator.Sharpie = Sharpie;
-  
-    return Actuator;
+Actuator.Sharpie = Sharpie;
+Actuator.DiscoLight = DiscoLight;    
+return Actuator;
 });

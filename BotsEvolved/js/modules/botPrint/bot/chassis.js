@@ -26,10 +26,12 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
         /**
          * @method init
          */
-        init : function() {
+        init : function(bot) {
             this._super();
 
             var chassis = this;
+            this.bot = bot;
+            this.idColor = bot.idColor;
 
             this.path = new Graph.Path();
             this.curveSubdivisions = 3;
@@ -234,15 +236,14 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
                 attachmentTypes.push(Attachment.Sensor.Timer), weights.push(1);
             }
 
-			if (app.getOption("useColorLerpers")){
-				attachmentTypes.push(Attachment.Sensor.ColorLerper), weights.push(1);
-			}
+            if (app.getOption("useColorLerpers")) {
+                attachmentTypes.push(Attachment.Sensor.ColorLerper), weights.push(1);
+            }
 
             if (app.getOption("useSharpie")) {
                 attachmentTypes.push(Attachment.Actuator.Sharpie), weights.push(1);
             }
 
-        
             // How many attachments to generate
             var count = 4;
 
