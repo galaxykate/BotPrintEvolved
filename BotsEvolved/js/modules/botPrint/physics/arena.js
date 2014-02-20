@@ -67,7 +67,6 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
         },
 
 
-
         //-------------------------------------------
         // User interaction
 
