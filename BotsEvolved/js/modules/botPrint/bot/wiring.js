@@ -39,7 +39,10 @@ define(["common", "graph"], function(common, Graph) {'use strict';
             var g = context.g;
             
             g.strokeWeight(1);
-            this.idColor.stroke(g);
+            //TODO: I guess that's an ok wire color?
+            
+            g.stroke(204, 102, 255);
+            //this.idColor.stroke(g);
             
             var p0 = this.start.pos;
             var p1 = this.end.pos;

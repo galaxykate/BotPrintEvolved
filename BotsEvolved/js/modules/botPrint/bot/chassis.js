@@ -39,8 +39,6 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             this.idColor = new common.KColor((.2813 * this.idNumber + .23) % 1, 1, 1);
 
             this.center = new Vector(0,0);
-            this.transCenter = new common.Transform();
-            this.transCenter.setTo(0,0,0);
             
             var pointCount = 5;
 
@@ -51,6 +49,28 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
 
                 this.path.addEdgeTo(pt);
             }
+            
+            //FIXME: this.center() doesn't actually point to the center when all is said and done, we need to get a "visual" center 
+            //to actually place the points
+            //This is done by finding the centroid of the polygon
+            //FIXME: move this over to the graph library?
+            var points = this.path.getHull();
+            
+            var twiceArea = 0;
+            var x = 0; var y = 0; var numPoints = this.path.getHull().length;
+            var p1, p2, f;
+            for(var i = 0, j = numPoints - 1; i < numPoints; j = i++){
+            	p1 = points[i];
+            	p2 = points[j];
+            	f = p1.x*p2.y - p2.x*p1.y;
+            	twiceArea += f;
+            	x += (p1.x + p2.x) * f;
+            	y += (p1.y + p2.y) * f;
+            }
+            f = twiceArea * 3;
+            
+            this.visualCenter = new common.Transform();
+            this.visualCenter.setTo((x/f), (y/f), 0);
             
             this.generateAttachments();
             this.generateWiring();
@@ -115,10 +135,10 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             	name : "Controller",
             });
             
-            battery.place(this, this.transCenter);
+            battery.place(this, this.visualCenter);
             //FIXME: temp solution where we drop the parts in the center
             var p = new common.Transform();
-            p.setTo(15,0,0);
+            p.setTo(this.visualCenter.x + 15, this.visualCenter.y,0);
             
             controller.place(this, p);
             
@@ -203,10 +223,45 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
 
 
             // Connect the components
-            var inPins = [];
-            var outPins = [];
-
+            var attachmentInPins = [];
+            var attachmentOutPins = [];
+            var controllerInPins = [];
+            var controllerOutPins = [];
             
+            chassis.wires = [];
+            
+            //wire attachments to the controller
+            $.each(this.attachments, function(index, attachment){ 
+				attachment.compilePins(attachmentInPins, function(pin) {
+					return pin.positive;
+				});
+				attachment.compilePins(attachmentOutPins, function(pin){
+					return !pin.positive;
+				});
+			});
+			
+			this.components[1].compilePins(controllerInPins, function(pin) {
+				return pin.positive;
+			});
+			this.components[1].compilePins(controllerOutPins, function(pin) {
+				return !pin.positive;
+			});
+			
+			$.each(attachmentInPins, function(index, pin) {
+				chassis.wires.push(new Wiring.Wire(attachmentInPins[index], controllerOutPins[index]));
+				chassis.wires.push(new Wiring.Wire(controllerInPins[index], attachmentOutPins[index]));
+			});
+			
+			//and now just hand wire the battery pack to the microcontroller
+			if(this.components[0].pins[0].positive === true){
+				chassis.wires.push(new Wiring.Wire(this.components[0].pins[0], controllerOutPins[controllerOutPins.length - 1]));
+				chassis.wires.push(new Wiring.Wire(controllerOutPins[controllerInPins.length - 1], this.components[0].pins[1]));				
+			}else{
+				chassis.wires.push(new Wiring.Wire(this.components[0].pins[1], controllerOutPins[controllerOutPins.length - 1]));
+				chassis.wires.push(new Wiring.Wire(controllerOutPins[controllerInPins.length - 1], this.components[0].pins[0]));				
+			}
+			
+/*
             $.each(this.components, function(index, component) {
             	component.compilePins(inPins, function(pin) {
                 	return pin.positive;
@@ -215,20 +270,11 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
                     return !pin.positive;
                 });
             });
-
-			$.each(this.attachments, function(index, attachment){ 
-				attachment.compilePins(inPins, function(pin) {
-					return pin.positive;
-				});
-				attachment.compilePins(outPins, function(pin){
-					return !pin.negative;
-				});
-			});
 			
 			chassislog("In pins: " + inPins.length);
 			chassislog("Out pins: " + outPins.length);
 			
-            chassis.wires = [];
+            
             // For each in pin, connect it to a random out pin
             $.each(inPins, function(startIndex, pin) {
                 var tries = 0;
@@ -241,7 +287,8 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
                 if (outPins[index].wire === undefined) {
                     chassis.wires.push(new Wiring.Wire(inPins[startIndex], outPins[index]));
                 }
-            });
+            });*/
+
         },
         
         //======================================================================================
