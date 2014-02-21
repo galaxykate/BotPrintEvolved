@@ -34,6 +34,17 @@ define(["common"], function(common) {'use strict';
                 dblue = dblue % 1;
                 return (.5 - dblue) * bot.idColor.b * bot.idColor.s;
             },
+        },
+        mostGreen : {
+            range : new common.Range({
+                min : -.5,
+                max : .5,
+            }),
+            evaluate : function(bot) {
+                var dblue = Math.abs(0.3 - bot.idColor.h);
+                dblue = dblue % 1;
+                return (.5 - dblue) * bot.idColor.b * bot.idColor.s;
+            },
         }
     }
 

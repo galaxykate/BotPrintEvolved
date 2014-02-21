@@ -12,7 +12,7 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
             this.bots = [];
 
             this.boxWorld = new BoxWorld(0);
-
+			this.obstacles = []; 
             switch (shape){
             	case "rectangle":
             		//still need to change this to consider the screen width and the camera
@@ -77,7 +77,37 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
             		this.border.addPoint(new Vector(maxX, maxY)); //bottom right
             	 	this.border.addPoint(new Vector(maxX, minY)); //top right
 				 	//Now let's populate the world with obstacles. 
-				 	
+				 	var min = 3;
+				 	var max = 10;
+				 	var nObstacles = Math.floor(Math.random() * (max - min + 1)) + min;
+				 	//We have a number of random obstacles to generate now, let's build them
+				 //	alert("nObstacles="+nObstacles);
+				 	for(var i=0; i<nObstacles; i++){
+					 //We want to select something inside the arena, thus we limit the ranges for random places to the corners of the arena. The obstacles are of 50*50px size, but you can change that. Maybe even randomize them for the moment. 				
+				 		
+					 	var obsWidth = 50; 
+					 	var obsHeight = 50; 
+					 	var x1 = minX;
+					 	var x2 = maxX;
+					 	var y1 = minY;
+					 	var y2 = maxY; 
+					 	var centerX = Math.floor(Math.random()*(maxX-minX+1))+minX;
+					 	var centerY = Math.floor(Math.random()*(maxY-minY+1))+minY;
+					 	//alert("cX="+centerX+" cY="+centerY);
+					 	//We have the center coordinates, let's assign it to a vector and calculate the corner vertices.
+					 	var obsCenter = new Vector(centerX,centerY);
+					 	var obsminX = obsCenter.x-obsWidth/2;
+					 	var obsmaxX = obsCenter.x+obsWidth/2;
+					 	var obsminY = obsCenter.y-obsHeight/2;
+					 	var obsmaxY = obsCenter.y+obsHeight/2;
+					 	//Let's create a path! 
+					 	var obsPath = new Graph.Path(); 
+					 	obsPath.addPoint(new Vector(obsminX,obsminY));
+					 	obsPath.addPoint(new Vector(obsminX,obsmaxY));
+					 	obsPath.addPoint(new Vector(obsmaxX,obsmaxY));
+					 	obsPath.addPoint(new Vector(obsmaxX,obsminY));  
+					 	this.obstacles[i] = obsPath;
+				 	}
             	break;
             	//this gets called when nothing is passed in the init() parameter
             	default:
@@ -92,6 +122,17 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
             //returns a Box2d body that is used for the arena collision
             var ground = this.boxWorld.makeEdgeRing(this.border.nodes);
             ground.isTerrain = false;
+            //Super hacky way to add obstacles?
+            //alert("shape="+shape);
+            var obsShapes = new Array(); 
+            if(shape=="obstacle"){
+	         for(var i =0; i<this.obstacles.length; i++){
+	         	//alert("this.obstacles[i].nodes="+obstacles[i].nodes);
+		         obsShapes[i] = this.boxWorld.makeEdgeRing(this.obstacles[i].nodes);
+		         obsShapes[i].isTerrain = false;
+		         
+	         }   
+            }
         },
         
         reset : function() {
@@ -180,8 +221,7 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
         //-------------------------------------------
         // Run a test
 
-        addPopulation : function(population) {
-
+        addPopulation : function(population){
             var arena = this;
             arena.reset();
             arena.scores = [];
@@ -359,10 +399,16 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
             g.strokeWeight(3);
             arenaColor.stroke(g, .3, .5);
             arenaColor.fill(g, .5, .85);
-            
-
-          this.border.drawFilled(context);
-
+            this.border.drawFilled(context);
+            // Draw the obstacles
+			var obstacleColor = new common.KColor(.3, .9, .3);
+            g.strokeWeight(10);
+            obstacleColor.stroke(g, .5, .7);
+            obstacleColor.fill(g, .75, .85);
+			for(var i=0; i<this.obstacles.length; i++){
+			this.obstacles[i].drawFilled(context);	
+			}
+		    
             context.simplifiedBots = true;
             $.each(this.bots, function(index, bot) {
                 bot.render(context);
