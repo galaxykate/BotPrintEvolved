@@ -74,6 +74,8 @@
 #edit.away {
 	-webkit-transform:translate(600px, 0px) rotateY(70deg);
 }
+
+
 .subpanel {
 	margin:5px;
 	background:rgba(100, 110, 110, .2);
