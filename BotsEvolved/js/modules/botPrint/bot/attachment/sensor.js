@@ -2,7 +2,7 @@
  * @author Kate Compton
  */
 
-define(["common", "./attachment"], function(common, Attachment) {'use strict';
+define(["common", "graph", "./attachment", "../wiring"], function(common, Graph, Attachment, Wiring) {'use strict';
 
     var Sensor = Attachment.extend({
         init : function() {
@@ -45,7 +45,6 @@ define(["common", "./attachment"], function(common, Attachment) {'use strict';
 
             g.fill(1, 0, 1, .7);
             g.text(this.idNumber, -3, 5);
-
         },
 
         toString : function() {

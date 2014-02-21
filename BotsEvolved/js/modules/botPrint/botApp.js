@@ -2,7 +2,7 @@
  * @author Kate Compton
  */
 
-define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "common", "./population", "./scoreGraph", "./heuristic"], function(UI, Bot, Arena, threeUtils, BotEvo, App, common, Population, ScoreGraph, Heuristic) {
+define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "common", "./population", "./scoreGraph", "./heuristic", "./bot/attachment/attachments"], function(UI, Bot, Arena, threeUtils, BotEvo, App, common, Population, ScoreGraph, Heuristic, Attachment) {
 
     /**
      * @class BotApp
@@ -20,7 +20,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
                 width : 150,
                 height : 220,
                 border : 20,
-            }
+            };
 
             app.paused = false;
             app.editChassis = false;
@@ -30,8 +30,13 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             // app.changeMode("inspector");
             app.arena = new Arena("rectangle");
 
-            app.setCurrentBot(new Bot());
-
+            //app.currentBot = new Bot();
+			
+			$("#select_arena").click(function() {
+				var arenatype = $("#arena_type_chooser").val();
+                app.loadNewArena(arenatype);
+            });
+			
             $("#switch_modes").click(function() {
                 app.toggleMainMode();
             });
@@ -39,12 +44,12 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             $(".edit_menu").click(function() {
                 app.toggleEditMode();
             });
-
             app.closeLoadScreen();
             app.createEmptyBotCard($("#app"));
 
             app.setPopulation(new Population(5));
-
+            app.currentBot = app.population.bots[0];
+            app.initializeEditMode();
             app.openArenaMode();
 
         },
@@ -58,6 +63,20 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.currentBot = bot;
             bot.saveBot()
         },
+
+		/**
+         * @method loadNewArena
+         */
+		loadNewArena : function(shape){
+			//deletes current bots in the arena. We might want to change this.
+            app.arena.reset();
+            app.arena = new Arena(shape);
+            //This adds brand new bots. Need to change to current bots. 
+            app.setPopulation(this.population);
+            //throw("I just set the population?");
+            app.currentBot = app.population.bots[0];
+		},
+
 
         highlightBot : function(bot) {
             //  console.log("Highlighting " + bot);
@@ -120,8 +139,53 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         },
 
         editBot : function(bot) {
-            app.setCurrentBot();
+            this.currentBot = bot;
+            app.setEditMenu();
             app.openEditMode();
+        },
+
+        //-------------------------------------------------------
+        /**
+         * @method initializeEditMode
+         */
+        initializeEditMode : function() {
+            $("#parts_edit").append("<br>");
+            app.setEditMenu();
+            var ui = app.ui;
+            var partNames = new Array();
+            var rTest = Attachment.Sensor;
+            partNames[0] = "wheel";
+            partNames[1] = "light sensor";
+            partNames[2] = "servo";
+            //var sampleDiv = $("#edit_item");
+            //var sDiv2 = sampleDiv.clone();
+            //sDiv2.appendTo($("#parts_edit"));
+            var sampleDiv = $("#edit_item")
+            for (var i = 0; i < 3; i++)
+            {
+                var myDiv = jQuery('<div/>', {
+                    id: 'edit_item',
+                    width: 175,
+                    height: 150,
+                });
+                myDiv.appendTo($("#parts_edit"));
+                
+                //Insert drag/droppable image here?
+                myDiv.append(partNames[i]);
+                sampleDiv.clone().appendTo(myDiv);
+            }
+            sampleDiv.remove();
+        },
+        /**
+         * @method toggleEditMode
+         */
+         
+        setEditMenu : function() {
+            $("#chassis_edit").text("");
+            $("#chassis_edit").append("<hr>");
+            nString = "<center>";
+            $("#chassis_edit").append(nString.concat(this.currentBot.name));
+            $("#chassis_edit").append("</center>");
         },
 
         //-------------------------------------------------------
@@ -192,6 +256,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         setPopulation : function(pop) {
             console.log("Set population: " + pop);
             app.population = pop;
+            app.currentBot = app.population.bots[0];            
             app.arena.reset();
             app.arena.addPopulation(app.population.bots);
             app.scoreGraph.setCompetitors(app.population.bots);
@@ -208,8 +273,10 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 
             var ui = app.ui;
 
-            app.ui.addOption("drawWiring", false);
-            app.ui.addOption("drawComponents", false);
+			app.ui.addOption("logWiring", true);
+			app.ui.addOption("logChassis", true);
+            app.ui.addOption("drawWiring", true);
+            app.ui.addOption("drawComponents", true);
             app.ui.addOption("logConditionTests", false);
             app.ui.addOption("logMutations", true);
             app.ui.addOption("useTimers", true);
@@ -281,6 +348,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             $("#select_winners").click(function() {
                 var winners = app.scoreGraph.getWinners();
                 app.population.createNextGenerationFromWinners(winners);
+                app.currentBot = app.population.bots[0]; 
             });
 
             $("#start_test").click(function() {
