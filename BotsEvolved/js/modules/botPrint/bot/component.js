@@ -46,7 +46,6 @@ define(["common", "graph", "./wiring"], function(common, Graph, Wiring) {'use st
                 var pin = new Wiring.Pin({
                     positive : Math.random() > .5,
                     parent : this,
-                    //edge : this.path.getRandomEdge(),
                 });
                 this.pins.push(pin);
             }
@@ -67,9 +66,9 @@ define(["common", "graph", "./wiring"], function(common, Graph, Wiring) {'use st
             this.attachPoint = point;
             
             //This needs to be overloaded by any components that are created off of this one.  Essentally builds a Vector.Path representation
-            //of the internal component for collision detection and stuff.
+            //of the internal component for collision detection and stuff, basing the built object off of the attachPoint.
             
-            //sadly, I can't thread and delay, so this needs to go in an awkward spot.
+            //This is not a good implementation because it requires the parts to be redrawn.
             //TODO: fix?
             this.buildDetails();
 		},
@@ -77,13 +76,6 @@ define(["common", "graph", "./wiring"], function(common, Graph, Wiring) {'use st
         //========================================================
 		// rendering
         renderDetails : function(context) {
-        	//var r = 10;
-        	//var g = context.g;
-			        	
-            //g.fill(.7, 1, 1);
-            //g.stroke(0);
-            
-            //g.rect(0, -r / 2, -r * 3, r);
             
             this.path.draw(context);
         },
@@ -118,13 +110,21 @@ define(["common", "graph", "./wiring"], function(common, Graph, Wiring) {'use st
 		
 		//add pins for wire-related things
 		addPins : function (){
+			
+			//setup offsets
+			var pinOffset = new common.Transform();
+			pinOffset.setTo(0, 3, 0);
+			
             var positive = new Wiring.Pin({
                  positive : true,
+                 offset : pinOffset,
                  parent : this,
             });
             
+            pinOffset.setTo(0, -3, 0);
             var negative = new Wiring.Pin({
             	positive : false,
+            	offset : pinOffset,
             	parent : this,
             });
             
@@ -148,19 +148,27 @@ define(["common", "graph", "./wiring"], function(common, Graph, Wiring) {'use st
 		
 		//add pins for wire-related things
 		addPins : function (){
+			//set up pin offsets
+			var pinOffset = new common.Transform();
+			
+			//TODO: pins are a little big right now compared to component size, so I'm just going to space them out.
+			pinOffset.setTo(0, 3, 0);
 			//positive pins
 			for(var i = 0; i < 12; i++){
 				var pin = new Wiring.Pin({
 					positive : true,
+					offset : pinOffset,
 					parent : this,
 				});
 				this.pins.push(pin);
 			}
 			
+			pinOffset.setTo(0, -3, 0);
 			//negative pins
 			for(var i = 0; i < 12; i++){
 				var pin = new Wiring.Pin({
 					positive : false,
+					offset : pinOffset,
 					parent : this,
 				});
 				this.pins.push(pin);

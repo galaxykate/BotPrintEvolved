@@ -63,19 +63,21 @@ define(["common", "graph"], function(common, Graph) {'use strict';
          * @param settings
          */
         init : function(settings) {
-            this.positive = true;
-            //this.pct = .5;
+            //defaults
             _.extend(this, settings);
             this.pos = new common.Transform();
             
-            //TODO: right now, pins sit on a random edge from their parent
-            //or the attach point.
-            
+           	//Pins can either be calculated from the center of an object, or from an edge.
             if(this.edge === undefined){
             	this.pos.add(this.parent.attachPoint);
+            	
+            	//allow us to define offsets from the center for pin positioning
+            	if(this.offset !== undefined){
+            		wirelog("Adding offset: (" + this.offset.x + ", " + this.offset.y + ")"); 
+            		this.pos.add(this.offset);	
+            	}
             }else{
             	var pct  = Math.random();
-            
 				this.pos.add(this.edge.getTracer(pct, -3));
             }
             
