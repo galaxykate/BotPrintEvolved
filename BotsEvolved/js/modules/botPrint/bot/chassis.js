@@ -53,7 +53,6 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             //FIXME: this.center() doesn't actually point to the center when all is said and done, we need to get a "visual" center 
             //to actually place the points
             //This is done by finding the centroid of the polygon
-            //FIXME: move this over to the graph library?
             var points = this.path.getHull();
             
             var twiceArea = 0;
@@ -138,7 +137,7 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             battery.place(this, this.visualCenter);
             //FIXME: temp solution where we drop the parts in the center
             var p = new common.Transform();
-            p.setTo(this.visualCenter.x + 15, this.visualCenter.y,0);
+            p.setTo(this.visualCenter.x + 15, this.visualCenter.y, 0);
             
             controller.place(this, p);
             
