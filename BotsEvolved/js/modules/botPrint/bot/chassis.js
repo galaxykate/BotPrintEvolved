@@ -31,7 +31,6 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             var theta = i * Math.PI * 2 / chassis.pointCount;
             var r = 100 * utilities.unitNoise(.7 * theta + 50 * chassis.idNumber);
             var pt = Vector.polar(r, theta);
-
             path.addEdgeTo(pt);
         }
 
@@ -77,8 +76,6 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
 
             this.center = new Vector(0, 0);
 
-
-
             //FIXME: this.center() doesn't actually point to the center when all is said and done, we need to get a "visual" center
             //to actually place the points
             //This is done by finding the centroid of the polygon
@@ -86,7 +83,8 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             var points = this.path.getHull();
 
             var twiceArea = 0;
-            var x = 0; var y = 0; var numPoints = this.path.getHull().length;
+            var x = 0; var y = 0;
+            var numPoints = this.path.getHull().length;
             var p1, p2, f;
             for(var i = 0, j = numPoints - 1; i < numPoints; j = i++){
                 p1 = points[i];
@@ -102,11 +100,10 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             this.visualCenter.setTo((x/f), (y/f), 0);
 
             this.generateAttachments();
-            //Currently generate Wiring relies on the rest of the chassis
+            //Currently generateWiring relies on the rest of the chassis
             //being set and configured. Must go last.
             this.generateWiring();
         },
-             // Cloning + modification
 
              /**
               * @method clone
@@ -451,7 +448,7 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
                      }
 
                      if (app.getOption("drawWiring")) {
-                         $.each(this.wires, function(index, wire) {               	
+                         $.each(this.wires, function(index, wire) {
                              wire.render(context);
                          });
                      }

@@ -179,7 +179,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         /**
          * @method toggleEditMode
          */
-         
+
         setEditMenu : function() {
             $("#chassis_edit").text("");
             $("#chassis_edit").append("<hr>");
@@ -217,7 +217,29 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.editChassis = false;
             $("#chassis_edit").removeClass("away");
             $("#parts_edit").addClass("away");
+
+            this.currentBot.mainChassis.path.nodes.forEach(function(node, i) {
+
+                var cssPosition = '-webkit-transform:translate(' + node.x + 'px, ' + node.y + 'px)';
+
+                var div = $("<div/>", {
+                    'class': 'chassisEditPoints',
+                    'id': "node" + i,
+                    'style': cssPosition
+                });
+                div.lastLocalPosition = node;
+                div.mousedown(function(eventObj) {
+                    console.log(eventObj);
+                    console.log(node);
+                });
+                div.mouseup(function(eventObj) {
+                    console.log("untouched");
+                    console.log(eventObj);
+                });
+                $('#editOverlay').append(div);
+            });
         },
+
         openLoadScreen : function() {
             $("#load_screen").show();
         },

@@ -7,7 +7,7 @@
 define(["common", "graph", "./wiring"], function(common, Graph, Wiring) {'use strict';
 	var componentCount = 0;
 	var Component = Class.extend({
-		
+
 		/**
 		 * Initalizes a new component 
 		 */
@@ -73,79 +73,79 @@ define(["common", "graph", "./wiring"], function(common, Graph, Wiring) {'use st
             //TODO: fix?
             this.buildDetails();
 		},
-        
+
         //========================================================
 		// rendering
         renderDetails : function(context) {
         	//var r = 10;
         	//var g = context.g;
-			        	
+
             //g.fill(.7, 1, 1);
             //g.stroke(0);
-            
+
             //g.rect(0, -r / 2, -r * 3, r);
-            
+
             this.path.draw(context);
         },
-        
+
         render : function(context) {
             var g = context.g;
 
             g.pushMatrix();
             this.attachPoint.applyTransform(g);
-			
+
             this.renderDetails(context);
-            
+
             g.popMatrix();
-            
+
             //render pins
             $.each(this.pins, function(index, pin) {
                 pin.render(context);
             });
         }
     });
-	
+
 	var Battery = Component.extend({
 		init : function(){
             this._super();
             this.id = "Battery " + this.idNumber;
 		},
-		
+
 		//build the actual shape of the core component block
 		buildDetails : function (){
 			this.path = Graph.makeRectangle(this.attachPoint, 10, 14);
 		},
-		
+
 		//add pins for wire-related things
 		addPins : function (){
             var positive = new Wiring.Pin({
                  positive : true,
                  parent : this,
             });
-            
+
             var negative = new Wiring.Pin({
             	positive : false,
             	parent : this,
             });
-            
+
         	this.pins.push(positive);
         	this.pins.push(negative);
 		},
-		
+
 		//we don't need to override the render details, because it just draws the shapes we throw at it.  Ballin'
 	});
-	
+
 	var Orangutan = Component.extend({
 		init : function(){
 			this._super();
 			this.id = "Orangutan " + this.idNumber;
 		},
-		
+
 		//build the actual shape of the core component block
 		buildDetails : function(){
 			this.path = Graph.makeRectangle(this.attachPoint, 5, 5);
 		},
-		
+
 		//add pins for wire-related things
 		addPins : function (){
 			//positive pins
@@ -156,7 +156,7 @@ define(["common", "graph", "./wiring"], function(common, Graph, Wiring) {'use st
 				});
 				this.pins.push(pin);
 			}
-			
+
 			//negative pins
 			for(var i = 0; i < 12; i++){
 				var pin = new Wiring.Pin({
@@ -167,9 +167,9 @@ define(["common", "graph", "./wiring"], function(common, Graph, Wiring) {'use st
 			}
 		}
 	});
-	
+
 	Component.Battery = Battery;
 	Component.Orangutan = Orangutan;
-	
+
 	return Component;
- });	
+ });
