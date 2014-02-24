@@ -72,7 +72,8 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.arena.reset();
             app.arena = new Arena(shape);
             //This adds brand new bots. Need to change to current bots. 
-            app.setPopulation(new Population(5));
+            app.setPopulation(this.population);
+            //throw("I just set the population?");
             app.currentBot = app.population.bots[0];
 		},
 
