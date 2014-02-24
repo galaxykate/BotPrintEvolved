@@ -7,7 +7,6 @@
 define(["common", "graph", "./wiring"], function(common, Graph, Wiring) {'use strict';
 	var componentCount = 0;
 	var Component = Class.extend({
-		
 		/**
 		 * Initalizes a new component 
 		 */
@@ -39,7 +38,7 @@ define(["common", "graph", "./wiring"], function(common, Graph, Wiring) {'use st
 		// add pins
 		addPins : function() {          
         	//add pins
-        	// each component gets three snap points randomly distributed
+        	//each component gets three snap points randomly distributed
         	
             //TODO: bringing back pins sitting on random edges of the component.  Word.
             for (var i = 0; i < 3; i++) {
@@ -62,7 +61,6 @@ define(["common", "graph", "./wiring"], function(common, Graph, Wiring) {'use st
 		// attaching 
 		place : function(parent, point){
 			this.parent = parent;
-            
             this.attachPoint = point;
             
             //This needs to be overloaded by any components that are created off of this one.  Essentally builds a Vector.Path representation
