@@ -4,422 +4,555 @@
 
 define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "common", "./population", "./scoreGraph", "./heuristic", "./bot/attachment/attachments"], function(UI, Bot, Arena, threeUtils, BotEvo, App, common, Population, ScoreGraph, Heuristic, Attachment) {
 
-    /**
-     * @class BotApp
-     * @extends App
-     */
-    var BotApp = App.extend({
-        /**
-         * @method init
-         */
-        init : function() {
-            app = this;
-            app.width = 900;
-            app.height = 600;
-            app.botCard = {
-                width : 150,
-                height : 220,
-                border : 20,
-            };
+	/**
+	 * @class BotApp
+	 * @extends App
+	 */
+	var BotApp = App.extend({
+		/**
+		 * @method init
+		 */
+		init : function() {
+			app = this;
+			app.width = 900;
+			app.height = 600;
+			app.botCard = {
+				width : 150,
+				height : 220,
+				border : 20,
+			};
 
-            app.paused = false;
-            app.editChassis = false;
-
-            app._super("Bots", new Vector(30, 30));
-
-            // app.changeMode("inspector");
-            app.arena = new Arena("rectangle");
-
-            //app.currentBot = new Bot();
+			app.paused = false;
+			app.editChassis = false;
 			
+			app.createAttachmentList();
+
+			app._super("Bots", new Vector(30, 30));
+
+			// app.changeMode("inspector");
+			app.arena = new Arena("rectangle");
+
+			//app.currentBot = new Bot();
+
 			$("#select_arena").click(function() {
 				var arenatype = $("#arena_type_chooser").val();
-                app.loadNewArena(arenatype);
-            });
+				app.loadNewArena(arenatype);
+			});
+
+			$("#switch_modes").click(function() {
+				app.toggleMainMode();
+			});
+
+			$(".edit_menu").click(function() {
+				app.toggleEditMode();
+			});
+			app.closeLoadScreen();
+
 			
-            $("#switch_modes").click(function() {
-                app.toggleMainMode();
-            });
+			app.createEmptyBotCard($("#app"));
 
-            $(".edit_menu").click(function() {
-                app.toggleEditMode();
-            });
-            app.closeLoadScreen();
-            app.createEmptyBotCard($("#app"));
+			app.setPopulation(new Population(5));
+			app.currentBot = app.population.bots[0];
+			app.initializeEditMode();
+			app.openArenaMode();
 
-            app.setPopulation(new Population(5));
-            app.currentBot = app.population.bots[0];
-            app.initializeEditMode();
-            app.openArenaMode();
+		},
+		//=====================================================================
+		//=====================================================================
+		//=====================================================================
+		// Create a global list of all the attachments and their weights
+		createAttachmentList : function() {
 
-        },
+			// Weights and attachment types: there should be the same number in each array, please!
+			app.attachmentWeights = [.3, .6];
+			app.attachmentTypes = [Attachment.Sensor, Attachment.Actuator];
+			console.log("weights: " + app.attachmentWeights);
+			/*
+			if (app.getOption("useTimers")) {
+				app.attachmentTypes.push(Attachment.Sensor.Timer), app.weights.push(1);
+			}
 
-        //=====================================================================
-        //=====================================================================
-        //=====================================================================
-        //=====================================================================
-        setCurrentBot : function(bot) {
+			if (app.getOption("useColorLerpers")) {
+				app.attachmentTypes.push(Attachment.Sensor.ColorLerper), app.weights.push(1);
+			}
 
-            app.currentBot = bot;
-            bot.saveBot()
-        },
-
-		/**
-         * @method loadNewArena
-         */
-		loadNewArena : function(shape){
-			//deletes current bots in the arena. We might want to change this.
-            app.arena.reset();
-            app.arena = new Arena(shape);
-            //This adds brand new bots. Need to change to current bots. 
-            app.setPopulation(this.population);
-            //throw("I just set the population?");
-            app.currentBot = app.population.bots[0];
+			if (app.getOption("useSharpie")) {
+				app.attachmentTypes.push(Attachment.Actuator.Sharpie), app.weights.push(1);
+			}
+		*/
 		},
 
+		//=====================================================================
+		//=====================================================================
+		//=====================================================================
+		//=====================================================================
+		setCurrentBot : function(bot) {
 
-        highlightBot : function(bot) {
-            //  console.log("Highlighting " + bot);
-        },
+			app.currentBot = bot;
+			bot.saveBot()
+		},
 
-        // Create a bot card and attach it here
-        createEmptyBotCard : function(parentHolder) {
+		/**
+		 * @method loadNewArena
+		 */
+		loadNewArena : function(shape) {
+			//deletes current bots in the arena. We might want to change this.
+			app.arena.reset();
+			app.arena = new Arena(shape);
+			//This adds brand new bots. Need to change to current bots.
+			app.setPopulation(this.population);
+			//throw("I just set the population?");
+			app.currentBot = app.population.bots[0];
+		},
 
-        },
+		highlightBot : function(bot) {
+			//  console.log("Highlighting " + bot);
+		},
 
-        /**
-         * @method toggleMainMode
-         */
+		// Create a bot card and attach it here
+		createEmptyBotCard : function(parentHolder) {
 
-        toggleMainMode : function() {
-            console.log("Toggle main mode " + app.editMode);
-            if (app.editMode)
-                app.openArenaMode();
-            else
-                app.openEditMode();
-        },
+		},
 
-        /**
-         * @method openEditMode
-         */
-        openEditMode : function() {
-            app.editMode = true;
-            $("#arena").addClass("away");
-            $("#edit").removeClass("away");
+		/**
+		 * @method toggleMainMode
+		 */
 
-            // Make wiring for this bot?
-            app.currentBot.transform.setTo(0, 0, 0);
-            app.openEditChassis();
+		toggleMainMode : function() {
+			console.log("Toggle main mode " + app.editMode);
+			if (app.editMode)
+				app.openArenaMode();
+			else
+				app.openEditMode();
+		},
 
-            var p = new Vector();
-            $(".bot_card").css({
-                "-webkit-transform" : "translate(" + p.x + "px, " + p.y + "px) rotateX(360deg) scale3d(1, 1, 1)",
-            });
-        },
+		/**
+		 * @method openEditMode
+		 */
+		openEditMode : function() {
+			app.editMode = true;
+			$("#arena").addClass("away");
+			$("#edit").removeClass("away");
 
-        /**
-         * @method openArenaMode
-         */
-        openArenaMode : function() {
-            var bc = app.botCard;
-            app.editMode = false;
-            $("#edit").addClass("away");
-            $("#arena").removeClass("away");
+			// Make wiring for this bot?
+			app.currentBot.transform.setTo(0, 0, 0);
+			app.openEditChassis();
 
-            var p = new Vector(app.width - bc.width - (bc.border * 2), app.height - bc.height - (bc.border * 2));
-            $(".bot_card").css({
-                "-webkit-transform" : "translate(" + p.x + "px, " + p.y + "px) rotateX(.01deg) scale3d(1, 1, 1)",
-            });
+			var p = new Vector();
+			$(".bot_card").css({
+				"-webkit-transform" : "translate(" + p.x + "px, " + p.y + "px) rotateX(360deg) scale3d(1, 1, 1)",
+			});
+		},
 
-            app.population.updateUI();
+		/**
+		 * @method openArenaMode
+		 */
+		openArenaMode : function() {
+			var bc = app.botCard;
+			app.editMode = false;
+			$("#edit").addClass("away");
+			$("#arena").removeClass("away");
 
-        },
-        createBot : function() {
-            return new Bot();
-        },
+			var p = new Vector(app.width - bc.width - (bc.border * 2), app.height - bc.height - (bc.border * 2));
+			$(".bot_card").css({
+				"-webkit-transform" : "translate(" + p.x + "px, " + p.y + "px) rotateX(.01deg) scale3d(1, 1, 1)",
+			});
 
-        editBot : function(bot) {
-            this.currentBot = bot;
-            app.setEditMenu();
-            app.openEditMode();
-        },
+			app.population.updateUI();
 
-        //-------------------------------------------------------
-        /**
-         * @method initializeEditMode
-         */
-        initializeEditMode : function() {
-            $("#parts_edit").append("<br>");
-            app.setEditMenu();
-            var ui = app.ui;
-            var partNames = new Array();
-            var rTest = Attachment.Sensor;
-            partNames[0] = "wheel";
-            partNames[1] = "light sensor";
-            partNames[2] = "servo";
-            //var sampleDiv = $("#edit_item");
-            //var sDiv2 = sampleDiv.clone();
-            //sDiv2.appendTo($("#parts_edit"));
-            var sampleDiv = $("#edit_item")
-            for (var i = 0; i < 3; i++)
-            {
-                var myDiv = jQuery('<div/>', {
-                    id: 'edit_item',
-                    width: 175,
-                    height: 150,
-                });
-                myDiv.appendTo($("#parts_edit"));
-                
-                //Insert drag/droppable image here?
-                myDiv.append(partNames[i]);
-                sampleDiv.clone().appendTo(myDiv);
-            }
-            sampleDiv.remove();
-        },
-        /**
-         * @method toggleEditMode
-         */
-         
-        setEditMenu : function() {
-            $("#chassis_edit").text("");
-            $("#chassis_edit").append("<hr>");
-            nString = "<center>";
-            $("#chassis_edit").append(nString.concat(this.currentBot.name));
-            $("#chassis_edit").append("</center>");
-        },
+		},
+		createBot : function() {
+			return new Bot();
+		},
 
-        //-------------------------------------------------------
-        /**
-         * @method toggleEditMode
-         */
-        toggleEditMode : function() {
-            console.log("Toggle edit mode " + app.editChassis);
-            if (app.editChassis)
-                app.openEditChassis();
-            else
-                app.openEditParts();
-        },
+		editBot : function(bot) {
+			this.currentBot = bot;
+			app.setEditMenu();
+			app.openEditMode();
+		},
 
-        /**
-         * @method openEditParts
-         */
-        openEditParts : function() {
-            app.editChassis = true;
-            $("#chassis_edit").addClass("away");
-            $("#parts_edit").removeClass("away");
+		//-------------------------------------------------------
+		/**
+		 * @method initializeEditMode
+		 */
+		initializeEditMode : function() {
+			$("#parts_edit").append("<br>");
+			app.setEditMenu();
+			var ui = app.ui;
+			var partNames = new Array();
+			var rTest = Attachment.Sensor;
+			partNames[0] = "wheel";
+			partNames[1] = "light sensor";
+			partNames[2] = "servo";
+			//var sampleDiv = $("#edit_item");
+			//var sDiv2 = sampleDiv.clone();
+			//sDiv2.appendTo($("#parts_edit"));
+			var sampleDiv = $("#edit_item")
 
-        },
+			for (var i = 0; i < 3; i++) {
 
-        /**
-         * @method openEditChassis
-         */
-        openEditChassis : function() {
-            app.editChassis = false;
-            $("#chassis_edit").removeClass("away");
-            $("#parts_edit").addClass("away");
-        },
-        openLoadScreen : function() {
-            $("#load_screen").show();
-        },
-        closeLoadScreen : function() {
-            $("#load_screen").hide();
-        },
+				var myDiv = jQuery('<div/>', {
+					id : 'edit_item',
+					width : 175,
+					height : 150,
+				});
 
-        /**
-         * @method openLoadScreen
-         */
-        openLoadScreen : function() {
-            $("#load_screen").show();
-        },
+				var canva = $("<canvas/>", {
+					id : 'edit_item',
+					width : 150,
+					height : 100,
+					//"border-radius": 1,
+				});
 
-        /**
-         * @method closeLoadScreen
-         */
-        closeLoadScreen : function() {
-            $("#load_screen").hide();
+				//var canvases = document.getElementById('edit_item');
+				//var ctx = $(canva).getContext('2d');
 
-            /* $("*").click(function(evt) {
-             console.log("Clicked ", this);
-             });*/
+				var attach = this.currentBot.mainChassis.attachments;
+				var attachTypes = this.currentBot.mainChassis.aTypes;
 
-        },
+				//console.log("attach types: " + this.currentBot.name);
+				for (var k = 0; k < attach.length; k++) {
 
-        //=====================================================================
-        //=====================================================================
+					console.log("Attachment: " + attach[k]);
+				}
 
-        //=====================================================================
+				//myDiv.appendTo($("#parts_edit"));
+				canva.appendTo($("#parts_edit"));
+				//canva.appendTo(myDiv);
+				//ctx.fillRect(0, 0, 40, 40);
 
-        spawnNextGeneration : function() {
-            app.setPopulation(app.population.createNextGeneration());
-        },
+				//Insert drag/droppable image here?
+				//myDiv.append(partNames[i]);
+				//canvases.append(partNames[i]);
 
-        setPopulation : function(pop) {
-            console.log("Set population: " + pop);
-            app.population = pop;
-            app.currentBot = app.population.bots[0];            
-            app.arena.reset();
-            app.arena.addPopulation(app.population.bots);
-            app.scoreGraph.setCompetitors(app.population.bots);
-            app.population.updateUI();
+				//my stuff
+				//myDiv.append(attachTypes + "");
+				//myDiv.append(attach[0].attachPoint + "");
+				//end my stuff
 
-        },
-        //=====================================================================
-        //=====================================================================
+				sampleDiv.clone().appendTo(myDiv);
+			}
+			sampleDiv.remove();
 
-        /**
-         * @method initModes
-         */
-        initModes : function() {
+			//my stuff
+			/*
+			var types = {
+			Timer: 0,
+			ColorLerper: 0
+			};
 
-            var ui = app.ui;
+			/*
+			for (var k = 0; k < this.currentBot.mainChassis.attachments.length; k++){
+			if (app.getOption("useColorLerpers")){
+			types.ColorLerper++;
+			}
+			if (app.getOption("useColorLerpers")){
+			types.ColorLerper++;
+			}
+			}
+
+			if (app.getOption("useColorLerpers")) {
+			var myDiv = jQuery('<div/>', {
+			id : 'edit_item',
+			width : 175,
+			height : 150,
+			});
+
+			myDiv.appendTo($("#parts_edit"));
+			myDiv.append("Color Lerpers:");
+			for (var k = 0; k < this.currentBot.mainChassis.attachments.length; k++){
+			if(this.currentBot.mainChassis.attachments[k].id.indexOf("ColorLerper") != -1){
+			myDiv.append(this.currentBot.mainChassis.attachments[k].id);
+			console.log("Attachment: " + this.currentBot.mainChassis.attachments[k]);
+			}
+			}
+			sampleDiv.clone().appendTo(myDiv);
+			}
+			sampleDiv.remove();
+
+			if (app.getOption("useTimers")) {
+			var myDiv = jQuery('<div/>', {
+			id : 'edit_item',
+			width : 175,
+			height : 150,
+			});
+
+			myDiv.appendTo($("#parts_edit"));
+			myDiv.append("Timers:");
+			for (var k = 0; k < this.currentBot.mainChassis.attachments.length; k++){
+			if(this.currentBot.mainChassis.attachments[k].id.indexOf("Timer") != -1){
+			myDiv.append(this.currentBot.mainChassis.attachments[k].id);
+			console.log("Attachment: " + this.currentBot.mainChassis.attachments[k]);
+			}
+			}
+			sampleDiv.clone().appendTo(myDiv);
+			}
+			sampleDiv.remove();
+
+			/*
+			for (var k = 0; k < this.currentBot.mainChassis.attachments.length; k++) {
+			var myDiv = jQuery('<div/>', {
+			id: 'edit_item',
+			width: 175,
+			height: 150,
+			});
+
+			console.log("Attachment: " + this.currentBot.mainChassis.attachments[k]);
+
+			myDiv.appendTo($("#parts_edit"));
+			myDiv.append(this.currentBot.mainChassis.attachments[k].id);
+			sampleDiv.clone().appendTo(myDiv);
+			}
+			sampleDiv.remove();
+			*/
+
+			//end my stuff
+
+		},
+		/**
+		 * @method toggleEditMode
+		 */
+
+		setEditMenu : function() {
+			$("#chassis_edit").text("");
+			$("#chassis_edit").append("<hr>");
+			nString = "<center>";
+			$("#chassis_edit").append(nString.concat(this.currentBot.name));
+			$("#chassis_edit").append("</center>");
+		},
+
+		//-------------------------------------------------------
+		/**
+		 * @method toggleEditMode
+		 */
+		toggleEditMode : function() {
+			console.log("Toggle edit mode " + app.editChassis);
+			if (app.editChassis)
+				app.openEditChassis();
+			else
+				app.openEditParts();
+		},
+
+		/**
+		 * @method openEditParts
+		 */
+		openEditParts : function() {
+			app.editChassis = true;
+			$("#chassis_edit").addClass("away");
+			$("#parts_edit").removeClass("away");
+
+		},
+
+		/**
+		 * @method openEditChassis
+		 */
+		openEditChassis : function() {
+			app.editChassis = false;
+			$("#chassis_edit").removeClass("away");
+			$("#parts_edit").addClass("away");
+		},
+		openLoadScreen : function() {
+			$("#load_screen").show();
+		},
+		closeLoadScreen : function() {
+			$("#load_screen").hide();
+		},
+
+		/**
+		 * @method openLoadScreen
+		 */
+		openLoadScreen : function() {
+			$("#load_screen").show();
+		},
+
+		/**
+		 * @method closeLoadScreen
+		 */
+		closeLoadScreen : function() {
+			$("#load_screen").hide();
+
+			/* $("*").click(function(evt) {
+			 console.log("Clicked ", this);
+			 });*/
+
+		},
+
+		//=====================================================================
+		//=====================================================================
+
+		//=====================================================================
+
+		spawnNextGeneration : function() {
+			app.setPopulation(app.population.createNextGeneration());
+		},
+
+		setPopulation : function(pop) {
+			console.log("Set population: " + pop);
+			app.population = pop;
+			app.currentBot = app.population.bots[0];
+			app.arena.reset();
+			app.arena.addPopulation(app.population.bots);
+			app.scoreGraph.setCompetitors(app.population.bots);
+			app.population.updateUI();
+
+		},
+		//=====================================================================
+		//=====================================================================
+
+		/**
+		 * @method initModes
+		 */
+		initModes : function() {
+
+			var ui = app.ui;
 
 			app.ui.addOption("logWiring", true);
 			app.ui.addOption("logChassis", true);
-            app.ui.addOption("drawWiring", true);
-            app.ui.addOption("drawComponents", true);
-            app.ui.addOption("logConditionTests", false);
-            app.ui.addOption("logMutations", true);
-            app.ui.addOption("useTimers", true);
-            app.ui.addOption("useColorLerpers", true);
-            app.ui.addOption("useSharpie", false);
-            app.ui.addTuningValue("unicornFluffiness", 100, 1, 700, function(key, value) {
-                // do something on change
-            });
+			app.ui.addOption("drawWiring", true);
+			app.ui.addOption("drawComponents", true);
+			app.ui.addOption("logConditionTests", false);
+			app.ui.addOption("logMutations", true);
+			app.ui.addOption("useTimers", true);
+			app.ui.addOption("useColorLerpers", true);
+			app.ui.addOption("useSharpie", false);
+			app.ui.addTuningValue("unicornFluffiness", 100, 1, 700, function(key, value) {
+				// do something on change
+			});
 
-        },
+		},
 
-        /**
-         * @method initControls
-         */
-        initControls : function() {
+		/**
+		 * @method initControls
+		 */
+		initControls : function() {
 
-            // Set all the default UI controls
-            app.controls = new UI.Controls($("body"), {
+			// Set all the default UI controls
+			app.controls = new UI.Controls($("body"), {
 
-                onKeyPress : {
+				onKeyPress : {
 
-                    d : function(event) {
-                        app.ui.devMode.toggle()
-                    },
+					d : function(event) {
+						app.ui.devMode.toggle()
+					},
 
-                    space : function() {
-                        app.paused = !app.paused;
-                    }
-                },
+					space : function() {
+						app.paused = !app.paused;
+					}
+				},
 
-            });
+			});
 
-            // Make some of the windows touchable
+			// Make some of the windows touchable
 
-            var touchInspector = app.controls.addTouchable("inspector", $("#edit_canvas"));
-            var touchArena = app.controls.addTouchable("arena", $("#arena_canvas"));
+			var touchInspector = app.controls.addTouchable("inspector", $("#edit_canvas"));
+			var touchArena = app.controls.addTouchable("arena", $("#arena_canvas"));
 
-            // Inspector controls
-            touchInspector.onDrag(function(touchwindow, p) {
-                var x = p.x - touchwindow.rect.w / 2;
-                var y = p.y - touchwindow.rect.h / 2;
-                // app.coin.designTransform.setTo(x, y, 0);
-            });
+			// Inspector controls
+			touchInspector.onDrag(function(touchwindow, p) {
+				var x = p.x - touchwindow.rect.w / 2;
+				var y = p.y - touchwindow.rect.h / 2;
+				// app.coin.designTransform.setTo(x, y, 0);
+			});
 
-            touchInspector.onMove(function(touchwindow, p) {
-                //  get midPoint
-                var x = p.x - touchwindow.rect.w / 2;
-                var y = p.y - touchwindow.rect.h / 2;
-                //  app.coin.selectAt(new Vector(x, y));
+			touchInspector.onMove(function(touchwindow, p) {
+				//  get midPoint
+				var x = p.x - touchwindow.rect.w / 2;
+				var y = p.y - touchwindow.rect.h / 2;
+				//  app.coin.selectAt(new Vector(x, y));
 
-            });
+			});
 
-        },
+		},
 
-        /**
-         * @method initUI
-         */
-        initUI : function() {
+		/**
+		 * @method initUI
+		 */
+		initUI : function() {
 
-            var ui = app.ui;
+			var ui = app.ui;
 
-            Heuristic.makeHeuristicMenu();
+			Heuristic.makeHeuristicMenu();
 
-            // Add functionality for some buttons
-            $("#next_generation").click(function() {
-                app.spawnNextGeneration();
-            });
+			// Add functionality for some buttons
+			$("#next_generation").click(function() {
+				app.spawnNextGeneration();
+			});
 
-            $("#select_winners").click(function() {
-                var winners = app.scoreGraph.getWinners();
-                app.population.createNextGenerationFromWinners(winners);
-                app.currentBot = app.population.bots[0]; 
-            });
+			$("#select_winners").click(function() {
+				var winners = app.scoreGraph.getWinners();
+				app.population.createNextGenerationFromWinners(winners);
+				app.currentBot = app.population.bots[0];
+			});
 
-            $("#start_test").click(function() {
-                console.log("Start test");
-            });
+			$("#start_test").click(function() {
+				console.log("Start test");
+			});
 
-            // Add the score graph
-            app.scoreGraph = new ScoreGraph.BarGraph($("#testing_panel"));
+			// Add the score graph
+			app.scoreGraph = new ScoreGraph.BarGraph($("#testing_panel"));
 
-            // These windows all use processing for the drawing
-            app.editWindow = new UI.DrawingWindow("edit", $("#edit_canvas"));
-            app.arenaWindow = new UI.DrawingWindow("arena", $("#arena_canvas"));
+			// These windows all use processing for the drawing
+			app.editWindow = new UI.DrawingWindow("edit", $("#edit_canvas"));
+			app.arenaWindow = new UI.DrawingWindow("arena", $("#arena_canvas"));
 
-            app.editorProcessing = ui.addProcessingWindow(app.editWindow.element, function(g) {
-                app.editWindow.setProcessing(g);
+			app.editorProcessing = ui.addProcessingWindow(app.editWindow.element, function(g) {
+				app.editWindow.setProcessing(g);
 
-            }, function(g) {
-                // Updates
+			}, function(g) {
+				// Updates
 
-                // only do if its the inspector mode
-                if (app.editMode) {
-                    // Updates
-                    app.ui.output.clear();
+				// only do if its the inspector mode
+				if (app.editMode) {
+					// Updates
+					app.ui.output.clear();
 
-                    if (!app.paused) {
-                        app.worldTime.updateTime(g.millis() * .001);
-                        app.currentBot.update({
-                            total : app.worldTime.total,
-                            elapsed : app.worldTime.ellapsed
-                        });
-                    }
+					if (!app.paused) {
+						app.worldTime.updateTime(g.millis() * .001);
+						app.currentBot.update({
+							total : app.worldTime.total,
+							elapsed : app.worldTime.ellapsed
+						});
+					}
 
-                    app.editWindow.render(function(context) {
+					app.editWindow.render(function(context) {
 
-                        var g = context.g;
-                        g.background(.8);
-                        context.useChassisCurves = true;
-                        // Draw the bot
+						var g = context.g;
+						g.background(.8);
+						context.useChassisCurves = true;
+						// Draw the bot
 
-                        g.fill(.8, 1, 1);
-                        g.ellipse(0, 0, 90, 90);
+						g.fill(.8, 1, 1);
+						g.ellipse(0, 0, 90, 90);
 
-                        app.currentBot.render(context);
+						app.currentBot.render(context);
 
-                    });
-                }
-            });
+					});
+				}
+			});
 
-            // Create the arena
-            app.arenaProcessing = ui.addProcessingWindow(app.arenaWindow.element, function(g) {
-                app.arenaWindow.setProcessing(g);
-            }, function(g) {
-                // only do if its the arena mode
-                if (!app.editMode) {
-                    app.ui.output.clear();
+			// Create the arena
+			app.arenaProcessing = ui.addProcessingWindow(app.arenaWindow.element, function(g) {
+				app.arenaWindow.setProcessing(g);
+			}, function(g) {
+				// only do if its the arena mode
+				if (!app.editMode) {
+					app.ui.output.clear();
 
-                    if (!app.paused) {
-                        app.worldTime.updateTime(g.millis() * .001);
-                        app.arena.update(app.worldTime.ellapsed);
-                        app.scoreGraph.update(app.worldTime);
-                    }
-                    app.arenaWindow.render(function(context) {
-                        context.scale = 3;
-                        app.arena.render(context);
-                    });
-                }
+					if (!app.paused) {
+						app.worldTime.updateTime(g.millis() * .001);
+						app.arena.update(app.worldTime.ellapsed);
+						app.scoreGraph.update(app.worldTime);
+					}
+					app.arenaWindow.render(function(context) {
+						context.scale = 3;
+						app.arena.render(context);
+					});
+				}
 
-            });
+			});
 
-        },
-    });
+		},
+	});
 
-    return BotApp;
+	return BotApp;
 });

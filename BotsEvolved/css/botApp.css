@@ -60,7 +60,8 @@
     position:relative;
     left:2px;
     width:95%;
-    height:50%;    
+    height:50%; 
+    border:9px solid white;   
 }
 #switch_modes {
 	position:absolute;

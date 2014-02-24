@@ -72,6 +72,7 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             this.visualCenter = new common.Transform();
             this.visualCenter.setTo((x/f), (y/f), 0);
             
+            
             this.generateAttachments();
             this.generateWiring();
         },
@@ -273,22 +274,12 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
         generateAttachments : function() {
             this.attachments = [];
             this.attachPoints = [];
-
-            // Weights and attachment types: there should be the same number in each array, please!
-            var weights = [.3, .6];
-            var attachmentTypes = [Attachment.Sensor, Attachment.Actuator];
-
-            if (app.getOption("useTimers")) {
-                attachmentTypes.push(Attachment.Sensor.Timer), weights.push(1);
-            }
-
-            if (app.getOption("useColorLerpers")) {
-                attachmentTypes.push(Attachment.Sensor.ColorLerper), weights.push(1);
-            }
-
-            if (app.getOption("useSharpie")) {
-                attachmentTypes.push(Attachment.Actuator.Sharpie), weights.push(1);
-            }
+			
+          
+            
+            //my stuff
+            this.aTypes = app.attachmentTypes;
+            //end my stuff
 
             // How many attachments to generate
             var count = 4;
@@ -304,8 +295,9 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
                     throw "Found invalid attach point: " + attachPoint + " edge: " + edge + " pct: " + pct;
                 
                 // Create an attachment of some random type
-                var typeIndex = utilities.getWeightedRandomIndex(weights);
-                var attachment = new attachmentTypes[typeIndex]();
+				//console.log("hh: " + app.attachmentWeights);
+                var typeIndex = utilities.getWeightedRandomIndex(app.attachmentWeights);
+                var attachment = new app.attachmentTypes[typeIndex]();
 
                 attachment.attachTo(this, attachPoint);
                 attachment.addPins();
@@ -427,6 +419,8 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
 
         },
     });
+
+
 
     return Chassis;
 });
