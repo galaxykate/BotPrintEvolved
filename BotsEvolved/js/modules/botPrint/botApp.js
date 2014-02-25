@@ -441,9 +441,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 
 						g.fill(.8, 1, 1);
 						g.ellipse(0, 0, 90, 90);
-
 						app.currentBot.render(context);
-
 					});
 				}
 			});

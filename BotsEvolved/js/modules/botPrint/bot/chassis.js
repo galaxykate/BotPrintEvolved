@@ -388,9 +388,9 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             context.drawPath = true;
             this.path.drawFilled(context);
 
-			context.simlifiedBots = false;
+			context.simplifiedBots = false;
 			
-            if (context.simplifiedBots) {
+            if (!context.simplifiedBots) {
 
                 if (app.getOption("drawComponents")) {
                     $.each(this.components, function(index, component) {
