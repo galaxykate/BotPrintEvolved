@@ -5,9 +5,15 @@ define(["common"], function(common) {'use strict';
     var MAX_BOTS = 6;
     var MIN_BOTS = 5;
 
+    var generation = 0;
+
     var Population = Class.extend({
 
         init : function(randomCount) {
+
+            console.log("NEW POPULATION");
+            this.generation = generation;
+            generation++;
             // Create some bots
             this.bots = [];
 
@@ -109,8 +115,9 @@ define(["common"], function(common) {'use strict';
         createNextGenerationFromWinners : function(winners) {
             this.clearNextGeneration();
             for (var i = 0; i < MAX_BOTS; i++) {
-                var which = Math.floor((.06 + .1*Math.random()) * Math.pow(i + 1, 2));
-                console.log("Create child of winner " + which + " " + winners[which].bot.name);
+                // Pick the bot (weighted to winners, with some randomness)
+                var which = Math.floor((.06 + .1 * Math.random()) * Math.pow(i + 1, 2));
+                console.log("Create child of winner " + which + " " + winners[which].bot.name + " " + winners[which].score);
                 this.addChild(winners[which].bot, i % 3);
             }
             app.spawnNextGeneration();
@@ -199,6 +206,8 @@ define(["common"], function(common) {'use strict';
         //============================================================
 
         createNextGeneration : function() {
+
+            console.log("Create generation " + this.generation);
             var population = new Population(0);
             $.each(this.nextGeneration, function(index, instructions) {
                 // For each child in the list, create an offspring of that parent

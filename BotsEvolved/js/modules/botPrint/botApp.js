@@ -68,6 +68,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
          * @method loadNewArena
          */
 		loadNewArena : function(shape){
+		    console.log("Load new arena " + shape);
 			//deletes current bots in the arena. We might want to change this.
             app.arena.reset();
             app.arena = new Arena(shape);
