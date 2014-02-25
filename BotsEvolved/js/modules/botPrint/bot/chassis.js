@@ -51,7 +51,6 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             //FIXME: this.center() doesn't actually point to the center when all is said and done, we need to get a "visual" center
             //to actually place the points
             //This is done by finding the centroid of the polygon
-            //FIXME: move this over to the graph library?
             var points = this.path.getHull();
 
             var twiceArea = 0;
