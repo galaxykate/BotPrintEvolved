@@ -76,15 +76,15 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 
 			
 			if (app.getOption("useTimers")) {
-				app.attachmentTypes.push(Attachment.Sensor.Timer), app.weights.push(1);
+				app.attachmentTypes.push(Attachment.Sensor.Timer), app.attachmentWeights.push(1);
 			}
 			
 			if (app.getOption("useColorLerpers")) {
-				app.attachmentTypes.push(Attachment.Sensor.ColorLerper), app.weights.push(1);
+				app.attachmentTypes.push(Attachment.Sensor.ColorLerper), app.attachmentWeights.push(1);
 			}
 			
 			if (app.getOption("useSharpie")) {
-				app.attachmentTypes.push(Attachment.Actuator.Sharpie), app.weights.push(1);
+				app.attachmentTypes.push(Attachment.Actuator.Sharpie), app.attachmentWeights.push(1);
 			}
 			
 		},
@@ -197,8 +197,8 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 			//var sDiv2 = sampleDiv.clone();
 			//sDiv2.appendTo($("#parts_edit"));
 			var sampleDiv = $("#edit_item")
-
-			for (var i = 0; i < 3; i++) {
+            var attachList = app.attachmentTypes;
+            for (var i = 0; i < attachList.length;i++) {
 
 				var myDiv = jQuery('<div/>', {
 					id : 'edit_item',
@@ -212,12 +212,12 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 					height : 100,
 					//"border-radius": 1,
 				});
-
+                var curAttachment = attachList[i];
 				//var canvases = document.getElementById('edit_item');
 				//var ctx = $(canva).getContext('2d');
 
-				var attach = this.currentBot.mainChassis.attachments;
-				var attachTypes = this.currentBot.mainChassis.aTypes;
+				//var attach = this.currentBot.mainChassis.attachments;
+				//var attachTypes = this.currentBot.mainChassis.aTypes;
 				
 				canva.appendTo($("#parts_edit"));
 
