@@ -13,6 +13,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 		 * @method init
 		 */
 		init : function() {
+			
 			app = this;
 			app.width = 900;
 			app.height = 600;
@@ -25,8 +26,8 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 			app.paused = false;
 			app.editChassis = false;
 			
-			app.createAttachmentList();
-
+			//app.initModes();
+			
 			app._super("Bots", new Vector(30, 30));
 
 			// app.changeMode("inspector");
@@ -46,6 +47,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 			$(".edit_menu").click(function() {
 				app.toggleEditMode();
 			});
+			app.createAttachmentList();
 			app.closeLoadScreen();
 
 			
@@ -54,7 +56,10 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 			app.setPopulation(new Population(5));
 			app.currentBot = app.population.bots[0];
 			app.initializeEditMode();
+			
 			app.openArenaMode();
+			
+
 
 		},
 		//=====================================================================
@@ -66,21 +71,25 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 			// Weights and attachment types: there should be the same number in each array, please!
 			app.attachmentWeights = [.3, .6];
 			app.attachmentTypes = [Attachment.Sensor, Attachment.Actuator];
-			console.log("weights: " + app.attachmentWeights);
-			/*
+			//app.initModes();
+			//console.log("types: " + app.getOption("useTimers"));
+
+			
 			if (app.getOption("useTimers")) {
 				app.attachmentTypes.push(Attachment.Sensor.Timer), app.weights.push(1);
 			}
-
+			
 			if (app.getOption("useColorLerpers")) {
 				app.attachmentTypes.push(Attachment.Sensor.ColorLerper), app.weights.push(1);
 			}
-
+			
 			if (app.getOption("useSharpie")) {
 				app.attachmentTypes.push(Attachment.Actuator.Sharpie), app.weights.push(1);
 			}
-		*/
+			
 		},
+		
+		
 
 		//=====================================================================
 		//=====================================================================
@@ -209,105 +218,14 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 
 				var attach = this.currentBot.mainChassis.attachments;
 				var attachTypes = this.currentBot.mainChassis.aTypes;
-
-				//console.log("attach types: " + this.currentBot.name);
-				for (var k = 0; k < attach.length; k++) {
-
-					console.log("Attachment: " + attach[k]);
-				}
-
-				//myDiv.appendTo($("#parts_edit"));
+				
 				canva.appendTo($("#parts_edit"));
-				//canva.appendTo(myDiv);
-				//ctx.fillRect(0, 0, 40, 40);
 
 				//Insert drag/droppable image here?
-				//myDiv.append(partNames[i]);
-				//canvases.append(partNames[i]);
-
-				//my stuff
-				//myDiv.append(attachTypes + "");
-				//myDiv.append(attach[0].attachPoint + "");
-				//end my stuff
 
 				sampleDiv.clone().appendTo(myDiv);
 			}
 			sampleDiv.remove();
-
-			//my stuff
-			/*
-			var types = {
-			Timer: 0,
-			ColorLerper: 0
-			};
-
-			/*
-			for (var k = 0; k < this.currentBot.mainChassis.attachments.length; k++){
-			if (app.getOption("useColorLerpers")){
-			types.ColorLerper++;
-			}
-			if (app.getOption("useColorLerpers")){
-			types.ColorLerper++;
-			}
-			}
-
-			if (app.getOption("useColorLerpers")) {
-			var myDiv = jQuery('<div/>', {
-			id : 'edit_item',
-			width : 175,
-			height : 150,
-			});
-
-			myDiv.appendTo($("#parts_edit"));
-			myDiv.append("Color Lerpers:");
-			for (var k = 0; k < this.currentBot.mainChassis.attachments.length; k++){
-			if(this.currentBot.mainChassis.attachments[k].id.indexOf("ColorLerper") != -1){
-			myDiv.append(this.currentBot.mainChassis.attachments[k].id);
-			console.log("Attachment: " + this.currentBot.mainChassis.attachments[k]);
-			}
-			}
-			sampleDiv.clone().appendTo(myDiv);
-			}
-			sampleDiv.remove();
-
-			if (app.getOption("useTimers")) {
-			var myDiv = jQuery('<div/>', {
-			id : 'edit_item',
-			width : 175,
-			height : 150,
-			});
-
-			myDiv.appendTo($("#parts_edit"));
-			myDiv.append("Timers:");
-			for (var k = 0; k < this.currentBot.mainChassis.attachments.length; k++){
-			if(this.currentBot.mainChassis.attachments[k].id.indexOf("Timer") != -1){
-			myDiv.append(this.currentBot.mainChassis.attachments[k].id);
-			console.log("Attachment: " + this.currentBot.mainChassis.attachments[k]);
-			}
-			}
-			sampleDiv.clone().appendTo(myDiv);
-			}
-			sampleDiv.remove();
-
-			/*
-			for (var k = 0; k < this.currentBot.mainChassis.attachments.length; k++) {
-			var myDiv = jQuery('<div/>', {
-			id: 'edit_item',
-			width: 175,
-			height: 150,
-			});
-
-			console.log("Attachment: " + this.currentBot.mainChassis.attachments[k]);
-
-			myDiv.appendTo($("#parts_edit"));
-			myDiv.append(this.currentBot.mainChassis.attachments[k].id);
-			sampleDiv.clone().appendTo(myDiv);
-			}
-			sampleDiv.remove();
-			*/
-
-			//end my stuff
-
 		},
 		/**
 		 * @method toggleEditMode
@@ -405,7 +323,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 		initModes : function() {
 
 			var ui = app.ui;
-
+			//console.log("adding options");
 			app.ui.addOption("logWiring", true);
 			app.ui.addOption("logChassis", true);
 			app.ui.addOption("drawWiring", true);
