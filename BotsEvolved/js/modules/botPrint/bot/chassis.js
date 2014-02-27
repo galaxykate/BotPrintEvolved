@@ -4,6 +4,33 @@
 
 define(["common", "graph", "./wiring", "./attachment/attachments", "./component"], function(common, Graph, Wiring, Attachment, Component) {'use strict';
     //Private helpers to hide some ugliness
+
+
+    //Takes a processing instance, and info for a circle to test
+    var insideCircle = function(g, nodes, diameter) {
+        var mX = g.mouseX;
+        var mY = g.mouseY;
+
+        var retNode;
+        nodes.forEach(function(node) {
+
+            var x = node.x + g.width/2;
+            var y = node.y + g.height/2;
+
+            var disX = x - mX;
+            var disY = y - mY;
+
+            var total = Math.sqrt((disX * disX) + (disY * disY))
+            console.log(total)
+            if(total < diameter) {
+                console.log("ITS TRUE!");
+                retNode = node;
+            }
+        });
+        //will be undefined if we haven't clicked on a node
+        return retNode;
+    }
+
     var getAttachmentTypes = function() {
         // Weights and attachment types: there should be the same number in each array, please!
         var attachmentTypes = [Attachment.Sensor, Attachment.Actuator];
@@ -457,7 +484,24 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
                  $.each(this.attachments, function(index, attachment) {
                      attachment.render(context);
                  });
+                 if(app.editMode || app.editChassis) {
+                     var d = 10;
+                     var nodes = this.path.nodes;
+                     context.g.mouseDragged = function() {
+                         var curr = insideCircle(context.g, nodes, d);
+                         if(curr !== undefined) {
+                             //Pseudo:
+                             curr.x = context.g.mouseX - context.g.width/2;
+                             curr.y = context.g.mouseY - context.g.height/2;
 
+                             console.log("INSIDE THE CIRCLE!!");
+                         }
+                     }
+                     //Draw handles
+                     nodes.forEach(function(node) {
+                         context.g.ellipse(node.x, node.y, d, d);
+                     });
+                 }
              },
 
              /**
