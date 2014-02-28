@@ -354,7 +354,6 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
          */
         update : function(time) {
             var chassis = this;
-
             $.each(this.attachments, function(index, attachment) {
                 attachment.update(time);
             });
@@ -369,8 +368,8 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
         getAt : function(query) {
             app.moveLog("Get at " + query.screenPos);
             return this.path.getAt(query);
-
         },
+
 
         //-------------------------------------------
         // View stuff - will probably end up in it's own file
@@ -440,7 +439,14 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             	});
         	}
     	},
-    });
 
+        /**
+         * @method hover
+         * @param pos
+         */
+        hover : function(pos) {
+
+        },
+    });
     return Chassis;
 });
