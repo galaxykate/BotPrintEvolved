@@ -44,9 +44,9 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 				app.toggleMainMode();
 			});
 
-			$(".edit_menu").click(function() {
+			/*$(".edit_menu").click(function() {
 				app.toggleEditMode();
-			});
+			});*/
 			app.createAttachmentList();
 			app.closeLoadScreen();
 
@@ -186,6 +186,14 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 		 */
 		initializeEditMode : function() {
 			$("#parts_edit").append("<br>");
+            var button = $("<button/>", {
+                id : 'edit_menu_button',
+            });
+            button.append("Edit Menu Button");
+            button.appendTo($("#parts_edit"));
+            button.click(function() {
+				app.toggleEditMode();
+			});
 			app.setEditMenu();
 			var ui = app.ui;
 			var partNames = new Array();
@@ -193,18 +201,8 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 			partNames[0] = "wheel";
 			partNames[1] = "light sensor";
 			partNames[2] = "servo";
-			//var sampleDiv = $("#edit_item");
-			//var sDiv2 = sampleDiv.clone();
-			//sDiv2.appendTo($("#parts_edit"));
-			var sampleDiv = $("#edit_item")
             var attachList = app.attachmentTypes;
             for (var i = 0; i < attachList.length;i++) {
-
-				var myDiv = jQuery('<div/>', {
-					id : 'edit_item',
-					width : 175,
-					height : 150,
-				});
 
 				var canva = $("<canvas/>", {
 					id : 'edit_item',
@@ -222,10 +220,12 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 				canva.appendTo($("#parts_edit"));
 
 				//Insert drag/droppable image here?
-
-				sampleDiv.clone().appendTo(myDiv);
+                
+                canva.click(function(e) {
+                   console.log("CLICKITY!");
+                   e.stopPropagation();
+                });
 			}
-			sampleDiv.remove();
 		},
 		/**
 		 * @method toggleEditMode
@@ -233,6 +233,14 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 
 		setEditMenu : function() {
 			$("#chassis_edit").text("");
+            var button = $("<button/>", {
+                id : 'edit_menu_button',
+            });
+            button.append("Edit Menu Button");
+            button.appendTo($("#chassis_edit"));
+            button.click(function() {
+				app.toggleEditMode();
+			});
 			$("#chassis_edit").append("<hr>");
 			nString = "<center>";
 			$("#chassis_edit").append(nString.concat(this.currentBot.name));

@@ -47,9 +47,10 @@
 .edit_menu {
 	perspective:600px;
 	transition:all .2s;
-	overflow:hidden;
 	width:95%;
-	height:600px;
+	height:550px;
+    overflow:auto;
+    border-radius: 0px;
 }
 .edit_menu.away {
 	overflow:hidden;
