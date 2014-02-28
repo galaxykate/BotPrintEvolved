@@ -8,7 +8,6 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
         init : function() {
             this.idNumber = attachmentCount;
             attachmentCount++;
-            
             this.pins = [];
         },
 
