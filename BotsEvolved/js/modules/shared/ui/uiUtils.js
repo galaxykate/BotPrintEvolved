@@ -96,6 +96,7 @@ define(["common", "processing", prefix + "panel", prefix + "controls", prefix + 
 
                 // Override draw function, by default it will be called 60 times per second
                 processing.draw = function() {
+                  
                     drawFunc(processing);
                 }
             });

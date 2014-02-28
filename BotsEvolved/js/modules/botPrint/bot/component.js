@@ -1,6 +1,6 @@
 /**
  * @author Johnathan Pagnutti
- * 
+ *
  * This Javascript object is a generic component.  Components are internal parts with input and output pins. 
  */
 
@@ -58,17 +58,17 @@ define(["common", "graph", "./wiring"], function(common, Graph, Wiring) {'use st
                     pinList.push(pin);
             });
         },
-        
+
         //========================================================
 		// attaching 
 		place : function(parent, point){
 			this.parent = parent;
-            
+
             this.attachPoint = point;
-            
+
             //This needs to be overloaded by any components that are created off of this one.  Essentally builds a Vector.Path representation
             //of the internal component for collision detection and stuff.
-            
+
             //sadly, I can't thread and delay, so this needs to go in an awkward spot.
             //TODO: fix?
             this.buildDetails();
