@@ -47,7 +47,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.closeLoadScreen();
             app.createEmptyBotCard($("#app"));
 
-            app.setPopulation(new Population(5));
+            app.setPopulation(new Population(3));
             app.currentBot = app.population.bots[0];
             app.initializeEditMode();
             app.openArenaMode();
@@ -216,7 +216,9 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.editChassis = false;
             $("#chassis_edit").removeClass("away");
             $("#parts_edit").addClass("away");
+
         },
+
         openLoadScreen : function() {
             $("#load_screen").show();
         },
@@ -254,14 +256,13 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         },
 
         setPopulation : function(pop) {
-            console.log("Set population: " + pop);
+            console.log("Set population: ", pop);
             app.population = pop;
             app.currentBot = app.population.bots[0];
             app.arena.reset();
             app.arena.addPopulation(app.population.bots);
             app.scoreGraph.setCompetitors(app.population.bots);
             app.population.updateUI();
-
         },
         //=====================================================================
         //=====================================================================

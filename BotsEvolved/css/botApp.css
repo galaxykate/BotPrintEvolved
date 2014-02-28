@@ -7,6 +7,7 @@
 	left: 0px;
 	top: 0px;
 }
+
 #population_panel {
 	position: absolute;
 	width: 200px;
@@ -14,6 +15,7 @@
 	bottom: 0px;
 	right: 0px;
 }
+
 #arena_panel {
 	position: relative;
 	float: left;
@@ -59,6 +61,7 @@
 	height: 600px;
 }
 #edit_item {
+
 	position: relative;
 	left: 2px;
 	width: 95%;
@@ -68,14 +71,16 @@
 	position: absolute;
 	right: 0px;
 }
-
-
+.main_canvas {
+	pointer-events: all;
+}
 
 #edit {
 	pointer-events: none;
 	transition: all .2s;
 	-webkit-transform: translate(0px, 0px) rotateX(.01deg) scale3d(1, 1, 1);
 }
+
 #arena {
 	transition: all .2s;
 	-webkit-transform: translate(0px, 0px) rotateX(0deg) scale3d(1, 1, 1);

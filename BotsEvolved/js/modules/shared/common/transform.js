@@ -33,7 +33,7 @@ define(["./vector"], function(Vector) {
         toWorld : function(localPos, worldPos) {
             if (!localPos || !localPos.isValid(localPos))
                 throw ("Can't tranform invalid vector:" + localPos);
-                
+
             worldPos.setTo(localPos);
             worldPos.rotate(this.rotation);
             worldPos.add(this);
@@ -46,7 +46,7 @@ define(["./vector"], function(Vector) {
         toLocal : function(worldPos, localPos) {
             if (!worldPos || !worldPos.isValid())
                 throw ("Can't tranform invalid vector:" + worldPos);
-                
+
             localPos.setTo(worldPos);
             localPos.div(this.scale);
             localPos.sub(this);

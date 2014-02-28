@@ -29,7 +29,9 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
 
             var colorGene = this.dna.genes[0];
             this.idColor = new common.KColor(colorGene[0], colorGene[1] * .4 + .6, colorGene[2]);
-            this.setMainChassis(new Chassis(this));
+            this.setMainChassis(new Chassis(this, {
+                pointCount:10
+            }));
             this.compileAttachments();
         },
 
