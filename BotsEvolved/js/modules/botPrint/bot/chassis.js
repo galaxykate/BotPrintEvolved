@@ -46,33 +46,14 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
                 var pt = Vector.polar(r, theta);
 
                 this.path.addEdgeTo(pt);
-            }
-
-            //FIXME: this.center() doesn't actually point to the center when all is said and done, we need to get a "visual" center
-            //to actually place the points
-            //This is done by finding the centroid of the polygon
-            //FIXME: move this over to the graph library?
-            var points = this.path.getHull();
-
-            var twiceArea = 0;
-            var x = 0;
-            var y = 0;
-            var numPoints = this.path.getHull().length;
-            var p1, p2, f;
-            for (var i = 0, j = numPoints - 1; i < numPoints; j = i++) {
-                p1 = points[i];
-                p2 = points[j];
-                f = p1.x * p2.y - p2.x * p1.y;
-                twiceArea += f;
-                x += (p1.x + p2.x) * f;
-                y += (p1.y + p2.y) * f;
-            }
-            f = twiceArea * 3;
+            }            
 
             this.visualCenter = new common.Transform();
-            this.visualCenter.setTo((x / f), (y / f), 0);
-
+            this.updateChassis();
+            
             this.generateAttachments();
+            this.generateComponents();
+            
             this.generateWiring();
         },
 
@@ -113,19 +94,19 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
                 this.parent.transformToGlobal(local, global);
         },
 
-        //======================================================================================
-        //======================================================================================
-        //======================================================================================
-        // Wiring
 
+		//======================================================================================
+        //======================================================================================
+        //======================================================================================
+        // Components
+        
         /**
-         * Here there be dragons
-         * @method generateWiring
+         * Create some basic components to stick on the bot
+         * @method generateComponents 
          */
-        generateWiring : function() {
-            var chassis = this;
-            // Create components
-
+        generateComponents : function(){
+        	var chassis = this;
+        	// Create components
             this.components = [];
             //TODO: for the demo, I'm just going to place the battery pack in the center, and offset the baby orangitang
             var battery = new Component.Battery({
@@ -136,6 +117,7 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             });
 
             battery.place(this, this.visualCenter);
+            
             //FIXME: temp solution where we drop the parts in the center
             var p = new common.Transform();
             p.setTo(this.visualCenter.x + 15, this.visualCenter.y, 0);
@@ -148,78 +130,20 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             this.components.push(battery);
             this.components.push(controller);
 
-            //FIXME: I want to return to this later.  Right now, we're just going to place both core components, with the orangitang offset
-            //from center.
-            /*
-            // make one component
-            for (var i = 0; i < 1; i++) {
+			//Note: see commented_out.txt        	
+        },
+        
+        //======================================================================================
+        //======================================================================================
+        //======================================================================================
+        // Wiring
 
-            var component = new Component.Core({
-            name : "component " + i,
-            //attachPoint : new Vector(300 * (Math.random() - .5), 300 * (Math.random() - .5)),
-            });
-            var p = undefined;
-
-            //FIXME: weird to have to stretch the bbox here...
-            this.path.expandBoxToFit(this.path.boundingBox);
-
-            var box = this.path.boundingBox;
-
-            var corners = box.getCorners(false);
-
-            var minX;
-            var maxX;
-            var minY;
-            var maxY;
-
-            if(corners[0].x < corners[2].x){
-            minX = corners[0].x;
-            maxX = corners[2].x;
-            }else{
-            minX = corners[2].x;
-            maxX = corners[0].x;
-            }
-
-            if(corners[0].y < corners[2].y){
-            minY = corners[0].y;
-            maxY = corners[2].y;
-            }else{
-            minY = corners[2].y;
-            maxY = corners[0].y;
-            }
-
-            //chassislog("Bounding vals: (" + minX + ", " + minY + ")" + "\n "
-            //+ "(" + maxX + ", " + maxY + ")" + "\n ");
-
-            p = new common.Transform(0,0,0);
-
-            //Use ray tracing (from http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html) to see if the point is inside
-            //the chassis
-            var valid = false;
-
-            while(!valid){
-            p.setTo(utilities.random(minX, maxX), utilities.random(minY, maxY), 0);
-
-            chassislog("attachPoint: (" + p.x + ", " + p.y + ")");
-
-            if(p === undefined){
-            chassislog("Attach Point Undefined");
-            }else{
-            var k,j;
-            var vertexes = this.path.getHull();
-            for(k = 0, j = vertexes.length - 1; k < vertexes.length; j = k++){
-            if(((vertexes[k].y > p.y) != (vertexes[j].y > p.y)) &&
-            (p.x < (vertexes[j].x - vertexes[k].x) * (p.y - vertexes[k].y) / (vertexes[j].y - vertexes[k].y) + vertexes[k].x)){
-            valid = !valid;
-            }
-            }
-            }
-            }
-
-            component.place(this, p);
-            component.addPins();
-            this.components.push(component);
-            }*/
+        /**
+         * Generate the wiring
+         * @method generateWiring
+         */
+        generateWiring : function() {
+            var chassis = this;
 
             // Connect the components
             var attachmentInPins = [];
@@ -343,7 +267,64 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
         //==========================================
         // Updates
 
+		// Called after the chassis has changed shape, to recalculate math on anything that cares.
+		updateChassis : function() {
+			//FIXME: this.center() doesn't actually point to the center when all is said and done, we need to get a "visual" center
+            //to actually place the points
+            //This is done by finding the centroid of the polygon
+            //FIXME: move this over to the graph library?
+			
+			//Calculate where the visual center of the bot is, by finding the centroid of the convex polygon that makes up the chassis
+			var points = this.path.getHull();
+
+            var twiceArea = 0;
+            var x = 0;
+            var y = 0;
+            var numPoints = this.path.getHull().length;
+            var p1, p2, f;
+            for (var i = 0, j = numPoints - 1; i < numPoints; j = i++) {
+                p1 = points[i];
+                p2 = points[j];
+                f = p1.x * p2.y - p2.x * p1.y;
+                twiceArea += f;
+                x += (p1.x + p2.x) * f;
+                y += (p1.y + p2.y) * f;
+            }
+            f = twiceArea * 3;
+            
+          	this.visualCenter.setTo((x / f), (y / f), 0);
+          	if(this.components !== undefined){
+          		updateComponents();
+          		updateWiring();	
+          	}  
+		},
+
+		/**
+		 * Updates the component position in response to the Chassis being changed
+		 *@method updateComponents 
+		 */
+		updateComponents : function() {
+			//FIXME: Components are hardcoded in place at the moment, so just replace them at the correct spots.
+			// replace the battery
+			this.components[0].place(this, this.visualCenter);
+			
+			//replace the microcontroller
+			var p = new common.Transform();
+            p.setTo(this.visualCenter.x + 15, this.visualCenter.y, 0);
+            
+            this.components[1].place(this, p);
+		},
+		
+		/**
+		 * Updates the wiring position in response to components being shifted in flight
+		 * @method updateWiring 
+		 */
+		updateWiring : function () {
+			
+		},
+				
         /**
+         * Called for when the attachments need to update
          * @method update
          * @param time
          */
@@ -362,7 +343,6 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
          * @param query
          */
         getAt : function(query) {
-
             app.moveLog("Get at " + query.screenPos);
             return this.path.getAt(query);
 
