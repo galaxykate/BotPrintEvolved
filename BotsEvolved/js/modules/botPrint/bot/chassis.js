@@ -3,16 +3,31 @@
  */
 
 define(["common", "graph", "./wiring", "./attachment/attachments", "./component"], function(common, Graph, Wiring, Attachment, Component) {'use strict';
+    //Private helpers to hide some ugliness
+
+
+    //Takes a processing instance, and info for a circle to test
+    var insideCircle = function(mVector, nodes, diameter) {
+        var retNode;
+        nodes.forEach(function(node) {
+            var nVector = new common.Vector(node.x, node.y);
+            if(mVector.getDistanceTo(nVector) < diameter) {
+                retNode = node;
+            }
+        });
+        //will be undefined if we haven't clicked on a node
+        return retNode;
+    }
+
     var chassisCount = 0;
     //configure logging for the bot "build" process
     var chassisLog = "";
-    function chassislog(s){
-    	if(app.getOption("logChassis"))
-    		console.log(s);
-    	chassisLog += (s + " <br>");
-    	
+    function chassislog(s) {
+        if (app.getOption("logChassis"))
+            console.log(s);
+        chassisLog += (s + " <br>");
     }
-    
+
     // Points MUST be coplanar
 
     // var CylinderGeometry = new
@@ -26,69 +41,80 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
         /**
          * @method init
          */
-        init : function(bot) {
+        init : function(bot, opts) {
             this._super();
 
-            var chassis = this;
+            opts = opts || {};
             this.bot = bot;
-            this.idColor = bot.idColor;
+            this.idColor = opts.idColor || bot.idColor;
+            this.curveSubdivisions = opts.curveSubdivisions || 3;
 
-            this.path = new Graph.Path();
-            this.curveSubdivisions = 3;
+            this.path = opts.path || new Graph.Path();
+            this.center = new Vector(0, 0);
 
-            this.idColor = new common.KColor((.2813 * this.idNumber + .23) % 1, 1, 1);
-
-            this.center = new Vector(0,0);
-            
-            var pointCount = 5;
+            var pointCount = opts.pointCount || 5;
 
             for (var i = 0; i < pointCount; i++) {
                 var theta = i * Math.PI * 2 / pointCount;
                 var r = 100 * utilities.unitNoise(.7 * theta + 50 * this.idNumber);
                 var pt = Vector.polar(r, theta);
-
                 this.path.addEdgeTo(pt);
             }
-            
-            //FIXME: this.center() doesn't actually point to the center when all is said and done, we need to get a "visual" center 
+
+
+            //FIXME: this.center() doesn't actually point to the center when all is said and done, we need to get a "visual" center
             //to actually place the points
             //This is done by finding the centroid of the polygon
-            //FIXME: move this over to the graph library?
             var points = this.path.getHull();
-            
+
             var twiceArea = 0;
-            var x = 0; var y = 0; var numPoints = this.path.getHull().length;
+            var x = 0; var y = 0;
+            var numPoints = this.path.getHull().length;
             var p1, p2, f;
             for(var i = 0, j = numPoints - 1; i < numPoints; j = i++){
-            	p1 = points[i];
-            	p2 = points[j];
-            	f = p1.x*p2.y - p2.x*p1.y;
-            	twiceArea += f;
-            	x += (p1.x + p2.x) * f;
-            	y += (p1.y + p2.y) * f;
+                p1 = points[i];
+                p2 = points[j];
+                f = p1.x*p2.y - p2.x*p1.y;
+                twiceArea += f;
+                x += (p1.x + p2.x) * f;
+                y += (p1.y + p2.y) * f;
             }
             f = twiceArea * 3;
-            
+
             this.visualCenter = new common.Transform();
             this.visualCenter.setTo((x/f), (y/f), 0);
-            
-            
+            this.visualCenter.setTo((x / f), (y / f), 0);
+
             this.generateAttachments();
+            //Currently generateWiring relies on the rest of the chassis
+            //being set and configured. Must go last.
             this.generateWiring();
         },
 
-        //======================================================================================
-        //======================================================================================
-        //======================================================================================
-        // Cloning + modification
+		//======================================================================================
+    	//======================================================================================
+    	//======================================================================================
+    	// Cloning + modification
+		/**
+    	 * @method clone
+     	 * @return {Chassis} newChassis
+    	*/
+    
+    	clone : function() {
+    		var c = new Chassis();
+    	    c.attachPoints = this.attachPoints.slice(0);
+    	    c.attachments = this.attachments.slice(0);
+    	    c.center = JSON.parse(JSON.stringify(this.center));
+    	    c.components = this.components.slice(0);
+    	    c.curveSubdivisions = this.curveSubdivisions;
+    	    c.depth = this.depth;
+    	    c.idColor = JSON.parse(JSON.stringify(this.idColor));
+    	    c.bot = this.bot;
+    	    c.path = JSON.parse(JSON.stringify(this.path));
+    	    c.wires = this.wires.slice(0);
 
-        /**
-         * @method clone
-         * @return {Chassis} newChassis
-         */
-        clone : function() {
-            return new Chassis();
-        },
+       		return c;
+		},
 
         //======================================================================================
         //======================================================================================
@@ -274,12 +300,8 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
         generateAttachments : function() {
             this.attachments = [];
             this.attachPoints = [];
-			
-          
-            
-            //my stuff
+
             this.aTypes = app.attachmentTypes;
-            //end my stuff
 
             // How many attachments to generate
             var count = 4;
@@ -419,8 +441,5 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
 
         },
     });
-
-
-
     return Chassis;
 });

@@ -68,7 +68,11 @@
 	position:absolute;
 	right:0px;
 }
+.main_canvas {
+    pointer-events: all;
+}
 #edit {
+    pointer-events: none;
 	transition:all .2s;
 	-webkit-transform:translate(0px, 0px) rotateX(.01deg) scale3d(1, 1, 1);
 }
@@ -82,6 +86,8 @@
 #edit.away {
 	-webkit-transform:translate(600px, 0px) rotateY(70deg);
 }
+
+
 .subpanel {
 	margin:5px;
 	background:rgba(100, 110, 110, .2);
