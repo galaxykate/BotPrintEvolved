@@ -148,13 +148,3 @@
 #test_heuristic {
 	float:left;
 }
-.chassisEditPoints {
-    background-color: red;
-    width: 20px;
-    height: 20px;
-    position: absolute;
-}
-#editOverlay {
-    height: 500px;
-    width: 700px;
-}
