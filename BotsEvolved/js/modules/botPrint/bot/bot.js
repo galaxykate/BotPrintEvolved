@@ -201,8 +201,8 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
             }
             this.selectedPoint = undefined;
         },
-        getAt : function(query) {
-            return this.mainChassis.getAt(query);
+        getAt : function(p, query) {
+           // return this.mainChassis.getAt(query);
         },
         createThreeMesh : function() {
             this.mainChassis.path.createThreeMesh({

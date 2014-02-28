@@ -315,13 +315,15 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
                 move : function() {
 
                     if (app.editMode) {
+                        // Move the mouse in the edit mode
                         app.controls.hoveredObject = app.currentBot.getAt(touchInspector.localPos, {
                             range : 30
                         });
 
                     } else {
-                        var previous = app.controls.hoveredObject;
 
+                        // Move the mouse in the arena mode
+                        var previous = app.controls.hoveredObject;
                         var selected = app.arena.getAt(touchArena.localPos, {
 
                         });
@@ -341,18 +343,19 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             // Make some of the windows touchable
 
             var touchInspector = app.controls.addTouchable("inspector", $("#edit_canvas"));
-
             var touchArena = app.controls.addTouchable("arena", $("#arena_canvas"));
 
+            // Add handlers for these particular windows
             touchInspector.addHandlers({
                 drag : function() {
 
                 }
             });
 
+            // Add handlers for these particular windows
             touchArena.addHandlers({
                 drag : function() {
-                    console.log(this);
+
                     if (app.controls.hoveredObject)
                         app.controls.hoveredObject.dragTo(this.localPos);
 
