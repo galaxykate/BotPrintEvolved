@@ -60,13 +60,17 @@
     position:relative;
     left:2px;
     width:95%;
-    height:50%;    
+    height:50%;
 }
 #switch_modes {
 	position:absolute;
 	right:0px;
 }
+.main_canvas {
+    pointer-events: all;
+}
 #edit {
+    pointer-events: none;
 	transition:all .2s;
 	-webkit-transform:translate(0px, 0px) rotateX(.01deg) scale3d(1, 1, 1);
 }
