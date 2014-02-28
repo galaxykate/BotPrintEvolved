@@ -7,21 +7,11 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
 
 
     //Takes a processing instance, and info for a circle to test
-    var insideCircle = function(g, nodes, diameter) {
-        var mX = g.mouseX;
-        var mY = g.mouseY;
-
+    var insideCircle = function(mVector, nodes, diameter) {
         var retNode;
         nodes.forEach(function(node) {
-
-            var x = node.x + g.width/2;
-            var y = node.y + g.height/2;
-
-            var disX = x - mX;
-            var disY = y - mY;
-
-            var total = Math.sqrt((disX * disX) + (disY * disY))
-            if(total < diameter) {
+            var nVector = new common.Vector(node.x, node.y);
+            if(mVector.getDistanceTo(nVector) < diameter) {
                 retNode = node;
             }
         });
@@ -306,13 +296,13 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
                      var d = 10;
                      var nodes = this.path.nodes;
                      context.g.mouseDragged = function() {
-                         var curr = insideCircle(context.g, nodes, d);
-                         if(curr !== undefined) {
-                             //Pseudo:
-                             curr.x = context.g.mouseX - context.g.width/2;
-                             curr.y = context.g.mouseY - context.g.height/2;
+                        var mVector = new common.Vector(g.mouseX - g.width/2, g.mouseY - g.height/2);
+                        bot.transform.toLocal(mVector, mVector);
 
-                             console.log("INSIDE THE CIRCLE!!");
+                         var curr = insideCircle(mVector, nodes, d);
+                         if(curr !== undefined) {
+                             curr.x = mVector.x;
+                             curr.y = mVector.y;
                          }
                      }
                      //Draw handles

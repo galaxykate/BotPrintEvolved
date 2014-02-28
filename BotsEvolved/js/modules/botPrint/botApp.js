@@ -31,12 +31,12 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.arena = new Arena("rectangle");
 
             //app.currentBot = new Bot();
-			
+
 			$("#select_arena").click(function() {
 				var arenatype = $("#arena_type_chooser").val();
                 app.loadNewArena(arenatype);
             });
-			
+
             $("#switch_modes").click(function() {
                 app.toggleMainMode();
             });
