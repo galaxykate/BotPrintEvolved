@@ -323,19 +323,15 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 			});
 			app.setEditMenu();
 			var ui = app.ui;
-			var partNames = new Array();
 			var rTest = Attachment.Sensor;
-			partNames[0] = "wheel";
-			partNames[1] = "light sensor";
-			partNames[2] = "servo";
             var attachList = app.attachmentTypes;
             for (var i = 0; i < attachList.length;i++) {
 
 				var canva = $("<canvas/>", {
-					id : 'edit_item',
+					id : 'edit_item ' + i,
+                    class: 'edit_item',
 					width : 150,
 					height : 100,
-					//"border-radius": 1,
 				});
                 var curAttachment = attachList[i];
 				//var canvases = document.getElementById('edit_item');
@@ -349,7 +345,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 				//Insert drag/droppable image here?
                 
                 canva.click(function(e) {
-                   console.log("CLICKITY!");
+                   console.log(e.target.id);
                    e.stopPropagation();
                 });
 			}
