@@ -5,200 +5,162 @@
 define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'use strict';
 
     var Arena = Class.extend({
-        
 
         init : function(shape) {
             this.border = new Graph.Path();
             this.bots = [];
 
             this.boxWorld = new BoxWorld(0);
-			this.obstacles = []; 
-            switch (shape){
-            	case "rectangle":
-            		//still need to change this to consider the screen width and the camera
-            		var width = 600;
-            		var height = 400;
-            		var center = new Vector(0,0);
-    			
-            		this.border.addPoint(new Vector(center.x-width/2, center.y-height/2)); //topLeft point
-            	 	this.border.addPoint(new Vector(center.x-width/2, center.y+height/2)); //bottom left
-            		this.border.addPoint(new Vector(center.x+width/2, center.y+height/2)); //bottom right
-            	 	this.border.addPoint(new Vector(center.x+width/2, center.y-height/2)); //top right
-            	break;
-            	case "hexagon":
-            		var sides = 6;
-            		var r = 250;
-            		for (var i = 0; i < sides; i++) {
-            			//the .95 fixes the default rotation
-                		var theta = (i * Math.PI * 2 / sides)+.95;
-                		var p = common.Vector.polar(r, theta);
-                		this.border.addPoint(p);
-            		}
-            	break;
-            	case "circle":
-            		var sides = 16;
-            		var r = 250;
-            		for (var i = 0; i < sides; i++) {
-            			//the .95 fixes the default rotation
-                		var theta = (i * Math.PI * 2 / sides)+.95;
-                		var p = common.Vector.polar(r, theta);
-                		this.border.addPoint(p);
-            		}
-            	break;	
-            	case "random":
-            	//Arenas are random now it generates from a triangle to an icosagon (circle?). 
-            	var min = 3;
-				var max = 20;
-				var random = Math.floor(Math.random() * (max - min + 1)) + min;
-            		var sides = random;
-            		var r = 250;
-            		for (var i = 0; i < sides; i++) {
-            			//the .95 fixes the default rotation
-                		var theta = (i * Math.PI * 2 / sides)+.95;
-                		var p = common.Vector.polar(r, theta);
-                		this.border.addPoint(p);
-            		}	
-            	break;
-            	//An obstacle course is a rectangle arena with random smaller squares on top of it as obstacles. 
-            	//A good heuristic for tests would be measuring obstacle avoidance. 
-            	case "obstacle":
-            	//The arena is a bit larger in this instance because we want to fit obstacles in it and have the bots move around them.
-            		var width = 670;
-            		var height = 470;
-            		var center = new Vector(0,0);
-            		//These will be the reference points in which we want to put the obstacles. 
-					var minX = center.x-width/2;
-					var maxX = center.x+width/2;
-					var minY = center.y-height/2;
-					var maxY = center.y+height/2; 
-					//But first we have to generate the container. 
-            		this.border.addPoint(new Vector(minX, minY)); //topLeft point
-            	 	this.border.addPoint(new Vector(minX, maxY)); //bottom left
-            		this.border.addPoint(new Vector(maxX, maxY)); //bottom right
-            	 	this.border.addPoint(new Vector(maxX, minY)); //top right
-				 	//Now let's populate the world with obstacles. 
-				 	var min = 3;
-				 	var max = 10;
-				 	var nObstacles = Math.floor(Math.random() * (max - min + 1)) + min;
-				 	//We have a number of random obstacles to generate now, let's build them
-				 //	alert("nObstacles="+nObstacles);
-				 	for(var i=0; i<nObstacles; i++){
-					 //We want to select something inside the arena, thus we limit the ranges for random places to the corners of the arena. The obstacles are of 50*50px size, but you can change that. Maybe even randomize them for the moment. 				
-				 		
-					 	var obsWidth = 50; 
-					 	var obsHeight = 50; 
-					 	var x1 = minX;
-					 	var x2 = maxX;
-					 	var y1 = minY;
-					 	var y2 = maxY; 
-					 	var centerX = Math.floor(Math.random()*(maxX-minX+1))+minX;
-					 	var centerY = Math.floor(Math.random()*(maxY-minY+1))+minY;
-					 	//alert("cX="+centerX+" cY="+centerY);
-					 	//We have the center coordinates, let's assign it to a vector and calculate the corner vertices.
-					 	var obsCenter = new Vector(centerX,centerY);
-					 	var obsminX = obsCenter.x-obsWidth/2;
-					 	var obsmaxX = obsCenter.x+obsWidth/2;
-					 	var obsminY = obsCenter.y-obsHeight/2;
-					 	var obsmaxY = obsCenter.y+obsHeight/2;
-					 	//Let's create a path! 
-					 	var obsPath = new Graph.Path(); 
-					 	obsPath.addPoint(new Vector(obsminX,obsminY));
-					 	obsPath.addPoint(new Vector(obsminX,obsmaxY));
-					 	obsPath.addPoint(new Vector(obsmaxX,obsmaxY));
-					 	obsPath.addPoint(new Vector(obsmaxX,obsminY));  
-					 	this.obstacles[i] = obsPath;
-				 	}
-            	break;
-            	//this gets called when nothing is passed in the init() parameter
-            	default:
-            	for (var i = 0; i < sides; i++) {
-                	var r = 200 + Math.random() * 130;
-                	var theta = i * Math.PI * 2 / sides;
-                	var p = common.Vector.polar(r, theta);
-                	this.border.addPoint(p);
-            	}
+            this.obstacles = [];
+            switch (shape) {
+                case "rectangle":
+                    //still need to change this to consider the screen width and the camera
+                    var width = 600;
+                    var height = 400;
+                    var center = new Vector(0, 0);
+
+                    this.border.addPoint(new Vector(center.x - width / 2, center.y - height / 2));
+                    //topLeft point
+                    this.border.addPoint(new Vector(center.x - width / 2, center.y + height / 2));
+                    //bottom left
+                    this.border.addPoint(new Vector(center.x + width / 2, center.y + height / 2));
+                    //bottom right
+                    this.border.addPoint(new Vector(center.x + width / 2, center.y - height / 2));
+                    //top right
+                    break;
+                case "hexagon":
+                    var sides = 6;
+                    var r = 250;
+                    for (var i = 0; i < sides; i++) {
+                        //the .95 fixes the default rotation
+                        var theta = (i * Math.PI * 2 / sides) + .95;
+                        var p = common.Vector.polar(r, theta);
+                        this.border.addPoint(p);
+                    }
+                    break;
+                case "circle":
+                    var sides = 16;
+                    var r = 250;
+                    for (var i = 0; i < sides; i++) {
+                        //the .95 fixes the default rotation
+                        var theta = (i * Math.PI * 2 / sides) + .95;
+                        var p = common.Vector.polar(r, theta);
+                        this.border.addPoint(p);
+                    }
+                    break;
+                case "random":
+                    //Arenas are random now it generates from a triangle to an icosagon (circle?).
+                    var min = 3;
+                    var max = 20;
+                    var random = Math.floor(Math.random() * (max - min + 1)) + min;
+                    var sides = random;
+                    var r = 250;
+                    for (var i = 0; i < sides; i++) {
+                        //the .95 fixes the default rotation
+                        var theta = (i * Math.PI * 2 / sides) + .95;
+                        var p = common.Vector.polar(r, theta);
+                        this.border.addPoint(p);
+                    }
+                    break;
+                //An obstacle course is a rectangle arena with random smaller squares on top of it as obstacles.
+                //A good heuristic for tests would be measuring obstacle avoidance.
+                case "obstacle":
+                    //The arena is a bit larger in this instance because we want to fit obstacles in it and have the bots move around them.
+                    var width = 670;
+                    var height = 470;
+                    var center = new Vector(0, 0);
+                    //These will be the reference points in which we want to put the obstacles.
+                    var minX = center.x - width / 2;
+                    var maxX = center.x + width / 2;
+                    var minY = center.y - height / 2;
+                    var maxY = center.y + height / 2;
+                    //But first we have to generate the container.
+                    this.border.addPoint(new Vector(minX, minY));
+                    //topLeft point
+                    this.border.addPoint(new Vector(minX, maxY));
+                    //bottom left
+                    this.border.addPoint(new Vector(maxX, maxY));
+                    //bottom right
+                    this.border.addPoint(new Vector(maxX, minY));
+                    //top right
+                    //Now let's populate the world with obstacles.
+                    var min = 3;
+                    var max = 10;
+                    var nObstacles = Math.floor(Math.random() * (max - min + 1)) + min;
+                    //We have a number of random obstacles to generate now, let's build them
+                    //	alert("nObstacles="+nObstacles);
+                    for (var i = 0; i < nObstacles; i++) {
+                        //We want to select something inside the arena, thus we limit the ranges for random places to the corners of the arena. The obstacles are of 50*50px size, but you can change that. Maybe even randomize them for the moment.
+
+                        var obsWidth = 50;
+                        var obsHeight = 50;
+                        var x1 = minX;
+                        var x2 = maxX;
+                        var y1 = minY;
+                        var y2 = maxY;
+                        var centerX = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
+                        var centerY = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
+                        //alert("cX="+centerX+" cY="+centerY);
+                        //We have the center coordinates, let's assign it to a vector and calculate the corner vertices.
+                        var obsCenter = new Vector(centerX, centerY);
+                        var obsminX = obsCenter.x - obsWidth / 2;
+                        var obsmaxX = obsCenter.x + obsWidth / 2;
+                        var obsminY = obsCenter.y - obsHeight / 2;
+                        var obsmaxY = obsCenter.y + obsHeight / 2;
+                        //Let's create a path!
+                        var obsPath = new Graph.Path();
+                        obsPath.addPoint(new Vector(obsminX, obsminY));
+                        obsPath.addPoint(new Vector(obsminX, obsmaxY));
+                        obsPath.addPoint(new Vector(obsmaxX, obsmaxY));
+                        obsPath.addPoint(new Vector(obsmaxX, obsminY));
+                        this.obstacles[i] = obsPath;
+                    }
+                    break;
+                //this gets called when nothing is passed in the init() parameter
+                default:
+                    for (var i = 0; i < sides; i++) {
+                        var r = 200 + Math.random() * 130;
+                        var theta = i * Math.PI * 2 / sides;
+                        var p = common.Vector.polar(r, theta);
+                        this.border.addPoint(p);
+                    }
             }
-            
+
             //returns a Box2d body that is used for the arena collision
             var ground = this.boxWorld.makeEdgeRing(this.border.nodes);
             ground.isTerrain = false;
             //Super hacky way to add obstacles?
             //alert("shape="+shape);
-            var obsShapes = new Array(); 
-            if(shape=="obstacle"){
-	         for(var i =0; i<this.obstacles.length; i++){
-	         	//alert("this.obstacles[i].nodes="+obstacles[i].nodes);
-		         obsShapes[i] = this.boxWorld.makeEdgeRing(this.obstacles[i].nodes);
-		         obsShapes[i].isTerrain = false;
-		         
-	         }   
+            var obsShapes = new Array();
+            if (shape == "obstacle") {
+                for (var i = 0; i < this.obstacles.length; i++) {
+                    //alert("this.obstacles[i].nodes="+obstacles[i].nodes);
+                    obsShapes[i] = this.boxWorld.makeEdgeRing(this.obstacles[i].nodes);
+                    obsShapes[i].isTerrain = false;
+
+                }
             }
         },
-        
+
         reset : function() {
             this.time = 0;
             this.resetDrawing();
             this.boxWorld.removeBodies();
         },
 
-
-
-        //-------------------------------------------
-        // User interaction
-
-        hover : function(p) {
-            var bot = this.getAt({
-                pos : p
-            });
-            if (this.selected !== undefined)
-                this.deselect(this.selected);
-
-            if (bot !== undefined) {
-
-                this.select(bot);
-            }
-        },
-
-        selectBotAt : function(p) {
-            var bot = this.getAt({
-                pos : p
-            });
-
-            if (this.selected !== undefined)
-                this.deselect(this.selected);
-            if (bot !== undefined) {
-                this.select(bot);
-            }
-
-            if (bot !== undefined) {
-                app.editBot(bot);
-            }
-        },
-
-        // Select and deselect: simple for now,
-        // but will eventually trigger more complicated UI
-        select : function(bot) {
-            this.selected = bot;
-            bot.selected = true;
-        },
-
-        deselect : function(bot) {
-            this.selected = undefined;
-            bot.selected = false;
-        },
-
         //-------------------------------------------
         // Hit testing
-        getAt : function(query) {
+        getAt : function(p, query) {
 
-            var p = new Vector(query.pos);
             var closest = undefined;
-            var closestDist = 120;
+            var closestDist = query.range ? query.range : 120;
+            app.moveLog("Get closest to " + p);
+
             $.each(this.bots, function(index, bot) {
                 // Transform
 
-                var d = bot.transform.getDistanceTo(query.pos);
-                app.moveLog(index + ": " + d);
+                var d = bot.transform.getDistanceTo(p);
+                app.moveLog(Math.round(bot.transform.x) + " " + Math.round(bot.transform.y) + ": " + d);
                 if (d < closestDist) {
                     app.moveLog("  closest!");
                     closest = bot;
@@ -221,7 +183,7 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
         //-------------------------------------------
         // Run a test
 
-        addPopulation : function(population){
+        addPopulation : function(population) {
             var arena = this;
             arena.reset();
             arena.scores = [];
@@ -401,14 +363,14 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
             arenaColor.fill(g, .5, .85);
             this.border.drawFilled(context);
             // Draw the obstacles
-			var obstacleColor = new common.KColor(.3, .9, .3);
+            var obstacleColor = new common.KColor(.3, .9, .3);
             g.strokeWeight(10);
             obstacleColor.stroke(g, .5, .7);
             obstacleColor.fill(g, .75, .85);
-			for(var i=0; i<this.obstacles.length; i++){
-			this.obstacles[i].drawFilled(context);	
-			}
-		    
+            for (var i = 0; i < this.obstacles.length; i++) {
+                this.obstacles[i].drawFilled(context);
+            }
+
             context.simplifiedBots = true;
             $.each(this.bots, function(index, bot) {
                 bot.render(context);

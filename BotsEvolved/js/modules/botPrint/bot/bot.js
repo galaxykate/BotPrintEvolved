@@ -41,6 +41,19 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
         //======================================================================================
         //======================================================================================
         //======================================================================================
+        // Selection
+
+        select : function() {
+            this.selected = true;
+        },
+
+        deselect : function() {
+            this.selected = false;
+        },
+
+        //======================================================================================
+        //======================================================================================
+        //======================================================================================
         // Transformation
 
         getBot : function() {
@@ -51,7 +64,6 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
         transformToGlobal : function(local, global) {
             this.transform.toWorld(local, global);
         },
-
         setMainChassis : function(chassis) {
             this.mainChassis = chassis;
             this.mainChassis.setParent(this);
@@ -69,13 +81,11 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
             this.compileAttachments();
             return bot;
         },
-
         setBrain : function(dtree) {
             this.brain = {
                 defaultTree : dtree
             };
         },
-
         compileAttachments : function() {
             this.attachments = [];
             this.sensors = [];
@@ -124,7 +134,8 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
                 });
             }
         },
-
+        
+        
         render : function(context) {
             var g = context.g;
             g.pushMatrix();
@@ -135,20 +146,19 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
 
             g.popMatrix();
         },
-
+        
+        
         getForceAmt : function() {
             if (this.decisionTree === undefined)
                 return Math.max(100000 * Math.sin(this.arena.time + this.idNumber), 0);
             else
                 return this.decisionTree.makeDecision();
         },
-
         getForces : function() {
             var forces = [];
             this.mainChassis.compileForces(forces);
             return forces;
         },
-
         hover : function(pos) {
             app.moveLog("Hovered " + pos);
             var pt = this.getAt({
@@ -185,7 +195,6 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
         getAt : function(query) {
             return this.mainChassis.getAt(query);
         },
-
         createThreeMesh : function() {
             this.mainChassis.path.createThreeMesh({
                 rings : 3,

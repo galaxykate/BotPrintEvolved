@@ -31,12 +31,12 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.arena = new Arena("rectangle");
 
             //app.currentBot = new Bot();
-			
-			$("#select_arena").click(function() {
-				var arenatype = $("#arena_type_chooser").val();
+
+            $("#select_arena").click(function() {
+                var arenatype = $("#arena_type_chooser").val();
                 app.loadNewArena(arenatype);
             });
-			
+
             $("#switch_modes").click(function() {
                 app.toggleMainMode();
             });
@@ -64,20 +64,19 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             bot.saveBot()
         },
 
-		/**
+        /**
          * @method loadNewArena
          */
-		loadNewArena : function(shape){
-		    console.log("Load new arena " + shape);
-			//deletes current bots in the arena. We might want to change this.
+        loadNewArena : function(shape) {
+            console.log("Load new arena " + shape);
+            //deletes current bots in the arena. We might want to change this.
             app.arena.reset();
             app.arena = new Arena(shape);
-            //This adds brand new bots. Need to change to current bots. 
+            //This adds brand new bots. Need to change to current bots.
             app.setPopulation(this.population);
             //throw("I just set the population?");
             app.currentBot = app.population.bots[0];
-		},
-
+        },
 
         highlightBot : function(bot) {
             //  console.log("Highlighting " + bot);
@@ -162,15 +161,14 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             //var sDiv2 = sampleDiv.clone();
             //sDiv2.appendTo($("#parts_edit"));
             var sampleDiv = $("#edit_item")
-            for (var i = 0; i < 3; i++)
-            {
+            for (var i = 0; i < 3; i++) {
                 var myDiv = jQuery('<div/>', {
-                    id: 'edit_item',
-                    width: 175,
-                    height: 150,
+                    id : 'edit_item',
+                    width : 175,
+                    height : 150,
                 });
                 myDiv.appendTo($("#parts_edit"));
-                
+
                 //Insert drag/droppable image here?
                 myDiv.append(partNames[i]);
                 sampleDiv.clone().appendTo(myDiv);
@@ -180,7 +178,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         /**
          * @method toggleEditMode
          */
-         
+
         setEditMenu : function() {
             $("#chassis_edit").text("");
             $("#chassis_edit").append("<hr>");
@@ -222,6 +220,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         openLoadScreen : function() {
             $("#load_screen").show();
         },
+
         closeLoadScreen : function() {
             $("#load_screen").hide();
         },
@@ -257,7 +256,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
         setPopulation : function(pop) {
             console.log("Set population: " + pop);
             app.population = pop;
-            app.currentBot = app.population.bots[0];            
+            app.currentBot = app.population.bots[0];
             app.arena.reset();
             app.arena.addPopulation(app.population.bots);
             app.scoreGraph.setCompetitors(app.population.bots);
@@ -274,8 +273,8 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 
             var ui = app.ui;
 
-			app.ui.addOption("logWiring", true);
-			app.ui.addOption("logChassis", true);
+            app.ui.addOption("logWiring", true);
+            app.ui.addOption("logChassis", true);
             app.ui.addOption("drawWiring", true);
             app.ui.addOption("drawComponents", true);
             app.ui.addOption("logConditionTests", false);
@@ -297,37 +296,66 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             // Set all the default UI controls
             app.controls = new UI.Controls($("body"), {
 
-                onKeyPress : {
+                keyPress : function() {
+                    // Standard controls: d toggles dev mode, space pauses
+                    switch( app.controls.key) {
+                        case 'd':
+                            app.ui.devMode.toggle();
+                            console.log("Dev mode");
+                            break;
+                        case 'space':
+                            app.paused = !app.paused;
 
-                    d : function(event) {
-                        app.ui.devMode.toggle()
-                    },
-
-                    space : function() {
-                        app.paused = !app.paused;
+                            break;
                     }
+
                 },
 
+                move : function() {
+
+                    if (app.editMode) {
+                        app.controls.hoveredObject = app.currentBot.getAt(touchInspector.localPos, {
+                            range : 30
+                        });
+
+                    } else {
+                        var previous = app.controls.hoveredObject;
+
+                        var selected = app.arena.getAt(touchArena.localPos, {
+
+                        });
+
+                        if (selected !== previous) {
+                            if (previous)
+                                previous.deselect();
+                            app.controls.hoveredObject = selected;
+                            if (selected)
+                                selected.select();
+                        }
+
+                    }
+                },
             });
 
             // Make some of the windows touchable
 
             var touchInspector = app.controls.addTouchable("inspector", $("#edit_canvas"));
+
             var touchArena = app.controls.addTouchable("arena", $("#arena_canvas"));
 
-            // Inspector controls
-            touchInspector.onDrag(function(touchwindow, p) {
-                var x = p.x - touchwindow.rect.w / 2;
-                var y = p.y - touchwindow.rect.h / 2;
-                // app.coin.designTransform.setTo(x, y, 0);
+            touchInspector.addHandlers({
+                drag : function() {
+
+                }
             });
 
-            touchInspector.onMove(function(touchwindow, p) {
-                //  get midPoint
-                var x = p.x - touchwindow.rect.w / 2;
-                var y = p.y - touchwindow.rect.h / 2;
-                //  app.coin.selectAt(new Vector(x, y));
+            touchArena.addHandlers({
+                drag : function() {
+                    console.log(this);
+                    if (app.controls.hoveredObject)
+                        app.controls.hoveredObject.dragTo(this.localPos);
 
+                }
             });
 
         },
@@ -349,7 +377,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             $("#select_winners").click(function() {
                 var winners = app.scoreGraph.getWinners();
                 app.population.createNextGenerationFromWinners(winners);
-                app.currentBot = app.population.bots[0]; 
+                app.currentBot = app.population.bots[0];
             });
 
             $("#start_test").click(function() {
