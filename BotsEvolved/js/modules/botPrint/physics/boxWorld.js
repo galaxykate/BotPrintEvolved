@@ -89,7 +89,6 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             $.each(objects, function(index, obj) {
 
                 var points = obj.getHull();
-                
                 // var customShapes = boxWorld.createPolygonShapes(obj.points);
                 var customShapes = boxWorld.createTriFanShapes(points);
 
