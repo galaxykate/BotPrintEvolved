@@ -3,6 +3,22 @@
  */
 
 define(["common", "graph", "./wiring", "./attachment/attachments", "./component"], function(common, Graph, Wiring, Attachment, Component) {'use strict';
+    //Private helpers to hide some ugliness
+
+
+    //Takes a processing instance, and info for a circle to test
+    var insideCircle = function(mVector, nodes, diameter) {
+        var retNode;
+        nodes.forEach(function(node) {
+            var nVector = new common.Vector(node.x, node.y);
+            if(mVector.getDistanceTo(nVector) < diameter) {
+                retNode = node;
+            }
+        });
+        //will be undefined if we haven't clicked on a node
+        return retNode;
+    }
+
     var chassisCount = 0;
     //configure logging for the bot "build" process
     var chassisLog = "";
@@ -10,7 +26,6 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
         if (app.getOption("logChassis"))
             console.log(s);
         chassisLog += (s + " <br>");
-
     }
 
     // Points MUST be coplanar
@@ -26,25 +41,23 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
         /**
          * @method init
          */
-        init : function(bot) {
+        init : function(bot, opts) {
             this._super();
 
-            var chassis = this;
+            opts = opts || {};
             this.bot = bot;
-            this.idColor = bot.idColor;
+            this.idColor = opts.idColor || bot.idColor;
+            this.curveSubdivisions = opts.curveSubdivisions || 3;
 
-            this.path = new Graph.Path();
-            this.curveSubdivisions = 3;
-
+            this.path = opts.path || new Graph.Path();
             this.center = new Vector(0, 0);
 
-            var pointCount = 5;
+            var pointCount = opts.pointCount || 5;
 
             for (var i = 0; i < pointCount; i++) {
                 var theta = i * Math.PI * 2 / pointCount;
                 var r = 100 * utilities.unitNoise(.7 * theta + 50 * this.idNumber);
                 var pt = Vector.polar(r, theta);
-
                 this.path.addEdgeTo(pt);
             }            
 
@@ -53,7 +66,6 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             
             this.generateAttachments();
             this.generateComponents();
-            
             this.generateWiring();
         },
 
@@ -61,14 +73,26 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
         //======================================================================================
         //======================================================================================
         // Cloning + modification
-
-        /**
+		/**
          * @method clone
          * @return {Chassis} newChassis
          */
-        clone : function() {
-            return new Chassis();
+         clone : function() {
+         	var c = new Chassis();
+            c.attachPoints = this.attachPoints.slice(0);
+            c.attachments = this.attachments.slice(0);
+            c.center = JSON.parse(JSON.stringify(this.center));
+            c.components = this.components.slice(0);
+            c.curveSubdivisions = this.curveSubdivisions;
+            c.depth = this.depth;
+            c.idColor = JSON.parse(JSON.stringify(this.idColor));
+            c.bot = this.bot;
+            c.path = JSON.parse(JSON.stringify(this.path));
+            c.wires = this.wires.slice(0);
+
+        return c;
         },
+
 
         //======================================================================================
         //======================================================================================
@@ -356,20 +380,20 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
          * @method render
          * @param context
          */
-        render : function(context) {
-            var bot = this.getBot();
+         render : function(context) {
+         	var bot = this.getBot();
             var g = context.g;
 
-            g.strokeWeight(1);
+             g.strokeWeight(1);
             this.idColor.fill(g, .2, 1);
 
             this.idColor.stroke(g, -.4, 1);
 
             if (bot.selected) {
-                g.strokeWeight(5);
+            	g.strokeWeight(5);
                 this.idColor.stroke(g, .7, 1);
-                this.idColor.fill(g, -.5, 1);
-            }
+		        this.idColor.fill(g, -.5, 1);
+           	}
 
             // Draw the region
             context.drawPath = true;
@@ -379,32 +403,43 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
 
             if (context.simplifiedBots) {
 
-                if (app.getOption("drawComponents")) {
-                    $.each(this.components, function(index, component) {
-                        component.render(context);
+            	if (app.getOption("drawComponents")) {
+                	$.each(this.components, function(index, component) {
+                    	component.render(context);
                     });
                 }
 
-                if (app.getOption("drawWiring")) {
+            if (app.getOption("drawWiring")) {
                     $.each(this.wires, function(index, wire) {
-                        wire.render(context);
-                    });
-                }
+                    	wire.render(context);
+                	});
+            	}
             }
 
             $.each(this.attachments, function(index, attachment) {
-                attachment.render(context);
+            	attachment.render(context);
             });
+                 
+            if(app.editMode || app.editChassis) {
+            	var d = 10;
+                var nodes = this.path.nodes;
+               	context.g.mouseDragged = function() {
+              		var mVector = new common.Vector(g.mouseX - g.width/2, g.mouseY - g.height/2);
+                    bot.transform.toLocal(mVector, mVector);
 
-        },
-
-        /**
-         * @method hover
-         * @param pos
-         */
-        hover : function(pos) {
-
-        },
+                    var curr = insideCircle(mVector, nodes, d);
+                   	if(curr !== undefined) {
+                    	curr.x = mVector.x;
+                        curr.y = mVector.y;
+                    }
+                };
+                
+                //Draw handles
+                nodes.forEach(function(node) {
+                	context.g.ellipse(node.x, node.y, d, d);
+            	});
+        	}
+    	},
     });
 
     return Chassis;
