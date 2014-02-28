@@ -41,6 +41,15 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
         //======================================================================================
         //======================================================================================
         //======================================================================================
+        // Interaciton
+
+        dragTo : function(p) {
+            this.transform.setTo(p);
+        },
+
+        //======================================================================================
+        //======================================================================================
+        //======================================================================================
         // Selection
 
         select : function() {
@@ -134,8 +143,7 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
                 });
             }
         },
-        
-        
+
         render : function(context) {
             var g = context.g;
             g.pushMatrix();
@@ -146,8 +154,7 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
 
             g.popMatrix();
         },
-        
-        
+
         getForceAmt : function() {
             if (this.decisionTree === undefined)
                 return Math.max(100000 * Math.sin(this.arena.time + this.idNumber), 0);
