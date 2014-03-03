@@ -426,6 +426,8 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
                    	if(curr !== undefined) {
                     	curr.x = mVector.x;
                         curr.y = mVector.y;
+                        
+                        updateChassis();
                     }
                 };
                 
