@@ -49,7 +49,7 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
         //
         attachTo : function(parent, attachPoint) {
             this.parent = parent;
-
+            
             this.attachPoint = attachPoint;
         },
 
@@ -62,21 +62,21 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
         addPins : function() {
 
             //add pins
-            // each component (right now) gets a positive and a negative pin
+        	// each component (right now) gets a positive and a negative pin
 
             var positive = new Wiring.Pin({
                 positive : true,
                 parent : this,
             });
-            this.pins.push(positive);
-
+        	this.pins.push(positive);
+            
             var negative = new Wiring.Pin({
-                positive : false,
-                parent : this,
+            	positive : false,
+            	parent : this,
             });
             this.pins.push(negative);
-        },
-
+		},
+		
         //========================================================
         // Rendering
         // overloading this to also account for pin shifts
@@ -110,12 +110,12 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
 
         //===========================================================
         // Configure Pins
-        compilePins : function(pinList, filter) {
+		compilePins : function(pinList, filter) {
             $.each(this.pins, function(index, pin) {
                 if (filter(pin))
                     pinList.push(pin);
             });
-        }
+        }        
     });
 
     return Attachment;
