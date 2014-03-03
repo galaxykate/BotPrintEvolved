@@ -357,7 +357,6 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             $.each(this.attachments, function(index, attachment) {
                 attachment.update(time);
             });
-
         },
 
         /**
@@ -400,20 +399,17 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
 
             context.simlifiedBots = false;
 
-            if (context.simplifiedBots) {
+			if (app.getOption("drawComponents")) {
+				$.each(this.components, function(index, component) {
+					component.render(context);
+				});
+			}
 
-            	if (app.getOption("drawComponents")) {
-                	$.each(this.components, function(index, component) {
-                    	component.render(context);
-                    });
-                }
-
-            if (app.getOption("drawWiring")) {
-                    $.each(this.wires, function(index, wire) {
-                    	wire.render(context);
-                	});
-            	}
-            }
+			if (app.getOption("drawWiring")) {
+				$.each(this.wires, function(index, wire) {
+					wire.render(context);
+				});
+			}
 
             $.each(this.attachments, function(index, attachment) {
             	attachment.render(context);
