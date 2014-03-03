@@ -294,6 +294,31 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
         //======================================================================================
         // Attachments
 
+		/**
+         * @method generateAttachment
+         */
+        generateAttachment : function(typeIndex) {
+        	// Create some random point around the path to attach this to.
+          	var edge = this.path.getRandomEdge();
+         	var pct = Math.random();
+          
+            // Make the tracer slightly inset
+            var attachPoint = edge.getTracer(pct, -3);
+            if (!attachPoint || !attachPoint.isValid())
+            throw "Found invalid attach point: " + attachPoint + " edge: " + edge + " pct: " + pct;
+          
+            // Create an attachment of some random type
+            //console.log("hh: " + app.attachmentWeights);
+            
+            var attachment = new app.attachmentTypes[typeIndex]();
+          
+            attachment.attachTo(this, attachPoint);
+            attachment.addPins();
+          
+            this.attachments.push(attachment);
+            this.attachPoints.push(attachPoint);
+        },
+
         /**
          * @method generateAttachments
          */
@@ -307,25 +332,8 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             var count = 4;
 
             for (var i = 0; i < count; i++) {
-                // Create some random point around the path to attach this to.
-                var edge = this.path.getRandomEdge();
-                var pct = Math.random();
-
-                // Make the tracer slightly inset
-                var attachPoint = edge.getTracer(pct, -3);
-                if (!attachPoint || !attachPoint.isValid())
-                    throw "Found invalid attach point: " + attachPoint + " edge: " + edge + " pct: " + pct;
-                
-                // Create an attachment of some random type
-				//console.log("hh: " + app.attachmentWeights);
-                var typeIndex = utilities.getWeightedRandomIndex(app.attachmentWeights);
-                var attachment = new app.attachmentTypes[typeIndex]();
-
-                attachment.attachTo(this, attachPoint);
-                attachment.addPins();
-                
-                this.attachments.push(attachment);
-                this.attachPoints.push(attachPoint);
+            	var typeIndex = utilities.getWeightedRandomIndex(app.attachmentWeights);
+                this.generateAttachment(typeIndex);
             }
         },
 

@@ -240,6 +240,10 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
                 
                 canva.click(function(e) {
                    console.log(e.target.id);
+                   var strChunks = e.target.id.split(" ");
+                   app.currentBot.mainChassis.generateAttachment(parseInt(strChunks[1]));
+                   app.currentBot.mainChassis.generateWiring();
+                   app.currentBot.compileAttachments();
                    e.stopPropagation();
                 });
 			}
