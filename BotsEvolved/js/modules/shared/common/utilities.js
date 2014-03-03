@@ -110,6 +110,9 @@ define([], function() {
          */
         // Inefficient, fix someday
         getWeightedRandomIndex : function(array) {
+            if(array === undefined) {
+                throw new Error("Array undefined");
+            }
             var totalWeight = 0;
             var length = array.length;
             //var length = array.length;

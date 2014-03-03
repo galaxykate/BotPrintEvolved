@@ -29,6 +29,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 
             // app.changeMode("inspector");
             app.arena = new Arena("rectangle");
+            app.createAttachmentList();
 
             //app.currentBot = new Bot();
 
@@ -75,11 +76,11 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 			//app.initModes();
 			//console.log("types: " + app.getOption("useTimers"));
 
-			
+
 			if (app.getOption("useTimers")) {
 				app.attachmentTypes.push(Attachment.Sensor.Timer), app.attachmentWeights.push(1);
 			}
-			
+
 			if (app.getOption("useColorLerpers")) {
 				app.attachmentTypes.push(Attachment.Sensor.ColorLerper), app.attachmentWeights.push(1);
 			}

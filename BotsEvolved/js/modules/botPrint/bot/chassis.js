@@ -315,7 +315,7 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
                 var attachPoint = edge.getTracer(pct, -3);
                 if (!attachPoint || !attachPoint.isValid())
                     throw "Found invalid attach point: " + attachPoint + " edge: " + edge + " pct: " + pct;
-                
+
                 // Create an attachment of some random type
 				//console.log("hh: " + app.attachmentWeights);
                 var typeIndex = utilities.getWeightedRandomIndex(app.attachmentWeights);
@@ -323,7 +323,7 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
 
                 attachment.attachTo(this, attachPoint);
                 attachment.addPins();
-                
+
                 this.attachments.push(attachment);
                 this.attachPoints.push(attachPoint);
             }
