@@ -177,112 +177,6 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.openEditMode();
         },
 
-        //-------------------------------------------------------
-        /**
-         * @method initializeEditMode
-         */
-        initializeEditMode : function() {
-            $("#parts_edit").append("<br>");
-            app.setEditMenu();
-            var ui = app.ui;
-            var partNames = new Array();
-            var rTest = Attachment.Sensor;
-            partNames[0] = "wheel";
-            partNames[1] = "light sensor";
-            partNames[2] = "servo";
-            //var sampleDiv = $("#edit_item");
-            //var sDiv2 = sampleDiv.clone();
-            //sDiv2.appendTo($("#parts_edit"));
-            var sampleDiv = $("#edit_item")
-            for (var i = 0; i < 3; i++)
-            {
-                var myDiv = jQuery('<div/>', {
-                    id: 'edit_item',
-                    width: 175,
-                    height: 150,
-                });
-                myDiv.appendTo($("#parts_edit"));
-
-                //Insert drag/droppable image here?
-                myDiv.append(partNames[i]);
-                sampleDiv.clone().appendTo(myDiv);
-            }
-            sampleDiv.remove();
-        },
-        /**
-         * @method toggleEditMode
-         */
-
-        setEditMenu : function() {
-            $("#chassis_edit").text("");
-            $("#chassis_edit").append("<hr>");
-            nString = "<center>";
-            $("#chassis_edit").append(nString.concat(this.currentBot.name));
-            $("#chassis_edit").append("</center>");
-        },
-
-        //-------------------------------------------------------
-        /**
-         * @method toggleEditMode
-         */
-        toggleEditMode : function() {
-            console.log("Toggle edit mode " + app.editChassis);
-            if (app.editChassis)
-                app.openEditChassis();
-            else
-                app.openEditParts();
-        },
-
-        /**
-         * @method openEditParts
-         */
-        openEditParts : function() {
-            app.editChassis = true;
-            $("#chassis_edit").addClass("away");
-            $("#parts_edit").removeClass("away");
-
-        },
-
-        /**
-         * @method openEditChassis
-         */
-        openEditChassis : function() {
-            app.editChassis = false;
-            $("#chassis_edit").removeClass("away");
-            $("#parts_edit").addClass("away");
-
-        },
-
-        openLoadScreen : function() {
-            $("#load_screen").show();
-        },
-        closeLoadScreen : function() {
-            $("#load_screen").hide();
-        },
-
-        /**
-         * @method openLoadScreen
-         */
-        openLoadScreen : function() {
-            $("#load_screen").show();
-        },
-
-        /**
-         * @method closeLoadScreen
-         */
-        closeLoadScreen : function() {
-            $("#load_screen").hide();
-
-            /* $("*").click(function(evt) {
-             console.log("Clicked ", this);
-             });*/
-
-        },
-
-        //=====================================================================
-        //=====================================================================
-
-        //=====================================================================
 
         spawnNextGeneration : function() {
             app.setPopulation(app.population.createNextGeneration());
@@ -323,19 +217,15 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 			});
 			app.setEditMenu();
 			var ui = app.ui;
-			var partNames = new Array();
 			var rTest = Attachment.Sensor;
-			partNames[0] = "wheel";
-			partNames[1] = "light sensor";
-			partNames[2] = "servo";
             var attachList = app.attachmentTypes;
             for (var i = 0; i < attachList.length;i++) {
 
 				var canva = $("<canvas/>", {
-					id : 'edit_item',
+					id : 'edit_item ' + i,
+                    class: 'edit_item',
 					width : 150,
 					height : 100,
-					//"border-radius": 1,
 				});
                 var curAttachment = attachList[i];
 				//var canvases = document.getElementById('edit_item');
@@ -349,7 +239,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 				//Insert drag/droppable image here?
                 
                 canva.click(function(e) {
-                   console.log("CLICKITY!");
+                   console.log(e.target.id);
                    e.stopPropagation();
                 });
 			}
@@ -404,12 +294,6 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 			$("#chassis_edit").removeClass("away");
 			$("#parts_edit").addClass("away");
 		},
-		openLoadScreen : function() {
-			$("#load_screen").show();
-		},
-		closeLoadScreen : function() {
-			$("#load_screen").hide();
-		},
 
 		/**
 		 * @method openLoadScreen
@@ -429,11 +313,6 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 			 });*/
 
 		},
-
-		//=====================================================================
-		//=====================================================================
-
-		//=====================================================================
 
 		spawnNextGeneration : function() {
 			app.setPopulation(app.population.createNextGeneration());
