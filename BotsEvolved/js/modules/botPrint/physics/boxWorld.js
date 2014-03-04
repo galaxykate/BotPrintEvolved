@@ -18,11 +18,24 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             this.frame = 0;
             this.gravity = new Box2D.b2Vec2(0.0, gravity);
             this.world = new Box2D.b2World(this.gravity);
+            this.listener = new Box2D.b2ContactListener();
 
             this.bodies = [];
+            //console.log("I've hit something");
+            this.enableEventListeners();
 
         },
-
+		
+		enableEventListeners : function(){
+			this.listener.BeginContact = function(contact) {
+				console.log("I've hit something");
+        		callbacks.BeginContact(contact.GetFixtureA().GetBody().GetUserData(),
+                contact.GetFixtureB().GetBody().GetUserData());
+			},
+			
+            this.world.SetContactListener( this.listener );
+		},
+		
         removeBodies : function() {
             var world = this.world;
             $.each(this.bodies, function(index, body) {
@@ -86,6 +99,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             bodyDef.angularDamping = 10.01;
             bodyDef.set_type(Box2D.b2_dynamicBody);
 
+			//iterates though all the objects
             $.each(objects, function(index, obj) {
 
                 var points = obj.getHull();
@@ -94,13 +108,22 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                 var customShapes = boxWorld.createTriFanShapes(points);
 
                 boxWorld.setBodyToTransform(bodyDef, obj.transform);
+                
                 var body = boxWorld.world.CreateBody(bodyDef);
-
-                // set the parent object
-                body.parentObject = obj;
+                
+                //iterates though the shape points and makes fixtures
                 $.each(customShapes, function(index, shape) {
+                	//var fixtureDef = new Box2D.b2FixtureDef();
+					//fixtureDef.set_density( 2.5 );
+					//fixtureDef.set_friction( 0.6 );
+					//fixtureDef.set_shape( shape );
+					//body.CreateFixture( fixtureDef );
                     body.CreateFixture(shape, 5.0);
                 })
+    
+                // set the parent object
+                body.parentObject = obj;
+                
                 boxWorld.bodies.push(body);
 
             });
