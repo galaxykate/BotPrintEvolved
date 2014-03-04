@@ -3,6 +3,22 @@
  */
 
 define(["common", "graph", "./wiring", "./attachment/attachments", "./component"], function(common, Graph, Wiring, Attachment, Component) {'use strict';
+    //Private helpers to hide some ugliness
+
+
+    //Takes a processing instance, and info for a circle to test
+    var insideCircle = function(mVector, nodes, diameter) {
+        var retNode;
+        nodes.forEach(function(node) {
+            var nVector = new common.Vector(node.x, node.y);
+            if(mVector.getDistanceTo(nVector) < diameter) {
+                retNode = node;
+            }
+        });
+        //will be undefined if we haven't clicked on a node
+        return retNode;
+    }
+
     var chassisCount = 0;
     //configure logging for the bot "build" process
     var chassisLog = "";
@@ -10,7 +26,6 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
         if (app.getOption("logChassis"))
             console.log(s);
         chassisLog += (s + " <br>");
-
     }
 
     // Points MUST be coplanar
@@ -26,43 +41,40 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
         /**
          * @method init
          */
-        init : function(bot) {
+        init : function(bot, opts) {
             this._super();
 
-            var chassis = this;
+            opts = opts || {};
             this.bot = bot;
-            this.idColor = bot.idColor;
+            this.idColor = opts.idColor || bot.idColor;
+            this.curveSubdivisions = opts.curveSubdivisions || 3;
 
-            this.path = new Graph.Path();
-            this.curveSubdivisions = 3;
-
+            this.path = opts.path || new Graph.Path();
             this.center = new Vector(0, 0);
 
-            var pointCount = 5;
+            var pointCount = opts.pointCount || 5;
 
             for (var i = 0; i < pointCount; i++) {
                 var theta = i * Math.PI * 2 / pointCount;
                 var r = 100 * utilities.unitNoise(.7 * theta + 50 * this.idNumber);
                 var pt = Vector.polar(r, theta);
-
                 this.path.addEdgeTo(pt);
             }
+
 
             //FIXME: this.center() doesn't actually point to the center when all is said and done, we need to get a "visual" center
             //to actually place the points
             //This is done by finding the centroid of the polygon
-            //FIXME: move this over to the graph library?
             var points = this.path.getHull();
 
             var twiceArea = 0;
-            var x = 0;
-            var y = 0;
+            var x = 0; var y = 0;
             var numPoints = this.path.getHull().length;
             var p1, p2, f;
-            for (var i = 0, j = numPoints - 1; i < numPoints; j = i++) {
+            for(var i = 0, j = numPoints - 1; i < numPoints; j = i++){
                 p1 = points[i];
                 p2 = points[j];
-                f = p1.x * p2.y - p2.x * p1.y;
+                f = p1.x*p2.y - p2.x*p1.y;
                 twiceArea += f;
                 x += (p1.x + p2.x) * f;
                 y += (p1.y + p2.y) * f;
@@ -70,24 +82,39 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             f = twiceArea * 3;
 
             this.visualCenter = new common.Transform();
+            this.visualCenter.setTo((x/f), (y/f), 0);
             this.visualCenter.setTo((x / f), (y / f), 0);
 
             this.generateAttachments();
+            //Currently generateWiring relies on the rest of the chassis
+            //being set and configured. Must go last.
             this.generateWiring();
         },
 
-        //======================================================================================
-        //======================================================================================
-        //======================================================================================
-        // Cloning + modification
+		//======================================================================================
+    	//======================================================================================
+    	//======================================================================================
+    	// Cloning + modification
+		/**
+    	 * @method clone
+     	 * @return {Chassis} newChassis
+    	*/
+    
+    	clone : function() {
+    		var c = new Chassis();
+    	    c.attachPoints = this.attachPoints.slice(0);
+    	    c.attachments = this.attachments.slice(0);
+    	    c.center = JSON.parse(JSON.stringify(this.center));
+    	    c.components = this.components.slice(0);
+    	    c.curveSubdivisions = this.curveSubdivisions;
+    	    c.depth = this.depth;
+    	    c.idColor = JSON.parse(JSON.stringify(this.idColor));
+    	    c.bot = this.bot;
+    	    c.path = JSON.parse(JSON.stringify(this.path));
+    	    c.wires = this.wires.slice(0);
 
-        /**
-         * @method clone
-         * @return {Chassis} newChassis
-         */
-        clone : function() {
-            return new Chassis();
-        },
+       		return c;
+		},
 
         //======================================================================================
         //======================================================================================
@@ -117,7 +144,7 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
         //======================================================================================
         //======================================================================================
         // Wiring
-
+        
         /**
          * Here there be dragons
          * @method generateWiring
@@ -129,138 +156,139 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             this.components = [];
             //TODO: for the demo, I'm just going to place the battery pack in the center, and offset the baby orangitang
             var battery = new Component.Battery({
-                name : "Battery",
+            	name : "Battery",
             });
             var controller = new Component.Orangutan({
-                name : "Controller",
+            	name : "Controller",
             });
-
+            
             battery.place(this, this.visualCenter);
             //FIXME: temp solution where we drop the parts in the center
             var p = new common.Transform();
-            p.setTo(this.visualCenter.x + 15, this.visualCenter.y, 0);
-
+            p.setTo(this.visualCenter.x + 15, this.visualCenter.y,0);
+            
             controller.place(this, p);
-
+            
             battery.addPins();
             controller.addPins();
-
+            
             this.components.push(battery);
             this.components.push(controller);
-
+            
             //FIXME: I want to return to this later.  Right now, we're just going to place both core components, with the orangitang offset
             //from center.
-            /*
+           	/*
             // make one component
             for (var i = 0; i < 1; i++) {
 
-            var component = new Component.Core({
-            name : "component " + i,
-            //attachPoint : new Vector(300 * (Math.random() - .5), 300 * (Math.random() - .5)),
-            });
-            var p = undefined;
+                var component = new Component.Core({
+                    name : "component " + i,
+                    //attachPoint : new Vector(300 * (Math.random() - .5), 300 * (Math.random() - .5)),
+                });
+				var p = undefined;
+				
+				//FIXME: weird to have to stretch the bbox here...
+				this.path.expandBoxToFit(this.path.boundingBox);
+				
+				var box = this.path.boundingBox;
+				
+				var corners = box.getCorners(false);
+				
+				var minX;
+				var maxX;
+				var minY;
+				var maxY;
+					
+				if(corners[0].x < corners[2].x){
+					minX = corners[0].x;
+					maxX = corners[2].x;
+				}else{
+					minX = corners[2].x;
+					maxX = corners[0].x;
+				}
 
-            //FIXME: weird to have to stretch the bbox here...
-            this.path.expandBoxToFit(this.path.boundingBox);
-
-            var box = this.path.boundingBox;
-
-            var corners = box.getCorners(false);
-
-            var minX;
-            var maxX;
-            var minY;
-            var maxY;
-
-            if(corners[0].x < corners[2].x){
-            minX = corners[0].x;
-            maxX = corners[2].x;
-            }else{
-            minX = corners[2].x;
-            maxX = corners[0].x;
-            }
-
-            if(corners[0].y < corners[2].y){
-            minY = corners[0].y;
-            maxY = corners[2].y;
-            }else{
-            minY = corners[2].y;
-            maxY = corners[0].y;
-            }
-
-            //chassislog("Bounding vals: (" + minX + ", " + minY + ")" + "\n "
-            //+ "(" + maxX + ", " + maxY + ")" + "\n ");
-
-            p = new common.Transform(0,0,0);
-
-            //Use ray tracing (from http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html) to see if the point is inside
-            //the chassis
-            var valid = false;
-
-            while(!valid){
-            p.setTo(utilities.random(minX, maxX), utilities.random(minY, maxY), 0);
-
-            chassislog("attachPoint: (" + p.x + ", " + p.y + ")");
-
-            if(p === undefined){
-            chassislog("Attach Point Undefined");
-            }else{
-            var k,j;
-            var vertexes = this.path.getHull();
-            for(k = 0, j = vertexes.length - 1; k < vertexes.length; j = k++){
-            if(((vertexes[k].y > p.y) != (vertexes[j].y > p.y)) &&
-            (p.x < (vertexes[j].x - vertexes[k].x) * (p.y - vertexes[k].y) / (vertexes[j].y - vertexes[k].y) + vertexes[k].x)){
-            valid = !valid;
-            }
-            }
-            }
-            }
-
-            component.place(this, p);
-            component.addPins();
-            this.components.push(component);
+				if(corners[0].y < corners[2].y){
+					minY = corners[0].y;
+					maxY = corners[2].y;
+				}else{
+					minY = corners[2].y;
+					maxY = corners[0].y;
+				}
+				
+				//chassislog("Bounding vals: (" + minX + ", " + minY + ")" + "\n "
+							//+ "(" + maxX + ", " + maxY + ")" + "\n ");
+							
+				p = new common.Transform(0,0,0);
+				
+				//Use ray tracing (from http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html) to see if the point is inside
+				//the chassis
+				var valid = false;
+				
+				while(!valid){
+				p.setTo(utilities.random(minX, maxX), utilities.random(minY, maxY), 0);
+				
+					chassislog("attachPoint: (" + p.x + ", " + p.y + ")");
+							
+					if(p === undefined){
+						chassislog("Attach Point Undefined");
+					}else{
+						var k,j;
+						var vertexes = this.path.getHull();
+						for(k = 0, j = vertexes.length - 1; k < vertexes.length; j = k++){
+							if(((vertexes[k].y > p.y) != (vertexes[j].y > p.y)) && 
+								(p.x < (vertexes[j].x - vertexes[k].x) * (p.y - vertexes[k].y) / (vertexes[j].y - vertexes[k].y) + vertexes[k].x)){
+								valid = !valid;
+							}
+						}	
+					}
+				}
+				
+				component.place(this, p);
+                component.addPins();
+                this.components.push(component);
             }*/
+
 
             // Connect the components
             var attachmentInPins = [];
             var attachmentOutPins = [];
             var controllerInPins = [];
             var controllerOutPins = [];
-
+            
             chassis.wires = [];
-
+            
             //wire attachments to the controller
-            $.each(this.attachments, function(index, attachment) {
-                attachment.compilePins(attachmentInPins, function(pin) {
-                    return pin.positive;
-                });
-                attachment.compilePins(attachmentOutPins, function(pin) {
-                    return !pin.positive;
-                });
-            });
-
-            this.components[1].compilePins(controllerInPins, function(pin) {
-                return pin.positive;
-            });
-            this.components[1].compilePins(controllerOutPins, function(pin) {
-                return !pin.positive;
-            });
-
-            $.each(attachmentInPins, function(index, pin) {
-                chassis.wires.push(new Wiring.Wire(attachmentInPins[index], controllerOutPins[index]));
-                chassis.wires.push(new Wiring.Wire(controllerInPins[index], attachmentOutPins[index]));
-            });
-
-            //and now just hand wire the battery pack to the microcontroller
-            if (this.components[0].pins[0].positive === true) {
-                chassis.wires.push(new Wiring.Wire(this.components[0].pins[0], controllerOutPins[controllerOutPins.length - 1]));
-                chassis.wires.push(new Wiring.Wire(controllerOutPins[controllerInPins.length - 1], this.components[0].pins[1]));
-            } else {
-                chassis.wires.push(new Wiring.Wire(this.components[0].pins[1], controllerOutPins[controllerOutPins.length - 1]));
-                chassis.wires.push(new Wiring.Wire(controllerOutPins[controllerInPins.length - 1], this.components[0].pins[0]));
-            }
+            $.each(this.attachments, function(index, attachment){ 
+				attachment.compilePins(attachmentInPins, function(pin) {
+					return pin.positive;
+				});
+				attachment.compilePins(attachmentOutPins, function(pin){
+					return !pin.positive;
+				});
+			});
+			
+			this.components[1].compilePins(controllerInPins, function(pin) {
+				return pin.positive;
+			});
+			this.components[1].compilePins(controllerOutPins, function(pin) {
+				return !pin.positive;
+			});
+			
+			$.each(attachmentInPins, function(index, pin) {
+				chassis.wires.push(new Wiring.Wire(attachmentInPins[index], controllerOutPins[index]));
+				chassis.wires.push(new Wiring.Wire(controllerInPins[index], attachmentOutPins[index]));
+			});
+			
+			//and now just hand wire the battery pack to the microcontroller
+			if(this.components[0].pins[0].positive === true){
+				chassis.wires.push(new Wiring.Wire(this.components[0].pins[0], controllerOutPins[controllerOutPins.length - 1]));
+				chassis.wires.push(new Wiring.Wire(controllerOutPins[controllerInPins.length - 1], this.components[0].pins[1]));				
+			}else{
+				chassis.wires.push(new Wiring.Wire(this.components[0].pins[1], controllerOutPins[controllerOutPins.length - 1]));
+				chassis.wires.push(new Wiring.Wire(controllerOutPins[controllerInPins.length - 1], this.components[0].pins[0]));				
+			}
         },
-
+        
         //======================================================================================
         //======================================================================================
         //======================================================================================
@@ -273,21 +301,7 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             this.attachments = [];
             this.attachPoints = [];
 
-            // Weights and attachment types: there should be the same number in each array, please!
-            var weights = [.3, .6];
-            var attachmentTypes = [Attachment.Sensor, Attachment.Actuator];
-
-            if (app.getOption("useTimers")) {
-                attachmentTypes.push(Attachment.Sensor.Timer), weights.push(1);
-            }
-
-            if (app.getOption("useColorLerpers")) {
-                attachmentTypes.push(Attachment.Sensor.ColorLerper), weights.push(1);
-            }
-
-            if (app.getOption("useSharpie")) {
-                attachmentTypes.push(Attachment.Actuator.Sharpie), weights.push(1);
-            }
+            this.aTypes = app.attachmentTypes;
 
             // How many attachments to generate
             var count = 4;
@@ -301,14 +315,15 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
                 var attachPoint = edge.getTracer(pct, -3);
                 if (!attachPoint || !attachPoint.isValid())
                     throw "Found invalid attach point: " + attachPoint + " edge: " + edge + " pct: " + pct;
-
+                
                 // Create an attachment of some random type
-                var typeIndex = utilities.getWeightedRandomIndex(weights);
-                var attachment = new attachmentTypes[typeIndex]();
+				//console.log("hh: " + app.attachmentWeights);
+                var typeIndex = utilities.getWeightedRandomIndex(app.attachmentWeights);
+                var attachment = new app.attachmentTypes[typeIndex]();
 
                 attachment.attachTo(this, attachPoint);
                 attachment.addPins();
-
+                
                 this.attachments.push(attachment);
                 this.attachPoints.push(attachPoint);
             }
@@ -395,19 +410,19 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             context.drawPath = true;
             this.path.drawFilled(context);
 
-            context.simlifiedBots = false;
-
-            if (context.simplifiedBots) {
+			context.simplifiedBots = false;
+			
+            if (!context.simplifiedBots) {
 
                 if (app.getOption("drawComponents")) {
                     $.each(this.components, function(index, component) {
                         component.render(context);
                     });
                 }
-
+                
                 if (app.getOption("drawWiring")) {
-                    $.each(this.wires, function(index, wire) {
-                        wire.render(context);
+                    $.each(this.wires, function(index, wire) {               	
+                    	wire.render(context);
                     });
                 }
             }
@@ -426,6 +441,5 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
 
         },
     });
-
     return Chassis;
 });

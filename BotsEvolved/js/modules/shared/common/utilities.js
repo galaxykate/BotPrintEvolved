@@ -112,6 +112,7 @@ define([], function() {
         getWeightedRandomIndex : function(array) {
             var totalWeight = 0;
             var length = array.length;
+            //var length = array.length;
 
             for (var i = 0; i < length; i++) {
 
