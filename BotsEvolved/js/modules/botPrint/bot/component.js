@@ -34,7 +34,8 @@ define(["common", "graph", "./wiring"], function(common, Graph, Wiring) {'use st
 		},
 		
 		//========================================================
-		// add pins
+		// Pins!
+		
 		addPins : function() {          
         	//add pins
         	//each component gets three snap points randomly distributed
