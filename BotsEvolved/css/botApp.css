@@ -58,12 +58,12 @@
 	-webkit-transform:translate(0px, 0px) rotateY(90deg) scale3d(1, 1, 1);
 	height:600px;
 }
-#edit_item {
+.edit_item {
     position:relative;
     left:2px;
     width:95%;
     height:50%; 
-    border:9px solid white;   
+    border:5px solid white;   
 }
 #switch_modes {
 	position:absolute;
