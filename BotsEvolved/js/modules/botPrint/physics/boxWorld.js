@@ -52,7 +52,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             b2D.set_x(x / this.scale);
             b2D.set_y(y / this.scale);
         },
-        
+
         readIntoTransform : function(body, transform) {
             var bpos = body.GetPosition();
             transform.rotation = body.GetAngle();
@@ -63,21 +63,28 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             	console.log(this.scale);
             }
         },
-        
+
         toB2Vec : function(p) {
             if (arguments.length === 1)
                 return new b2Vec2(arguments[0].x / this.scale, arguments[0].y / this.scale);
             if (arguments.length === 2)
                 return new b2Vec2(arguments[0] / this.scale, arguments[1] / this.scale);
         },
-        
+
         setBodyPosition : function(bodyDef, p) {
             bodyDef.set_position(this.toB2Vec(p));
         },
-        setBodyToTransform : function(bodyDef, transform) {
 
-            bodyDef.set_position(this.toB2Vec(transform));
-            bodyDef.set_angle(transform.rotation);
+        /**
+         * @method toggleMainMode
+         * Set the body definition to this transform
+         */
+
+        setBodyToTransform : function(body, transform) {
+            var angle = body.GetAngle();
+            if (!isNaN(transform.rotation))
+                angle = transform.rotation;
+            body.SetTransform(this.toB2Vec(transform), angle);
         },
 
         // Add some set of objects that have "getHull" and a "transform"
@@ -94,11 +101,12 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             $.each(objects, function(index, obj) {
 
                 var points = obj.getHull();
+
                 // var customShapes = boxWorld.createPolygonShapes(obj.points);
                 var customShapes = boxWorld.createTriFanShapes(points);
 
-                boxWorld.setBodyToTransform(bodyDef, obj.transform);
                 var body = boxWorld.world.CreateBody(bodyDef);
+                boxWorld.setBodyToTransform(body, obj.transform);
 
                 // set the parent object
                 body.parentObject = obj;
@@ -220,6 +228,11 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
         simulate : function(dt) {
             var boxWorld = this;
+
+            // Set the bodies from the boxes
+            $.each(this.bodies, function(index, body) {
+                boxWorld.setBodyToTransform(body, body.parentObject.transform);
+            });
 
             this.applyForce();
             this.world.Step(dt, 2, 2);

@@ -97,12 +97,12 @@ define(["common"], function(common) {'use strict';
 
                 div.mouseenter(function() {
                     detaildiv.show();
-                    bot.selected = true;
+                    bot.select();
                 });
 
                 div.mouseleave(function() {
                     detaildiv.hide();
-                    bot.selected = false;
+                    bot.deselect();
                 });
 
                 div.click(function() {

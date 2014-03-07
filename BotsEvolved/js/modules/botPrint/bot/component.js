@@ -34,7 +34,8 @@ define(["common", "graph", "./tuning", "./wiring"], function(common, Graph, Tuni
 		},
 		
 		//========================================================
-		// add pins
+		// Pins!
+		
 		addPins : function() {          
         	//add pins
         	//each component gets three snap points randomly distributed
