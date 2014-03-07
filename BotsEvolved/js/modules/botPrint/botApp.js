@@ -58,6 +58,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 			
 			app.openArenaMode();
 		},
+
 		//=====================================================================
 		//=====================================================================
 		//=====================================================================
@@ -100,16 +101,16 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 		/**
          * @method loadNewArena
          */
-		loadNewArena : function(shape){
-		    console.log("Load new arena " + shape);
-			//deletes current bots in the arena. We might want to change this.
-			app.arena.reset();
-			app.arena = new Arena(shape);
-			//This adds brand new bots. Need to change to current bots.
-			app.setPopulation(this.population);
-			//throw("I just set the population?");
-			app.currentBot = app.population.bots[0];
-		},
+        loadNewArena : function(shape) {
+            console.log("Load new arena " + shape);
+            //deletes current bots in the arena. We might want to change this.
+            app.arena.reset();
+            app.arena = new Arena(shape);
+            //This adds brand new bots. Need to change to current bots.
+            app.setPopulation(this.population);
+            //throw("I just set the population?");
+            app.currentBot = app.population.bots[0];
+        },
 
 		highlightBot : function(bot) {
 			//  console.log("Highlighting " + bot);
@@ -123,7 +124,6 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 		/**
 		 * @method toggleMainMode
 		 */
-
 		toggleMainMode : function() {
 			console.log("Toggle main mode " + app.editMode);
 			if (app.editMode)
@@ -177,6 +177,57 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.openEditMode();
         },
 
+        /**
+         * @method openEditParts
+         */
+        openEditParts : function() {
+            app.editChassis = true;
+            $("#chassis_edit").addClass("away");
+            $("#parts_edit").removeClass("away");
+
+        },
+
+        /**
+         * @method openEditChassis
+         */
+        openEditChassis : function() {
+            app.editChassis = false;
+            $("#chassis_edit").removeClass("away");
+            $("#parts_edit").addClass("away");
+
+        },
+
+        openLoadScreen : function() {
+            $("#load_screen").show();
+        },
+
+        closeLoadScreen : function() {
+            $("#load_screen").hide();
+        },
+
+        /**
+         * @method openLoadScreen
+         */
+        openLoadScreen : function() {
+            $("#load_screen").show();
+        },
+
+        /**
+         * @method closeLoadScreen
+         */
+        closeLoadScreen : function() {
+            $("#load_screen").hide();
+
+            /* $("*").click(function(evt) {
+             console.log("Clicked ", this);
+             });*/
+
+        },
+
+        //=====================================================================
+        //=====================================================================
+
+        //=====================================================================
 
         spawnNextGeneration : function() {
             app.setPopulation(app.population.createNextGeneration());
@@ -199,6 +250,18 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
          */
         initModes : function() {
             var ui = app.ui;
+            app.ui.addOption("logWiring", true);
+            app.ui.addOption("logChassis", true);
+            app.ui.addOption("drawWiring", true);
+            app.ui.addOption("drawComponents", true);
+            app.ui.addOption("logConditionTests", false);
+            app.ui.addOption("logMutations", true);
+            app.ui.addOption("useTimers", true);
+            app.ui.addOption("useColorLerpers", true);
+            app.ui.addOption("useSharpie", false);
+            app.ui.addTuningValue("unicornFluffiness", 100, 1, 700, function(key, value) {
+                // do something on change
+            });
 		},
 		
 		//-------------------------------------------------------
@@ -217,7 +280,11 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 			});
 			app.setEditMenu();
 			var ui = app.ui;
+			var partNames = new Array();
 			var rTest = Attachment.Sensor;
+			partNames[0] = "wheel";
+			partNames[1] = "light sensor";
+			partNames[2] = "servo";
             var attachList = app.attachmentTypes;
             for (var i = 0; i < attachList.length;i++) {
 
@@ -226,6 +293,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
                     class: 'edit_item',
 					width : 150,
 					height : 100,
+					//"border-radius": 1,
 				});
                 var curAttachment = attachList[i];
 				//var canvases = document.getElementById('edit_item');
@@ -244,9 +312,6 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
                 });
 			}
 		},
-		/**
-		 * @method toggleEditMode
-		 */
 
 		setEditMenu : function() {
 			$("#chassis_edit").text("");
@@ -283,7 +348,6 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 			app.editChassis = true;
 			$("#chassis_edit").addClass("away");
 			$("#parts_edit").removeClass("away");
-
 		},
 
 		/**
@@ -307,11 +371,9 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 		 */
 		closeLoadScreen : function() {
 			$("#load_screen").hide();
-
 			/* $("*").click(function(evt) {
 			 console.log("Clicked ", this);
 			 });*/
-
 		},
 
 		spawnNextGeneration : function() {
@@ -326,163 +388,173 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 			app.arena.addPopulation(app.population.bots);
 			app.scoreGraph.setCompetitors(app.population.bots);
 			app.population.updateUI();
-
 		},
 		//=====================================================================
 		//=====================================================================
 
-		/**
-		 * @method initModes
-		 */
-		initModes : function() {
+        /**
+         * @method initControls
+         */
+        initControls : function() {
+            // Set all the default UI controls
+            app.controls = new UI.Controls($("body"), {
 
-			var ui = app.ui;
-			//console.log("adding options");
-			app.ui.addOption("logWiring", true);
-			app.ui.addOption("logChassis", true);
-			app.ui.addOption("drawWiring", true);
-			app.ui.addOption("drawComponents", true);
-			app.ui.addOption("logConditionTests", false);
-			app.ui.addOption("logMutations", true);
-			app.ui.addOption("useTimers", true);
-			app.ui.addOption("useColorLerpers", true);
-			app.ui.addOption("useSharpie", false);
-			app.ui.addTuningValue("unicornFluffiness", 100, 1, 700, function(key, value) {
-				// do something on change
-			});
+                keyPress : function() {
+                    // Standard controls: d toggles dev mode, space pauses
+                    switch( app.controls.key) {
+                        case 'd':
+                            app.ui.devMode.toggle();
+                            console.log("Dev mode");
+                            break;
+                        case 'space':
+                            app.paused = !app.paused;
 
-		},
+                            break;
+                    }
 
-		/**
-		 * @method initControls
-		 */
-		initControls : function() {
+                },
 
-			// Set all the default UI controls
-			app.controls = new UI.Controls($("body"), {
+                move : function() {
 
-				onKeyPress : {
+                    if (app.editMode) {
+                        // Move the mouse in the edit mode
+                        app.controls.hoveredObject = app.currentBot.getAt(touchInspector.localPos, {
+                            range : 30
+                        });
 
-					d : function(event) {
-						app.ui.devMode.toggle()
-					},
+                    } else {
 
-					space : function() {
-						app.paused = !app.paused;
-					}
-				},
+                        // Move the mouse in the arena mode
+                        var previous = app.controls.hoveredObject;
+                        var selected = app.arena.getAt(touchArena.localPos, {
 
-			});
+                        });
 
-			// Make some of the windows touchable
+                        if (selected !== previous) {
+                            if (previous)
+                                previous.deselect();
+                            app.controls.hoveredObject = selected;
+                            if (selected)
+                                selected.select();
+                        }
 
-			var touchInspector = app.controls.addTouchable("inspector", $("#edit_canvas"));
-			var touchArena = app.controls.addTouchable("arena", $("#arena_canvas"));
+                    }
+                },
+            });
 
-			// Inspector controls
-			touchInspector.onDrag(function(touchwindow, p) {
-				var x = p.x - touchwindow.rect.w / 2;
-				var y = p.y - touchwindow.rect.h / 2;
-				// app.coin.designTransform.setTo(x, y, 0);
-			});
+            // Make some of the windows touchable
 
-			touchInspector.onMove(function(touchwindow, p) {
-				//  get midPoint
-				var x = p.x - touchwindow.rect.w / 2;
-				var y = p.y - touchwindow.rect.h / 2;
-				//  app.coin.selectAt(new Vector(x, y));
+            var touchInspector = app.controls.addTouchable("inspector", $("#edit_canvas"));
+            var touchArena = app.controls.addTouchable("arena", $("#arena_canvas"));
 
-			});
+            // Add handlers for these particular windows
+            touchInspector.addHandlers({
+                drag : function() {
 
-		},
+                }
+            });
 
-		/**
-		 * @method initUI
-		 */
-		initUI : function() {
+            // Add handlers for these particular windows
+            touchArena.addHandlers({
+                drag : function() {
 
-			var ui = app.ui;
+                    if (app.controls.hoveredObject)
+                        app.controls.hoveredObject.dragTo(this.localPos);
 
-			Heuristic.makeHeuristicMenu();
+                }
+            });
 
-			// Add functionality for some buttons
-			$("#next_generation").click(function() {
-				app.spawnNextGeneration();
-			});
+        },
 
-			$("#select_winners").click(function() {
-				var winners = app.scoreGraph.getWinners();
-				app.population.createNextGenerationFromWinners(winners);
-				app.currentBot = app.population.bots[0];
-			});
+        /**
+         * @method initUI
+         */
+        initUI : function() {
 
-			$("#start_test").click(function() {
-				console.log("Start test");
-			});
+            var ui = app.ui;
 
-			// Add the score graph
-			app.scoreGraph = new ScoreGraph.BarGraph($("#testing_panel"));
+            Heuristic.makeHeuristicMenu();
 
-			// These windows all use processing for the drawing
-			app.editWindow = new UI.DrawingWindow("edit", $("#edit_canvas"));
-			app.arenaWindow = new UI.DrawingWindow("arena", $("#arena_canvas"));
+            // Add functionality for some buttons
+            $("#next_generation").click(function() {
+                app.spawnNextGeneration();
+            });
 
-			app.editorProcessing = ui.addProcessingWindow(app.editWindow.element, function(g) {
-				app.editWindow.setProcessing(g);
+            $("#select_winners").click(function() {
+                var winners = app.scoreGraph.getWinners();
+                app.population.createNextGenerationFromWinners(winners);
+                app.currentBot = app.population.bots[0];
+            });
 
-			}, function(g) {
-				// Updates
+            $("#start_test").click(function() {
+                console.log("Start test");
+            });
 
-				// only do if its the inspector mode
-				if (app.editMode) {
-					// Updates
-					app.ui.output.clear();
+            // Add the score graph
+            app.scoreGraph = new ScoreGraph.BarGraph($("#testing_panel"));
 
-					if (!app.paused) {
-						app.worldTime.updateTime(g.millis() * .001);
-						app.currentBot.update({
-							total : app.worldTime.total,
-							elapsed : app.worldTime.ellapsed
-						});
-					}
+            // These windows all use processing for the drawing
+            app.editWindow = new UI.DrawingWindow("edit", $("#edit_canvas"));
+            app.arenaWindow = new UI.DrawingWindow("arena", $("#arena_canvas"));
 
-					app.editWindow.render(function(context) {
+            app.editorProcessing = ui.addProcessingWindow(app.editWindow.element, function(g) {
+                app.editWindow.setProcessing(g);
 
-						var g = context.g;
-						g.background(.8);
-						context.useChassisCurves = true;
-						// Draw the bot
+            }, function(g) {
+                // Updates
 
-						g.fill(.8, 1, 1);
-						g.ellipse(0, 0, 90, 90);
-						app.currentBot.render(context);
-					});
-				}
-			});
+                // only do if its the inspector mode
+                if (app.editMode) {
+                    // Updates
+                    app.ui.output.clear();
 
-			// Create the arena
-			app.arenaProcessing = ui.addProcessingWindow(app.arenaWindow.element, function(g) {
-				app.arenaWindow.setProcessing(g);
-			}, function(g) {
-				// only do if its the arena mode
-				if (!app.editMode) {
-					app.ui.output.clear();
+                    if (!app.paused) {
+                        app.worldTime.updateTime(g.millis() * .001);
+                        app.currentBot.update({
+                            total : app.worldTime.total,
+                            elapsed : app.worldTime.ellapsed
+                        });
+                    }
 
-					if (!app.paused) {
-						app.worldTime.updateTime(g.millis() * .001);
-						app.arena.update(app.worldTime.ellapsed);
-						app.scoreGraph.update(app.worldTime);
-					}
-					app.arenaWindow.render(function(context) {
-						context.scale = 3;
-						app.arena.render(context);
-					});
-				}
+                    app.editWindow.render(function(context) {
 
-			});
+                        var g = context.g;
+                        g.background(.8);
+                        context.useChassisCurves = true;
+                        // Draw the bot
 
-		},
-	});
+                        g.fill(.8, 1, 1);
+                        g.ellipse(0, 0, 90, 90);
 
-	return BotApp;
+                        app.currentBot.render(context);
+
+                    });
+                }
+            });
+
+            // Create the arena
+            app.arenaProcessing = ui.addProcessingWindow(app.arenaWindow.element, function(g) {
+                app.arenaWindow.setProcessing(g);
+            }, function(g) {
+                // only do if its the arena mode
+                if (!app.editMode) {
+                    app.ui.output.clear();
+
+                    if (!app.paused) {
+                        app.worldTime.updateTime(g.millis() * .001);
+                        app.arena.update(app.worldTime.ellapsed);
+                        app.scoreGraph.update(app.worldTime);
+                    }
+                    app.arenaWindow.render(function(context) {
+                        context.scale = 3;
+                        app.arena.render(context);
+                    });
+                }
+
+            });
+
+        },
+    });
+
+    return BotApp;
 });

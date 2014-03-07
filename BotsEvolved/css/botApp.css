@@ -27,15 +27,16 @@
 	height:100%;
 }
 #arena_bar {
-	position:absolute;
-	bottom:0px;
-	width:700px;
-	height:100px;
+	position: absolute;
+	bottom: 0px;
+	width: 700px;
+	height: 140px;
 }
 .main_canvas {
-	position:absolute;
-	width:700px;
-	height:500px;
+	pointer-events: all;
+	position: absolute;
+	width: 700px;
+	height: 500px;
 }
 #edit_menus {
 	position:absolute;
@@ -86,7 +87,6 @@
 #edit.away {
 	-webkit-transform:translate(600px, 0px) rotateY(70deg);
 }
-
 
 .subpanel {
 	margin:5px;
