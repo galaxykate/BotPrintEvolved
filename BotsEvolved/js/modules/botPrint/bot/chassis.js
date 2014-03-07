@@ -431,7 +431,7 @@ define(["common", "graph", "./wiring", "./Tuning", "./attachment/attachments", "
             	attachment.render(context);
             });
                  
-            if(app.editMode || app.editChassis) {
+            if(app.editMode && !app.editChassis) {
             	var d = 10;
                 var nodes = this.path.nodes;
                	context.g.mouseDragged = function() {
