@@ -2,7 +2,7 @@
  * @author Kate Compton
  */
 
-define(["common", "graph", "./wiring", "./attachment/attachments", "./component"], function(common, Graph, Wiring, Attachment, Component) {'use strict';
+define(["common", "graph", "./wiring", "./Tuning", "./attachment/attachments", "./component"], function(common, Graph, Wiring, Tuning, Attachment, Component) {'use strict';
     //Private helpers to hide some ugliness
 
 
@@ -48,6 +48,7 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             this.bot = bot;
             this.idColor = opts.idColor || bot.idColor;
             this.curveSubdivisions = opts.curveSubdivisions || 3;
+			this.attachmentCount = 0;
 
             this.path = opts.path || new Graph.Path();
             this.center = new Vector(0, 0);
@@ -273,7 +274,6 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
 			this.components[1].compilePins(controllerOutPins, function(pin) {
 				return !pin.positive;
 			});
-			
 			$.each(attachmentInPins, function(index, pin) {
 				chassis.wires.push(new Wiring.Wire(attachmentInPins[index], controllerOutPins[index]));
 				chassis.wires.push(new Wiring.Wire(controllerInPins[index], attachmentOutPins[index]));
@@ -299,24 +299,28 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
          */
         generateAttachment : function(typeIndex) {
         	// Create some random point around the path to attach this to.
-          	var edge = this.path.getRandomEdge();
-         	var pct = Math.random();
-          
-            // Make the tracer slightly inset
-            var attachPoint = edge.getTracer(pct, -3);
-            if (!attachPoint || !attachPoint.isValid())
-            throw "Found invalid attach point: " + attachPoint + " edge: " + edge + " pct: " + pct;
-          
-            // Create an attachment of some random type
-            //console.log("hh: " + app.attachmentWeights);
+            if (this.attachmentCount < Tuning.OrangatanPins)
+            {
+              var edge = this.path.getRandomEdge();
+              var pct = Math.random();
             
-            var attachment = new app.attachmentTypes[typeIndex]();
-          
-            attachment.attachTo(this, attachPoint);
-            attachment.addPins();
-          
-            this.attachments.push(attachment);
-            this.attachPoints.push(attachPoint);
+              // Make the tracer slightly inset
+              var attachPoint = edge.getTracer(pct, -3);
+              if (!attachPoint || !attachPoint.isValid())
+              throw "Found invalid attach point: " + attachPoint + " edge: " + edge + " pct: " + pct;
+            
+              // Create an attachment of some random type
+              //console.log("hh: " + app.attachmentWeights);
+              
+              var attachment = new app.attachmentTypes[typeIndex]();
+            
+              attachment.attachTo(this, attachPoint);
+              attachment.addPins();
+            
+              this.attachments.push(attachment);
+              this.attachPoints.push(attachPoint);
+              this.attachmentCount++;
+            }
         },
 
         /**
