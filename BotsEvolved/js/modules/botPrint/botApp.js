@@ -210,7 +210,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             var button = $("<button/>", {
                 id : 'edit_menu_button',
             });
-            button.append("Edit Menu Button");
+            button.append("Edit Bot");
             button.appendTo($("#parts_edit"));
             button.click(function() {
 				app.toggleEditMode();
@@ -257,7 +257,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             var button = $("<button/>", {
                 id : 'edit_menu_button',
             });
-            button.append("Edit Menu Button");
+            button.append("Edit Parts");
             button.appendTo($("#chassis_edit"));
             button.click(function() {
 				app.toggleEditMode();
