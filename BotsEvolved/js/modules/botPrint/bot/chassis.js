@@ -451,6 +451,25 @@ define(["common", "graph", "./wiring", "./Tuning", "./attachment/attachments", "
                 	context.g.ellipse(node.x, node.y, d, d);
             	});
         	}
+            else if (!app.editChassis) {
+            //Edit parts mode = Drag, drop and delete attachments
+            	cvar d = 10;
+                var nodes = this.path.nodes;
+               	context.g.mouseDragged = function() {
+              		var mVector = new common.Vector(g.mouseX - g.width/2, g.mouseY - g.height/2);
+                    bot.transform.toLocal(mVector, mVector);
+
+                    var curr = insideCircle(mVector, nodes, d);
+                   	if(curr !== undefined) {
+                    	curr.x = mVector.x;
+                        curr.y = mVector.y;
+                        
+                    }
+                };
+            }
+            else {
+            	context.g.mouseDragged = undefined;
+            }
     	},
 
         /**
