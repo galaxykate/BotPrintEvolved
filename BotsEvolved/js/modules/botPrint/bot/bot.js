@@ -22,6 +22,9 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
             this.name = makeBotName();
             this.transform = new common.Transform();
             this.lastTransform = new common.Transform();
+            
+            //keeps track of the amount of times this bot has collided.
+            this.amountOfCollisions = 0;
 
             // Create DNA for the bot
             if (parent) {
@@ -225,6 +228,14 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
 
             return this.mesh;
 
+        },
+        
+        incrementCollisionAmount: function(){
+        	this.amountOfCollisions++;
+        },
+        
+        resetCollisionAmount: function(){
+        	this.amountofCollisions = 0;
         },
 
         //========================================================================
