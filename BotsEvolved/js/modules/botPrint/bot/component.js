@@ -4,7 +4,7 @@
  * This Javascript object is a generic component.  Components are internal parts with input and output pins. 
  */
 
-define(["common", "graph", "./wiring"], function(common, Graph, Wiring) {'use strict';
+define(["common", "graph", "./tuning", "./wiring"], function(common, Graph, Tuning, Wiring) {'use strict';
 	var componentCount = 0;
 	var Component = Class.extend({
 		/**
@@ -34,7 +34,8 @@ define(["common", "graph", "./wiring"], function(common, Graph, Wiring) {'use st
 		},
 		
 		//========================================================
-		// add pins
+		// Pins!
+		
 		addPins : function() {          
         	//add pins
         	//each component gets three snap points randomly distributed
@@ -145,7 +146,7 @@ define(["common", "graph", "./wiring"], function(common, Graph, Wiring) {'use st
 			this._super();
 			this.id = "Orangutan " + this.idNumber;
 		},
-
+		
 		//build the actual shape of the core component block
 		buildDetails : function(){
 			this.path = Graph.makeRectangle(this.attachPoint, 5, 5);
@@ -159,7 +160,7 @@ define(["common", "graph", "./wiring"], function(common, Graph, Wiring) {'use st
 			pinOffset.setTo(0, 3, 0);
 
 			//positive pins
-			for(var i = 0; i < 12; i++){
+			for(var i = 0; i < Tuning.OrangatanPins; i++){
 				var pin = new Wiring.Pin({
 					positive : true,
 					offset : pinOffset,
@@ -169,7 +170,7 @@ define(["common", "graph", "./wiring"], function(common, Graph, Wiring) {'use st
 			}
 
 			pinOffset.setTo(0, -3, 0);
-			for(var i = 0; i < 12; i++){
+			for(var i = 0; i < Tuning.OrangatanPins; i++){
 				var pin = new Wiring.Pin({
                     positive : false,
 					offset : pinOffset,
