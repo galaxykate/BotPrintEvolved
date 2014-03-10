@@ -451,6 +451,10 @@ define(["common", "graph", "./wiring", "./tuning", "./attachment/attachments", "
                 	context.g.ellipse(node.x, node.y, d, d);
             	});
         	}
+            else
+            {
+            	context.g.mouseDragged = undefined;
+            }
     	},
 
         /**
