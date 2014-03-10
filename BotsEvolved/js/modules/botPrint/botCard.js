@@ -83,10 +83,6 @@ define(["common"], function(common) {'use strict';
 
             });
 
-            $("*").click(function() {
-                console.log(this);
-                //   return false;
-            });
         },
 
         setBot : function(bot) {

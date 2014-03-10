@@ -2,7 +2,7 @@
  * @author Kate Compton
  */
 
-define(["ui", "./bot/tuning", "./bot/bot","./botCard", "./physics/arena", "threeUtils", "./botEvo", "app", "common", "./population", "./scoreGraph", "./heuristic", "./bot/attachment/attachments"], function(UI, Tuning, Bot, BotCard, Arena, threeUtils, BotEvo, App, common, Population, ScoreGraph, Heuristic, Attachment) {
+define(["ui", "./bot/tuning", "./bot/bot", "./botCard", "./physics/arena", "threeUtils", "./botEvo", "app", "common", "./population", "./scoreGraph", "./heuristic", "./bot/attachment/attachments"], function(UI, Tuning, Bot, BotCard, Arena, threeUtils, BotEvo, App, common, Population, ScoreGraph, Heuristic, Attachment) {
 
     /**
      * @class BotApp
@@ -17,13 +17,12 @@ define(["ui", "./bot/tuning", "./bot/bot","./botCard", "./physics/arena", "three
             app = this;
             app.width = 900;
             app.height = 600;
-             app.botCardDimensions = {
+            app.botCardDimensions = {
                 width : 150,
                 height : 220,
                 border : 20,
             };
-            
-            
+
             app.paused = false;
             app.editChassis = false;
 
@@ -42,17 +41,21 @@ define(["ui", "./bot/tuning", "./bot/bot","./botCard", "./physics/arena", "three
             });
 
 
+            $("#switch_modes").click(function() {
+                app.toggleMainMode();
+            });
+
             /*$(".edit_menu").click(function() {
              app.toggleEditMode();
              });*/
             app.createAttachmentList();
             app.closeLoadScreen();
 
-          app.botCard = new BotCard($("#app"));
-              app.setPopulation(new Population(5));
+            app.botCard = new BotCard($("#app"));
+            app.setPopulation(new Population(5));
             app.currentBot = app.population.bots[0];
-                   app.botCard.setBot( app.currentBot);
-                         
+            app.botCard.setBot(app.currentBot);
+
             app.initializeEditMode();
 
             app.openArenaMode();
