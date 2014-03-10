@@ -13,9 +13,6 @@ define(["common"], function(common) {'use strict';
             this.mainDiv = $("<div/>", {
                 "class" : "bot_card"
             });
-            this.thumbnail = $("<div/>", {
-                "class" : "bot_thumbnail"
-            });
 
             this.title = $("<div/>", {
                 html : "unknown bot",
@@ -35,11 +32,9 @@ define(["common"], function(common) {'use strict';
                 html : "bot info here...",
                 "class" : "bot_details"
             });
+            this.thumbnail = $("<canvas/>", {
+                "class" : "bot_thumbnail",
 
-            this.canvas = $("<canvas/>", {
-                "class" : "bot_card_canvas",
-                width : "200px",
-                height : "200px",
             });
 
             parentHolder.append(this.mainDiv);
@@ -47,10 +42,9 @@ define(["common"], function(common) {'use strict';
             this.mainDiv.append(this.title);
             this.mainDiv.append(this.thumbnail);
             this.mainDiv.append(this.details);
-            this.thumbnail.append(this.canvas);
 
             // Add processing
-            var div = this.canvas;
+            var div = this.thumbnail;
             var canvas = div.get(0);
 
             var processingInstance = new Processing(canvas, function sketchProc(processing) {
@@ -58,19 +52,23 @@ define(["common"], function(common) {'use strict';
                 processing.size(div.width(), div.height());
                 var g = processing;
                 g.colorMode(g.HSB, 1);
-                g.background(.5, 1, 1);
 
                 // Override draw function, by default it will be called 60 times per second
                 processing.draw = function() {
+                    g.background(.5, 1, 1);
                     var context = {
                         g : g,
+                        centerBot : true,
                         useChassisCurves : true,
 
                     };
-
+                    g.pushMatrix();
+                    g.translate(g.width / 2, g.height / 2);
+                    g.scale(.8);
                     if (card.bot) {
                         card.bot.render(context);
                     }
+                    g.popMatrix();
                 }
             });
         },

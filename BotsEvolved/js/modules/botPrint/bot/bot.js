@@ -30,7 +30,7 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
             var colorGene = this.dna.genes[0];
             this.idColor = new common.KColor(colorGene[0], colorGene[1] * .4 + .6, colorGene[2]);
             this.setMainChassis(new Chassis(this, {
-                pointCount:10
+                pointCount : 10
             }));
             this.compileAttachments();
         },
@@ -149,7 +149,8 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
         render : function(context) {
             var g = context.g;
             g.pushMatrix();
-            this.transform.applyTransform(g);
+            if (!context.centerBot)
+                this.transform.applyTransform(g);
 
             context.useChassisCurves = true;
             this.mainChassis.render(context);
@@ -202,7 +203,7 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
             this.selectedPoint = undefined;
         },
         getAt : function(p, query) {
-           // return this.mainChassis.getAt(query);
+            // return this.mainChassis.getAt(query);
         },
         createThreeMesh : function() {
             this.mainChassis.path.createThreeMesh({

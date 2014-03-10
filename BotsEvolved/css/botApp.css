@@ -69,9 +69,7 @@
 	position:absolute;
 	right:0px;
 }
-.main_canvas {
-    pointer-events: all;
-}
+
 #edit {
     pointer-events: none;
 	transition:all .2s;
@@ -107,7 +105,7 @@
 .bot_thumbnail {
 	position:relative;
 	width:90%;
-	height:30%;
+	height:40%;
 	margin:0 auto;
 	border:1px solid white;
 	box-shadow:inset 2px 2px 15px 0px rgba(0, 0, 0, .4);
