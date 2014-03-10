@@ -7,6 +7,8 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
     function B2DtoString(v) {
         return "(" + v.get_x().toFixed(2) + ", " + v.get_y().toFixed(2) + ")";
     };
+    
+    var firstTime = true;
 
     var b2Vec2 = Box2D.b2Vec2;
 
@@ -18,22 +20,35 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             this.frame = 0;
             this.gravity = new Box2D.b2Vec2(0.0, gravity);
             this.world = new Box2D.b2World(this.gravity);
-            this.listener = new Box2D.b2ContactListener();
+            //this.listener = new Box2D.b2ContactListener();
 
             this.bodies = [];
             //console.log("I've hit something");
             this.enableEventListeners();
 
         },
-		
+        
+        
+		//replaces the default event listener with out own custom one
 		enableEventListeners : function(){
-			this.listener.BeginContact = function(contact) {
-				console.log("I've hit something");
-        		callbacks.BeginContact(contact.GetFixtureA().GetBody().GetUserData(),
-                contact.GetFixtureB().GetBody().GetUserData());
-			},
-			
-            this.world.SetContactListener( this.listener );
+			var listener = new Box2D.b2ContactListener();
+
+            Box2D.customizeVTable(listener, [{
+                original : Box2D.b2ContactListener.prototype.BeginContact,
+                replacement : function(thsPtr, contactPtr) {
+                    var contact = Box2D.wrapPointer(contactPtr, Box2D.b2Contact);
+                    var botA = contact.GetFixtureA().GetBody().parentObject;
+                    var botB = contact.GetFixtureB().GetBody().parentObject;
+                    
+                    //catches when the bot turns undefined
+                    if(typeof(botA) != 'undefined' && typeof(botB) != 'undefined'){
+                    	botA.incrementCollisionAmount();
+                    	botB.incrementCollisionAmount();
+                    }
+                }
+            }]),
+
+            this.world.SetContactListener(listener);
 		},
 		
         removeBodies : function() {
@@ -111,7 +126,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             bodyDef.angularDamping = 10.01;
             bodyDef.set_type(Box2D.b2_dynamicBody);
 
-			//iterates though all the objects
+			//iterates though all the objects i.e bots
             $.each(objects, function(index, obj) {
 
                 var points = obj.getHull();
@@ -119,26 +134,22 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                 // var customShapes = boxWorld.createPolygonShapes(obj.points);
                 var customShapes = boxWorld.createTriFanShapes(points);
 
-                
                 var body = boxWorld.world.CreateBody(bodyDef);
 
-                // set the parent object
-                body.parentObject = obj;
                 boxWorld.setBodyToTransform(body, obj.transform);
 
-                // set the parent object
-                body.parentObject = obj;
                 $.each(customShapes, function(index, shape) {
-                	//var fixtureDef = new Box2D.b2FixtureDef();
-					//fixtureDef.set_density( 2.5 );
-					//fixtureDef.set_friction( 0.6 );
-					//fixtureDef.set_shape( shape );
-					//body.CreateFixture( fixtureDef );
-                    body.CreateFixture(shape, 5.0);
-                })
+                	var fixtureDef = new Box2D.b2FixtureDef();
+					fixtureDef.set_density( 5.0 );
+					fixtureDef.set_friction( 0.6 );
+					fixtureDef.set_shape( shape );
+					body.CreateFixture( fixtureDef );
+                }),
     
                 // set the parent object
                 body.parentObject = obj;
+                
+                //body.SetUserData(obj);
                 
                 boxWorld.bodies.push(body);
 
