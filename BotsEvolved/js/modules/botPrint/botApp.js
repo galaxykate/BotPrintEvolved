@@ -2,103 +2,99 @@
  * @author Kate Compton
  */
 
-define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "common", "./population", "./scoreGraph", "./heuristic", "./bot/attachment/attachments"], function(UI, Bot, Arena, threeUtils, BotEvo, App, common, Population, ScoreGraph, Heuristic, Attachment) {
+define(["ui", "./bot/bot", "./botCard", "./physics/arena", "threeUtils", "./botEvo", "app", "common", "./population", "./scoreGraph", "./heuristic", "./bot/attachment/attachments"], function(UI, Bot, BotCard, Arena, threeUtils, BotEvo, App, common, Population, ScoreGraph, Heuristic, Attachment) {
 
-	/**
-	 * @class BotApp
-	 * @extends App
-	 */
-	var BotApp = App.extend({
-		/**
-		 * @method init
-		 */
-		init : function() {
-			
-			app = this;
-			app.width = 900;
-			app.height = 600;
-			app.botCard = {
-				width : 150,
-				height : 220,
-				border : 20,
-			};
+    /**
+     * @class BotApp
+     * @extends App
+     */
+    var BotApp = App.extend({
+        /**
+         * @method init
+         */
+        init : function() {
 
-			app.paused = false;
-			app.editChassis = false;
-			
-			//app.initModes();
-			
-			app._super("Bots", new Vector(30, 30));
+            app = this;
+            app.width = 900;
+            app.height = 600;
+            app.botCardDimensions = {
+                width : 150,
+                height : 220,
+                border : 20,
+            };
 
-			// app.changeMode("inspector");
-			app.arena = new Arena("rectangle");
+            app.paused = false;
+            app.editChassis = false;
 
-			//app.currentBot = new Bot();
+            //app.initModes();
 
-			$("#select_arena").click(function() {
-				var arenatype = $("#arena_type_chooser").val();
-				app.loadNewArena(arenatype);
-			});
+            app._super("Bots", new Vector(30, 30));
 
-			$("#switch_modes").click(function() {
-				app.toggleMainMode();
-			});
+            // app.changeMode("inspector");
+            app.arena = new Arena("rectangle");
 
-			/*$(".edit_menu").click(function() {
-				app.toggleEditMode();
-			});*/
-			app.createAttachmentList();
-			app.closeLoadScreen();
+            //app.currentBot = new Bot();
 
-			
-			app.createEmptyBotCard($("#app"));
-			app.setPopulation(new Population(5));
-			app.currentBot = app.population.bots[0];
-			app.initializeEditMode();
-			
-			app.openArenaMode();
-		},
+            $("#select_arena").click(function() {
+                var arenatype = $("#arena_type_chooser").val();
+                app.loadNewArena(arenatype);
+            });
 
-		//=====================================================================
-		//=====================================================================
-		//=====================================================================
-		// Create a global list of all the attachments and their weights
-		createAttachmentList : function() {
+            $("#switch_modes").click(function() {
+                app.toggleMainMode();
+            });
 
-			// Weights and attachment types: there should be the same number in each array, please!
-			app.attachmentWeights = [.3, .6];
-			app.attachmentTypes = [Attachment.Sensor, Attachment.Actuator];
-			//app.initModes();
-			//console.log("types: " + app.getOption("useTimers"));
+            /*$(".edit_menu").click(function() {
+             app.toggleEditMode();
+             });*/
+            app.createAttachmentList();
+            app.closeLoadScreen();
 
-			
-			if (app.getOption("useTimers")) {
-				app.attachmentTypes.push(Attachment.Sensor.Timer), app.attachmentWeights.push(1);
-			}
-			
-			if (app.getOption("useColorLerpers")) {
-				app.attachmentTypes.push(Attachment.Sensor.ColorLerper), app.attachmentWeights.push(1);
-			}
-			
-			if (app.getOption("useSharpie")) {
-				app.attachmentTypes.push(Attachment.Actuator.Sharpie), app.attachmentWeights.push(1);
-			}
-			
-		},
-		
-		
+            app.botCard = new BotCard($("#app"));
+            app.setPopulation(new Population(5));
+            app.currentBot = app.population.bots[0];
+            app.initializeEditMode();
 
-		//=====================================================================
-		//=====================================================================
-		//=====================================================================
-		//=====================================================================
-		setCurrentBot : function(bot) {
+            app.openArenaMode();
+        },
 
-			app.currentBot = bot;
-			bot.saveBot()
-		},
+        //=====================================================================
+        //=====================================================================
+        //=====================================================================
+        // Create a global list of all the attachments and their weights
+        createAttachmentList : function() {
 
-		/**
+            // Weights and attachment types: there should be the same number in each array, please!
+            app.attachmentWeights = [.3, .6];
+            app.attachmentTypes = [Attachment.Sensor, Attachment.Actuator];
+            //app.initModes();
+            //console.log("types: " + app.getOption("useTimers"));
+
+            if (app.getOption("useTimers")) {
+                app.attachmentTypes.push(Attachment.Sensor.Timer), app.attachmentWeights.push(1);
+            }
+
+            if (app.getOption("useColorLerpers")) {
+                app.attachmentTypes.push(Attachment.Sensor.ColorLerper), app.attachmentWeights.push(1);
+            }
+
+            if (app.getOption("useSharpie")) {
+                app.attachmentTypes.push(Attachment.Actuator.Sharpie), app.attachmentWeights.push(1);
+            }
+
+        },
+
+        //=====================================================================
+        //=====================================================================
+        //=====================================================================
+        //=====================================================================
+        setCurrentBot : function(bot) {
+
+            app.currentBot = bot;
+            bot.saveBot()
+        },
+
+        /**
          * @method loadNewArena
          */
         loadNewArena : function(shape) {
@@ -112,64 +108,59 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.currentBot = app.population.bots[0];
         },
 
-		highlightBot : function(bot) {
-			//  console.log("Highlighting " + bot);
-		},
+        highlightBot : function(bot) {
+            //  console.log("Highlighting " + bot);
+        },
 
-		// Create a bot card and attach it here
-		createEmptyBotCard : function(parentHolder) {
+        /**
+         * @method toggleMainMode
+         */
+        toggleMainMode : function() {
+            console.log("Toggle main mode " + app.editMode);
+            if (app.editMode)
+                app.openArenaMode();
+            else
+                app.openEditMode();
+        },
 
-		},
+        /**
+         * @method openEditMode
+         */
+        openEditMode : function() {
+            app.editMode = true;
+            $("#arena").addClass("away");
+            $("#edit").removeClass("away");
 
-		/**
-		 * @method toggleMainMode
-		 */
-		toggleMainMode : function() {
-			console.log("Toggle main mode " + app.editMode);
-			if (app.editMode)
-				app.openArenaMode();
-			else
-				app.openEditMode();
-		},
+            // Make wiring for this bot?
+            app.currentBot.transform.setTo(0, 0, 0);
+            app.openEditChassis();
 
-		/**
-		 * @method openEditMode
-		 */
-		openEditMode : function() {
-			app.editMode = true;
-			$("#arena").addClass("away");
-			$("#edit").removeClass("away");
+            var p = new Vector();
+            $(".bot_card").css({
+                "-webkit-transform" : "translate(" + p.x + "px, " + p.y + "px) rotateX(360deg) scale3d(1, 1, 1)",
+            });
+        },
 
-			// Make wiring for this bot?
-			app.currentBot.transform.setTo(0, 0, 0);
-			app.openEditChassis();
+        /**
+         * @method openArenaMode
+         */
+        openArenaMode : function() {
+            var bc = app.botCardDimensions;
+            app.editMode = false;
+            $("#edit").addClass("away");
+            $("#arena").removeClass("away");
 
-			var p = new Vector();
-			$(".bot_card").css({
-				"-webkit-transform" : "translate(" + p.x + "px, " + p.y + "px) rotateX(360deg) scale3d(1, 1, 1)",
-			});
-		},
+            var p = new Vector(app.width - bc.width - (bc.border * 2), app.height - bc.height - (bc.border * 2));
+            $(".bot_card").css({
+                "-webkit-transform" : "translate(" + p.x + "px, " + p.y + "px) rotateX(.01deg) scale3d(1, 1, 1)",
+            });
 
-		/**
-		 * @method openArenaMode
-		 */
-		openArenaMode : function() {
-			var bc = app.botCard;
-			app.editMode = false;
-			$("#edit").addClass("away");
-			$("#arena").removeClass("away");
+            app.population.updateUI();
+        },
 
-			var p = new Vector(app.width - bc.width - (bc.border * 2), app.height - bc.height - (bc.border * 2));
-			$(".bot_card").css({
-				"-webkit-transform" : "translate(" + p.x + "px, " + p.y + "px) rotateX(.01deg) scale3d(1, 1, 1)",
-			});
-
-			app.population.updateUI();
-		},
-		
-		createBot : function() {
-			return new Bot();
-		},
+        createBot : function() {
+            return new Bot();
+        },
 
         editBot : function(bot) {
             this.currentBot = bot;
@@ -262,135 +253,135 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
             app.ui.addTuningValue("unicornFluffiness", 100, 1, 700, function(key, value) {
                 // do something on change
             });
-		},
-		
-		//-------------------------------------------------------
-		/**
-		 * @method initializeEditMode
-		 */
-		initializeEditMode : function() {
-			$("#parts_edit").append("<br>");
+        },
+
+        //-------------------------------------------------------
+        /**
+         * @method initializeEditMode
+         */
+        initializeEditMode : function() {
+            $("#parts_edit").append("<br>");
             var button = $("<button/>", {
                 id : 'edit_menu_button',
             });
             button.append("Edit Menu Button");
             button.appendTo($("#parts_edit"));
             button.click(function() {
-				app.toggleEditMode();
-			});
-			app.setEditMenu();
-			var ui = app.ui;
-			var partNames = new Array();
-			var rTest = Attachment.Sensor;
-			partNames[0] = "wheel";
-			partNames[1] = "light sensor";
-			partNames[2] = "servo";
+                app.toggleEditMode();
+            });
+            app.setEditMenu();
+            var ui = app.ui;
+            var partNames = new Array();
+            var rTest = Attachment.Sensor;
+            partNames[0] = "wheel";
+            partNames[1] = "light sensor";
+            partNames[2] = "servo";
             var attachList = app.attachmentTypes;
-            for (var i = 0; i < attachList.length;i++) {
+            for (var i = 0; i < attachList.length; i++) {
 
-				var canva = $("<canvas/>", {
-					id : 'edit_item ' + i,
-                    class: 'edit_item',
-					width : 150,
-					height : 100,
-					//"border-radius": 1,
-				});
-                var curAttachment = attachList[i];
-				//var canvases = document.getElementById('edit_item');
-				//var ctx = $(canva).getContext('2d');
-
-				//var attach = this.currentBot.mainChassis.attachments;
-				//var attachTypes = this.currentBot.mainChassis.aTypes;
-				
-				canva.appendTo($("#parts_edit"));
-
-				//Insert drag/droppable image here?
-                
-                canva.click(function(e) {
-                   console.log(e.target.id);
-                   e.stopPropagation();
+                var canva = $("<canvas/>", {
+                    id : 'edit_item ' + i,
+                    class : 'edit_item',
+                    width : 150,
+                    height : 100,
+                    //"border-radius": 1,
                 });
-			}
-		},
+                var curAttachment = attachList[i];
+                //var canvases = document.getElementById('edit_item');
+                //var ctx = $(canva).getContext('2d');
 
-		setEditMenu : function() {
-			$("#chassis_edit").text("");
+                //var attach = this.currentBot.mainChassis.attachments;
+                //var attachTypes = this.currentBot.mainChassis.aTypes;
+
+                canva.appendTo($("#parts_edit"));
+
+                //Insert drag/droppable image here?
+
+                canva.click(function(e) {
+                    console.log(e.target.id);
+                    e.stopPropagation();
+                });
+            }
+        },
+
+        setEditMenu : function() {
+            $("#chassis_edit").text("");
             var button = $("<button/>", {
                 id : 'edit_menu_button',
             });
             button.append("Edit Menu Button");
             button.appendTo($("#chassis_edit"));
             button.click(function() {
-				app.toggleEditMode();
-			});
-			$("#chassis_edit").append("<hr>");
-			nString = "<center>";
-			$("#chassis_edit").append(nString.concat(this.currentBot.name));
-			$("#chassis_edit").append("</center>");
-		},
+                app.toggleEditMode();
+            });
+            $("#chassis_edit").append("<hr>");
+            nString = "<center>";
+            $("#chassis_edit").append(nString.concat(this.currentBot.name));
+            $("#chassis_edit").append("</center>");
+        },
 
-		//-------------------------------------------------------
-		/**
-		 * @method toggleEditMode
-		 */
-		toggleEditMode : function() {
-			console.log("Toggle edit mode " + app.editChassis);
-			if (app.editChassis)
-				app.openEditChassis();
-			else
-				app.openEditParts();
-		},
+        //-------------------------------------------------------
+        /**
+         * @method toggleEditMode
+         */
+        toggleEditMode : function() {
+            console.log("Toggle edit mode " + app.editChassis);
+            if (app.editChassis)
+                app.openEditChassis();
+            else
+                app.openEditParts();
+        },
 
-		/**
-		 * @method openEditParts
-		 */
-		openEditParts : function() {
-			app.editChassis = true;
-			$("#chassis_edit").addClass("away");
-			$("#parts_edit").removeClass("away");
-		},
+        /**
+         * @method openEditParts
+         */
+        openEditParts : function() {
+            app.editChassis = true;
+            $("#chassis_edit").addClass("away");
+            $("#parts_edit").removeClass("away");
+        },
 
-		/**
-		 * @method openEditChassis
-		 */
-		openEditChassis : function() {
-			app.editChassis = false;
-			$("#chassis_edit").removeClass("away");
-			$("#parts_edit").addClass("away");
-		},
+        /**
+         * @method openEditChassis
+         */
+        openEditChassis : function() {
+            app.editChassis = false;
+            $("#chassis_edit").removeClass("away");
+            $("#parts_edit").addClass("away");
+        },
 
-		/**
-		 * @method openLoadScreen
-		 */
-		openLoadScreen : function() {
-			$("#load_screen").show();
-		},
+        /**
+         * @method openLoadScreen
+         */
+        openLoadScreen : function() {
+            $("#load_screen").show();
+        },
 
-		/**
-		 * @method closeLoadScreen
-		 */
-		closeLoadScreen : function() {
-			$("#load_screen").hide();
-			/* $("*").click(function(evt) {
-			 console.log("Clicked ", this);
-			 });*/
-		},
+        /**
+         * @method closeLoadScreen
+         */
+        closeLoadScreen : function() {
+            $("#load_screen").hide();
+            /* $("*").click(function(evt) {
+             console.log("Clicked ", this);
+             });*/
+        },
 
-		spawnNextGeneration : function() {
-			app.setPopulation(app.population.createNextGeneration());
-		},
+        spawnNextGeneration : function() {
+            app.setPopulation(app.population.createNextGeneration());
+        },
 
-		setPopulation : function(pop) {
-			console.log("Set population: " + pop);
-			app.population = pop;
-			app.currentBot = app.population.bots[0];
-			app.arena.reset();
-			app.arena.addPopulation(app.population.bots);
-			app.scoreGraph.setCompetitors(app.population.bots);
-			app.population.updateUI();
-		},
-		//=====================================================================
-		//=====================================================================
+        setPopulation : function(pop) {
+            console.log("Set population: " + pop);
+            app.population = pop;
+            app.currentBot = app.population.bots[0];
+            app.arena.reset();
+            app.arena.addPopulation(app.population.bots);
+            app.scoreGraph.setCompetitors(app.population.bots);
+            app.population.updateUI();
+        },
+        //=====================================================================
+        //=====================================================================
 
         /**
          * @method initControls
@@ -427,15 +418,18 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
                         // Move the mouse in the arena mode
                         var previous = app.controls.hoveredObject;
                         var selected = app.arena.getAt(touchArena.localPos, {
-
+                            range : 90,
                         });
 
+                        // Swich which bot is selected
                         if (selected !== previous) {
                             if (previous)
                                 previous.deselect();
                             app.controls.hoveredObject = selected;
-                            if (selected)
+                            if (selected) {
                                 selected.select();
+                                app.botCard.setBot(selected);
+                            }
                         }
 
                     }
@@ -461,7 +455,18 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
                     if (app.controls.hoveredObject)
                         app.controls.hoveredObject.dragTo(this.localPos);
 
-                }
+                },
+
+                click : function() {
+                    console.log("Click");
+                },
+
+                dblClick : function() {
+                    console.log("DBLClick");
+
+                    // Edit this bot
+                    app.editBot(app.controls.hoveredObject);
+                },
             });
 
         },
