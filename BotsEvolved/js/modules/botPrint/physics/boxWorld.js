@@ -71,7 +71,12 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
         readIntoTransform : function(body, transform) {
             var bpos = body.GetPosition();
             transform.rotation = body.GetAngle();
-            transform.setTo(bpos.get_x() * this.scale, bpos.get_y() * this.scale);
+            try{
+            	transform.setTo(bpos.get_x() * this.scale, bpos.get_y() * this.scale);
+            }
+            catch(err){
+            	console.log(this.scale);
+            }
         },
 
         toB2Vec : function(p) {

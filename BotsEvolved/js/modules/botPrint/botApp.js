@@ -2,7 +2,7 @@
  * @author Kate Compton
  */
 
-define(["ui", "./bot/bot", "./botCard", "./physics/arena", "threeUtils", "./botEvo", "app", "common", "./population", "./scoreGraph", "./heuristic", "./bot/attachment/attachments"], function(UI, Bot, BotCard, Arena, threeUtils, BotEvo, App, common, Population, ScoreGraph, Heuristic, Attachment) {
+define(["ui", "./bot/tuning", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "common", "./population", "./scoreGraph", "./heuristic", "./bot/attachment/attachments"], function(UI, Tuning, Bot, Arena, threeUtils, BotEvo, App, common, Population, ScoreGraph, Heuristic, Attachment) {
 
     /**
      * @class BotApp
@@ -17,7 +17,7 @@ define(["ui", "./bot/bot", "./botCard", "./physics/arena", "threeUtils", "./botE
             app = this;
             app.width = 900;
             app.height = 600;
-            app.botCardDimensions = {
+            app.botCard = {
                 width : 150,
                 height : 220,
                 border : 20,
@@ -50,7 +50,7 @@ define(["ui", "./bot/bot", "./botCard", "./physics/arena", "threeUtils", "./botE
             app.createAttachmentList();
             app.closeLoadScreen();
 
-            app.botCard = new BotCard($("#app"));
+            app.createEmptyBotCard($("#app"));
             app.setPopulation(new Population(5));
             app.currentBot = app.population.bots[0];
             app.initializeEditMode();
@@ -95,6 +95,7 @@ define(["ui", "./bot/bot", "./botCard", "./physics/arena", "threeUtils", "./botE
         },
 
         /**
+
          * @method loadNewArena
          */
         loadNewArena : function(shape) {
@@ -264,7 +265,7 @@ define(["ui", "./bot/bot", "./botCard", "./physics/arena", "threeUtils", "./botE
             var button = $("<button/>", {
                 id : 'edit_menu_button',
             });
-            button.append("Edit Menu Button");
+            button.append("Edit Bot");
             button.appendTo($("#parts_edit"));
             button.click(function() {
                 app.toggleEditMode();
@@ -298,7 +299,13 @@ define(["ui", "./bot/bot", "./botCard", "./physics/arena", "threeUtils", "./botE
                 //Insert drag/droppable image here?
 
                 canva.click(function(e) {
+
                     console.log(e.target.id);
+                    var strChunks = e.target.id.split(" ");
+                    app.currentBot.mainChassis.generateAttachment(parseInt(strChunks[1]));
+                    app.currentBot.mainChassis.generateWiring();
+                    app.currentBot.compileAttachments();
+
                     e.stopPropagation();
                 });
             }
@@ -309,7 +316,7 @@ define(["ui", "./bot/bot", "./botCard", "./physics/arena", "threeUtils", "./botE
             var button = $("<button/>", {
                 id : 'edit_menu_button',
             });
-            button.append("Edit Menu Button");
+            button.append("Edit Parts");
             button.appendTo($("#chassis_edit"));
             button.click(function() {
                 app.toggleEditMode();

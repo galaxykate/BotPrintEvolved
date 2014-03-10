@@ -2,7 +2,7 @@
  * @author Kate Compton
  */
 
-define(["common", "graph", "./wiring", "./attachment/attachments", "./component"], function(common, Graph, Wiring, Attachment, Component) {'use strict';
+define(["common", "graph", "./wiring", "./tuning", "./attachment/attachments", "./component"], function(common, Graph, Wiring, Tuning, Attachment, Component) {'use strict';
     //Private helpers to hide some ugliness
 
 
@@ -48,6 +48,7 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             this.bot = bot;
             this.idColor = opts.idColor || bot.idColor;
             this.curveSubdivisions = opts.curveSubdivisions || 3;
+			this.attachmentCount = 0;
 
             this.path = opts.path || new Graph.Path();
             this.center = new Vector(0, 0);
@@ -214,13 +215,11 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
         //======================================================================================
         // Attachments
 
-        /**
-         * @method generateAttachments
+		/**
+         * @method generateAttachment
          */
-        generateAttachments : function() {
-            this.attachments = [];
-            this.attachPoints = [];
-
+        generateAttachment : function(typeIndex) {
+            this.aTypes = app.attachmentTypes;
             // Weights and attachment types: there should be the same number in each array, please!
             var weights = [.3, .6];
             var attachmentTypes = [Attachment.Sensor, Attachment.Actuator];
@@ -236,29 +235,46 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             if (app.getOption("useSharpie")) {
                 attachmentTypes.push(Attachment.Actuator.Sharpie), weights.push(1);
             }
+        	// Create some random point around the path to attach this to.
+            if (this.attachmentCount < Tuning.OrangatanPins)
+            {
+              var edge = this.path.getRandomEdge();
+              var pct = Math.random();
+            
+              // Make the tracer slightly inset
+              var attachPoint = edge.getTracer(pct, -3);
+              if (!attachPoint || !attachPoint.isValid())
+              throw "Found invalid attach point: " + attachPoint + " edge: " + edge + " pct: " + pct;
+
+              // Create an attachment of some random type
+              //console.log("hh: " + app.attachmentWeights);
+                var typeIndex = utilities.getWeightedRandomIndex(app.attachmentWeights);
+                var attachment = new app.attachmentTypes[typeIndex]();
+            
+              attachment.attachTo(this, attachPoint);
+              attachment.addPins();
+
+              this.attachments.push(attachment);
+              this.attachPoints.push(attachPoint);
+              this.attachmentCount++;
+            }
+        },
+
+        /**
+         * @method generateAttachments
+         */
+        generateAttachments : function() {
+            this.attachments = [];
+            this.attachPoints = [];
+
+            this.aTypes = app.attachmentTypes;
 
             // How many attachments to generate
             var count = 4;
 
             for (var i = 0; i < count; i++) {
-                // Create some random point around the path to attach this to.
-                var edge = this.path.getRandomEdge();
-                var pct = Math.random();
-
-                // Make the tracer slightly inset
-                var attachPoint = edge.getTracer(pct, -3);
-                if (!attachPoint || !attachPoint.isValid())
-                    throw "Found invalid attach point: " + attachPoint + " edge: " + edge + " pct: " + pct;
-
-                // Create an attachment of some random type
-                var typeIndex = utilities.getWeightedRandomIndex(weights);
-                var attachment = new attachmentTypes[typeIndex]();
-
-                attachment.attachTo(this, attachPoint);
-                attachment.addPins();
-
-                this.attachments.push(attachment);
-                this.attachPoints.push(attachPoint);
+            	var typeIndex = utilities.getWeightedRandomIndex(app.attachmentWeights);
+                this.generateAttachment(typeIndex);
             }
         },
 
@@ -415,7 +431,7 @@ define(["common", "graph", "./wiring", "./attachment/attachments", "./component"
             	attachment.render(context);
             });
                  
-            if(app.editMode || app.editChassis) {
+            if(app.editMode && !app.editChassis) {
             	var d = 10;
                 var nodes = this.path.nodes;
                	context.g.mouseDragged = function() {
