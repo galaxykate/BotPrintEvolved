@@ -2,7 +2,7 @@
  * @author Kate Compton
  */
 
-define(["common", "graph", "./wiring", "./Tuning", "./attachment/attachments", "./component"], function(common, Graph, Wiring, Tuning, Attachment, Component) {'use strict';
+define(["common", "graph", "./wiring", "./tuning", "./attachment/attachments", "./component"], function(common, Graph, Wiring, Tuning, Attachment, Component) {'use strict';
     //Private helpers to hide some ugliness
 
 
