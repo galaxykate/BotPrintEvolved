@@ -71,11 +71,35 @@ define(["common"], function(common) {'use strict';
                     g.popMatrix();
                 }
             });
+
+            // Interactions
+            this.mainDiv.dblclick(function() {
+                if (card.bot) {
+                    console.log("Click bot card for " + card.bot.name)
+
+                    //   app.setCurrentBot(this.bot);
+                    app.toggleMainMode();
+                }
+
+            });
+
+            $("*").click(function() {
+                console.log(this);
+                //   return false;
+            });
         },
 
         setBot : function(bot) {
             this.bot = bot;
             this.title.html(this.bot.name);
+
+            if (this.bot.parent) {
+                this.details.html("Child " + this.bot.parent.childCount + " of " + this.bot.parent.name);
+
+                this.details.append("<br>Generation " + this.bot.generation);
+            } else
+                this.details.html("First gen bot");
+
         },
     });
 
