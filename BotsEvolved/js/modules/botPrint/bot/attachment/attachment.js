@@ -96,7 +96,8 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             var g = context.g;
 
             g.pushMatrix();
-            this.attachPoint.applyTransform(g);
+            if (this.attachPoint)
+            	this.attachPoint.applyTransform(g);
 
             this.renderDetails(context);
 

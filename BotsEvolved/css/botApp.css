@@ -61,8 +61,8 @@
 .edit_item {
     position:relative;
     left:2px;
-    width:95%;
-    height:50%; 
+    width:90%;
+    height:20%; 
     border:5px solid white;   
 }
 #switch_modes {
