@@ -248,7 +248,7 @@ define(["common", "graph", "./wiring", "./tuning", "./attachment/attachments", "
 
               // Create an attachment of some random type
               //console.log("hh: " + app.attachmentWeights);
-                var typeIndex = utilities.getWeightedRandomIndex(app.attachmentWeights);
+                
                 var attachment = new app.attachmentTypes[typeIndex]();
             
               attachment.attachTo(this, attachPoint);
