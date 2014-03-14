@@ -26,6 +26,21 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             //console.log("I've hit something");
             this.enableEventListeners();
 
+            var listener = new Box2D.b2ContactListener();
+
+            Box2D.customizeVTable(listener, [{
+                original : Box2D.b2ContactListener.prototype.BeginContact,
+                replacement : function(thsPtr, contactPtr) {
+                    var contact = Box2D.wrapPointer(contactPtr, Box2D.b2Contact);
+                    var fixtureA = contact.GetFixtureA();
+                    var fixtureB = contact.GetFixtureB();
+                    //    console.log("Hit ", fixtureA ,fixtureB);
+                    // now do what you wish with the fixtures
+                }
+            }])
+
+            this.world.SetContactListener(listener);
+
         },
         
         

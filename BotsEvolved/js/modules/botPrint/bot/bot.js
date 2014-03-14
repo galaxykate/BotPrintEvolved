@@ -17,6 +17,8 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
             this.idNumber = botCount;
             botCount++;
 
+            this.childCount = 0;
+
             this.name = makeBotName();
             this.transform = new common.Transform();
             this.lastTransform = new common.Transform();
@@ -25,19 +27,23 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
             this.amountOfCollisions = 0;
 
             // Create DNA for the bot
-            if (parent)
+            if (parent) {
+                this.parent = parent;
                 this.dna = parent.dna.createMutant(mutationLevel);
-            else
+                this.parent.childCount++;
+                this.generation = parent.generation + 1;
+            } else {
                 this.dna = new DNA(10, 3);
+                this.generation = 0;
+            }
 
             var colorGene = this.dna.genes[0];
             this.idColor = new common.KColor(colorGene[0], colorGene[1] * .4 + .6, colorGene[2]);
             this.setMainChassis(new Chassis(this, {
-                pointCount:10
+                pointCount : 10
             }));
             this.compileAttachments();
         },
-
         createChild : function(instructions) {
             var child = new Bot(this, instructions.mutationLevel);
             return child;
@@ -60,7 +66,6 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
         select : function() {
             this.selected = true;
         },
-
         deselect : function() {
             this.selected = false;
         },
@@ -148,18 +153,17 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
                 });
             }
         },
-
         render : function(context) {
             var g = context.g;
             g.pushMatrix();
-            this.transform.applyTransform(g);
+            if (!context.centerBot)
+                this.transform.applyTransform(g);
 
             context.useChassisCurves = true;
             this.mainChassis.render(context);
 
             g.popMatrix();
         },
-
         getForceAmt : function() {
             if (this.decisionTree === undefined)
                 return Math.max(100000 * Math.sin(this.arena.time + this.idNumber), 0);
@@ -205,7 +209,7 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
             this.selectedPoint = undefined;
         },
         getAt : function(p, query) {
-           // return this.mainChassis.getAt(query);
+            // return this.mainChassis.getAt(query);
         },
         createThreeMesh : function() {
             this.mainChassis.path.createThreeMesh({

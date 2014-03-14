@@ -250,7 +250,7 @@ define(["common", "mousewheel"], function(common, MOUSEWHEEL) {'use strict';
 
             function startInteraction(ev) {
                 app.ui.moveOutput.clear();
-                //      ev.preventDefault();
+                      ev.preventDefault();
             };
 
             // Key handlers
