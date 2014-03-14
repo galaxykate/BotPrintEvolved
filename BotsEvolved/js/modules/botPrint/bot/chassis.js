@@ -219,23 +219,7 @@ define(["common", "graph", "./wiring", "./tuning", "./attachment/attachments", "
          * @method generateAttachment
          */
         generateAttachment : function(typeIndex) {
-            this.aTypes = app.attachmentTypes;
-            // Weights and attachment types: there should be the same number in each array, please!
-            var weights = [.3, .6];
-            var attachmentTypes = [Attachment.Sensor, Attachment.Actuator];
-
-            if (app.getOption("useTimers")) {
-                attachmentTypes.push(Attachment.Sensor.Timer), weights.push(1);
-            }
-
-            if (app.getOption("useColorLerpers")) {
-                attachmentTypes.push(Attachment.Sensor.ColorLerper), weights.push(1);
-            }
-
-            if (app.getOption("useSharpie")) {
-                attachmentTypes.push(Attachment.Actuator.Sharpie), weights.push(1);
-            }
-        	// Create some random point around the path to attach this to.
+            
             if (this.attachmentCount < Tuning.OrangatanPins)
             {
               var edge = this.path.getRandomEdge();
@@ -434,6 +418,7 @@ define(["common", "graph", "./wiring", "./tuning", "./attachment/attachments", "
             if(app.editMode && !app.editChassis) {
             	var d = 10;
                 var nodes = this.path.nodes;
+                context.g.mouseClicked = undefined;
                	context.g.mouseDragged = function() {
               		var mVector = new common.Vector(g.mouseX - g.width/2, g.mouseY - g.height/2);
                     bot.transform.toLocal(mVector, mVector);
@@ -451,9 +436,26 @@ define(["common", "graph", "./wiring", "./tuning", "./attachment/attachments", "
                 	context.g.ellipse(node.x, node.y, d, d);
             	});
         	}
+            else if(app.editMode && app.editChassis) 
+            {
+            	context.g.mouseDragged
+            	context.g.mouseClicked = function() {
+              		var mVector = new common.Vector(g.mouseX - g.width/2, g.mouseY - g.height/2);
+                    console.log(g.mouseX);
+                    /*bot.transform.toLocal(mVector, mVector);
+
+                    var curr = insideCircle(mVector, nodes, d);
+                   	if(curr !== undefined) {
+                    	curr.x = mVector.x;
+                        curr.y = mVector.y;
+                        
+                    }*/
+                };
+            }
             else
             {
             	context.g.mouseDragged = undefined;
+                context.g.mouseClicked = undefined;
             }
     	},
 
