@@ -6,124 +6,56 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
 
 	var Arena = Class.extend({
 
-		init : function(shape) {
+		init : function(shape, sides, density) {
 			this.border = new Graph.Path();
 			this.bots = [];
-
 			this.boxWorld = new BoxWorld(0);
 			this.obstacles = [];
 			switch (shape) {
 				case "rectangle":
-					//still need to change this to consider the screen width and the camera
-					var width = 600;
-					var height = 400;
-					var center = new Vector(0, 0);
-
-					this.border.addPoint(new Vector(center.x - width / 2, center.y - height / 2));
-					//topLeft point
-					this.border.addPoint(new Vector(center.x - width / 2, center.y + height / 2));
-					//bottom left
-					this.border.addPoint(new Vector(center.x + width / 2, center.y + height / 2));
-					//bottom right
-					this.border.addPoint(new Vector(center.x + width / 2, center.y - height / 2));
-					//top right
+					var width = 990;
+					var height = 590;
+					this.generateArenaRectangular(width, height);
 					break;
 				case "hexagon":
 					var sides = 6;
-					var r = 250;
-					for (var i = 0; i < sides; i++) {
-						//the .95 fixes the default rotation
-						var theta = (i * Math.PI * 2 / sides) + .95;
-						var p = common.Vector.polar(r, theta);
-						this.border.addPoint(p);
-					}
+					this.generateArenaPolygonal(sides, true);
 					break;
 				case "circle":
 					var sides = 16;
-					var r = 250;
-					for (var i = 0; i < sides; i++) {
-						//the .95 fixes the default rotation
-						var theta = (i * Math.PI * 2 / sides) + .95;
-						var p = common.Vector.polar(r, theta);
-						this.border.addPoint(p);
-					}
+					this.generateArenaPolygonal(sides, true);
 					break;
 				case "random":
 					//Arenas are random now it generates from a triangle to an icosagon (circle?).
-					var min = 3;
-					var max = 20;
-					var random = Math.floor(Math.random() * (max - min + 1)) + min;
-					var sides = random;
-					var r = 250;
-					for (var i = 0; i < sides; i++) {
-						//the .95 fixes the default rotation
-						var theta = (i * Math.PI * 2 / sides) + .95;
-						var p = common.Vector.polar(r, theta);
-						this.border.addPoint(p);
-					}
+					var sides = this.randomRange(3, 20);
+					this.generateArenaPolygonal(sides, false);
 					break;
 				//An obstacle course is a rectangle arena with random smaller squares on top of it as obstacles.
-				//A good heuristic for tests would be measuring obstacle avoidance.
 				case "obstacle":
 					//The arena is a bit larger in this instance because we want to fit obstacles in it and have the bots move around them.
-					var width = 670;
-					var height = 470;
-					var center = new Vector(0, 0);
-					//These will be the reference points in which we want to put the obstacles.
-					var minX = center.x - width / 2;
-					var maxX = center.x + width / 2;
-					var minY = center.y - height / 2;
-					var maxY = center.y + height / 2;
-					//But first we have to generate the container.
-					this.border.addPoint(new Vector(minX, minY));
-					//topLeft point
-					this.border.addPoint(new Vector(minX, maxY));
-					//bottom left
-					this.border.addPoint(new Vector(maxX, maxY));
-					//bottom right
-					this.border.addPoint(new Vector(maxX, minY));
-					//top right
+					var width = 990;
+					var height = 590;
+					this.generateArenaRectangular(width, height);
 					//Now let's populate the world with obstacles.
-					var min = 3;
-					var max = 10;
-					var nObstacles = Math.floor(Math.random() * (max - min + 1)) + min;
+					var nObstacles = this.randomRange(3, 10);
 					//We have a number of random obstacles to generate now, let's build them
-					//	alert("nObstacles="+nObstacles);
-					for (var i = 0; i < nObstacles; i++) {
-						//We want to select something inside the arena, thus we limit the ranges for random places to the corners of the arena. The obstacles are of 50*50px size, but you can change that. Maybe even randomize them for the moment.
+					this.generateObstaclesRandom(nObstacles, (-1) * (width / 2), (-1) * (height / 2), (width / 2), (height / 2), 32);
+					this.addObstaclesToBoxWorld(this.obstacles);
 
-						var obsWidth = 50;
-						var obsHeight = 50;
-						var x1 = minX;
-						var x2 = maxX;
-						var y1 = minY;
-						var y2 = maxY;
-						var centerX = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
-						var centerY = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
-						//alert("cX="+centerX+" cY="+centerY);
-						//We have the center coordinates, let's assign it to a vector and calculate the corner vertices.
-						var obsCenter = new Vector(centerX, centerY);
-						var obsminX = obsCenter.x - obsWidth / 2;
-						var obsmaxX = obsCenter.x + obsWidth / 2;
-						var obsminY = obsCenter.y - obsHeight / 2;
-						var obsmaxY = obsCenter.y + obsHeight / 2;
-						//Let's create a path!
-						var obsPath = new Graph.Path();
-						obsPath.addPoint(new Vector(obsminX, obsminY));
-						obsPath.addPoint(new Vector(obsminX, obsmaxY));
-						obsPath.addPoint(new Vector(obsmaxX, obsmaxY));
-						obsPath.addPoint(new Vector(obsmaxX, obsminY));
-						this.obstacles[i] = obsPath;
+					break;
+				case "custom":
+					if (sides == 4) {
+						var width = 990;
+						var height = 590;
+						this.generateArenaRectangular(width, height);
+					} else {
+						this.generateArenaPolygonal(sides, false);
 					}
+					
 					break;
 				//this gets called when nothing is passed in the init() parameter
 				default:
-					for (var i = 0; i < sides; i++) {
-						var r = 200 + Math.random() * 130;
-						var theta = i * Math.PI * 2 / sides;
-						var p = common.Vector.polar(r, theta);
-						this.border.addPoint(p);
-					}
+					this.generateArenaPolygonal(4);
 			}
 
 			//returns a Box2d body that is used for the arena collision
@@ -131,17 +63,142 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
 			ground.isTerrain = false;
 			//Super hacky way to add obstacles?
 			//alert("shape="+shape);
-			var obsShapes = new Array();
-			if (shape == "obstacle") {
-				for (var i = 0; i < this.obstacles.length; i++) {
-					//alert("this.obstacles[i].nodes="+obstacles[i].nodes);
-					obsShapes[i] = this.boxWorld.makeEdgeRing(this.obstacles[i].nodes);
-					obsShapes[i].isTerrain = false;
-
-				}
-			}
 		},
 
+		//-----------------------------------------------
+		// Quick Utility functions that I need for porting -> These will be moved to the Utility classes later.
+
+		randomRange : function(max, min) {
+			return Math.floor(Math.random() * (max - min + 1)) + min;
+		},
+
+		//-----------------------------------------------
+		// Arena Container Generation
+		validateCanvasConstrains : function(p) {
+			if (p.x <= -500) {
+				p.x = this.randomRange(-430, -495);
+			}
+			if (p.x >= 500) {
+				p.x = this.randomRange(430, 495);
+			}
+			if (p.y <= -300) {
+				p.y = this.randomRange(-230, -295);
+			}
+			if (p.y >= 300) {
+				p.y = this.randomRange(230, 295);
+			}
+			return p;
+		},
+
+		generateArenaPolygonal : function(sides, isRegular) {
+			var r = 600;
+			if (isRegular == true) {
+				r = 370;
+			}
+			for (var i = 0; i < sides; i++) {
+				if (sides % 2 == 1) {
+					//the .95 fixes the default rotation for odd numbers of sides
+					var theta = (i * Math.PI * 2 / sides) + .95;
+				} else {
+					var theta = (i * Math.PI * 2 / sides);
+				}
+				var p = common.Vector.polar(r, theta);
+				if (isRegular == false) {
+					p = this.validateCanvasConstrains(p);
+				}
+				this.border.addPoint(p);
+			}
+		},
+		generateArenaRectangular : function(width, height) {
+			var center = new Vector(0, 0);
+			this.border.addPoint(new Vector(center.x - width / 2, center.y - height / 2));
+			//topLeft point
+			this.border.addPoint(new Vector(center.x - width / 2, center.y + height / 2));
+			//bottom left
+			this.border.addPoint(new Vector(center.x + width / 2, center.y + height / 2));
+			//bottom right
+			this.border.addPoint(new Vector(center.x + width / 2, center.y - height / 2));
+			//top right
+		},
+
+		//-----------------------------------------------
+		// Authored Arena Shape Generation
+
+		//-------------------------------------------
+		// Obstacle Generation
+		//Generate n randomly positioned obstacles within a rectangular arena.
+		generateObstaclesRandom : function(nObstacles, minX, minY, maxX, maxY, size) {
+			for (var i = 0; i < nObstacles; i++) {
+				//We want to select something inside the arena, thus we limit the ranges for random places to the corners of the arena. The obstacles are of 50*50px size, but you can change that. Maybe even randomize them for the moment.
+				var obsWidth = size;
+				var obsHeight = size;
+				var x1 = minX + size;
+				var x2 = maxX - size;
+				var y1 = minY + size;
+				var y2 = maxY - size;
+				var centerX = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
+				var centerY = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
+				//We have the center coordinates, let's assign it to a vector and calculate the corner vertices.
+				var obsCenter = new Vector(centerX, centerY);
+				var obsminX = obsCenter.x - obsWidth / 2;
+				var obsmaxX = obsCenter.x + obsWidth / 2;
+				var obsminY = obsCenter.y - obsHeight / 2;
+				var obsmaxY = obsCenter.y + obsHeight / 2;
+				//Let's create a path!
+				var obsPath = new Graph.Path();
+				obsPath.addPoint(new Vector(obsminX, obsminY));
+				obsPath.addPoint(new Vector(obsminX, obsmaxY));
+				obsPath.addPoint(new Vector(obsmaxX, obsmaxY));
+				obsPath.addPoint(new Vector(obsmaxX, obsminY));
+				this.obstacles[i] = obsPath;
+			}
+		},
+		//Generate a 4 sided obstacle at a point (x,y) of size (sizeX*sizeY)
+		generateObstacleAt : function(obsX, obsY, sizeX, sizeY) {
+			var obsWidth = sizeX;
+			var obsHeight = sizey;
+			var obsCenter = new Vector(obsX, obsY);
+			var obsminX = obsCenter.x - obsWidth / 2;
+			var obsmaxX = obsCenter.x + obsWidth / 2;
+			var obsminY = obsCenter.y - obsHeight / 2;
+			var obsmaxY = obsCenter.y + obsHeight / 2;
+			//Let's create a path!
+			var obsPath = new Graph.Path();
+			obsPath.addPoint(new Vector(obsminX, obsminY));
+			obsPath.addPoint(new Vector(obsminX, obsmaxY));
+			obsPath.addPoint(new Vector(obsmaxX, obsmaxY));
+			obsPath.addPoint(new Vector(obsmaxX, obsminY));
+			this.obstacles.push(obsPath);
+		},
+		//Generate a regular polygonal obstacle of size (size) at (x,y)
+		generateObstaclePolygonalAt : function(obsX, obsY, size, sides) {
+			var obsPath = new Graph.Path(); 
+			var r = size;
+			for (var i = 0; i < sides; i++) {
+				if (sides % 2 == 1) {
+					//the .95 fixes the default rotation for odd numbers of sides
+					var theta = (i * Math.PI * 2 / sides) + .95;
+				} else {
+					var theta = (i * Math.PI * 2 / sides);
+				}
+				var p = common.Vector.polar(r, theta);
+				p.x = p.x + obsX;
+				p.y = p.y + obsY;
+				obsPath.addPoint(p);
+			}
+			this.obstacles.push(obsPath);
+		},
+		addObstaclesToBoxWorld : function(obstacles) {
+			var obsShapes = new Array();
+			for (var i = 0; i < this.obstacles.length; i++) {
+				//alert("this.obstacles[i].nodes="+obstacles[i].nodes);
+				obsShapes[i] = this.boxWorld.makeEdgeRing(this.obstacles[i].nodes);
+				obsShapes[i].isTerrain = false;
+			}
+			return obsShapes;
+		},
+		//-----------------------------------------------
+		// Reset Function
 		reset : function() {
 			this.time = 0;
 			this.resetDrawing();

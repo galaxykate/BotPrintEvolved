@@ -2,7 +2,7 @@
  * @author Kate Compton
  */
 
-define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "common", "./population", "./scoreGraph", "./heuristic", "./bot/attachment/attachments"], function(UI, Bot, Arena, threeUtils, BotEvo, App, common, Population, ScoreGraph, Heuristic, Attachment) {
+define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "common", "./population", "./scoreGraph", "./heuristic", "./bot/attachment/attachments","./UIArena"], function(UI, Bot, Arena, threeUtils, BotEvo, App, common, Population, ScoreGraph, Heuristic, Attachment, UIArena) {
 
 	/**
 	 * @class BotApp
@@ -15,8 +15,8 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 		init : function() {
 			
 			app = this;
-			app.width = 900;
-			app.height = 600;
+			app.width = 1366;
+			app.height = 768;
 			app.botCard = {
 				width : 150,
 				height : 220,
@@ -29,17 +29,12 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 			//app.initModes();
 			
 			app._super("Bots", new Vector(30, 30));
-
+			app.UIArena = new UIArena(); 
+			app.arena = app.UIArena.arena; 
 			// app.changeMode("inspector");
-			app.arena = new Arena("rectangle");
+			//app.arena = new Arena("rectangle");
 
 			//app.currentBot = new Bot();
-
-			$("#select_arena").click(function() {
-				var arenatype = $("#arena_type_chooser").val();
-				app.loadNewArena(arenatype);
-			});
-
 			$("#switch_modes").click(function() {
 				app.toggleMainMode();
 			});
@@ -94,21 +89,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 		setCurrentBot : function(bot) {
 
 			app.currentBot = bot;
-			bot.saveBot()
-		},
-
-		/**
-         * @method loadNewArena
-         */
-		loadNewArena : function(shape){
-		    console.log("Load new arena " + shape);
-			//deletes current bots in the arena. We might want to change this.
-			app.arena.reset();
-			app.arena = new Arena(shape);
-			//This adds brand new bots. Need to change to current bots.
-			app.setPopulation(this.population);
-			//throw("I just set the population?");
-			app.currentBot = app.population.bots[0];
+			bot.saveBot();
 		},
 
 		highlightBot : function(bot) {
@@ -364,7 +345,7 @@ define(["ui", "./bot/bot", "./physics/arena", "threeUtils", "./botEvo", "app", "
 				onKeyPress : {
 
 					d : function(event) {
-						app.ui.devMode.toggle()
+						app.ui.devMode.toggle();
 					},
 
 					space : function() {
