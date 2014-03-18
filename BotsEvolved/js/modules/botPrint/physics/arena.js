@@ -51,7 +51,7 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
 					} else {
 						this.generateArenaPolygonal(sides, false);
 					}
-					
+
 					break;
 				//this gets called when nothing is passed in the init() parameter
 				default:
@@ -172,7 +172,7 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
 		},
 		//Generate a regular polygonal obstacle of size (size) at (x,y)
 		generateObstaclePolygonalAt : function(obsX, obsY, size, sides) {
-			var obsPath = new Graph.Path(); 
+			var obsPath = new Graph.Path();
 			var r = size;
 			for (var i = 0; i < sides; i++) {
 				if (sides % 2 == 1) {

@@ -16,13 +16,12 @@ define(["ui", "common", "./physics/arena", "./botApp"], function(ui, common, Are
 			//This controls the select arena drop down with JQuery.
 			$("#select_arena").click(function() {
 				var arenatype = $("#arena_type_chooser").val();
-				if(arenatype=="custom"){
-					UIArena.loadNewArena(arenatype,$("#complexity").val(),$("#density").val());
+				if (arenatype == "custom") {
+					UIArena.loadNewArena(arenatype, $("#complexity").val(), $("#density").val());
+				} else {
+					UIArena.loadNewArena(arenatype, 0, 0);
 				}
-				else{
-					UIArena.loadNewArena(arenatype,0,0);
-				}
-				
+
 			});
 			//This controls the custom arena complexity slider with JQuery.
 			$("#slider_arena_complexity").slider({
@@ -52,11 +51,11 @@ define(["ui", "common", "./physics/arena", "./botApp"], function(ui, common, Are
 		/**
 		 * @method loadNewArena
 		 */
-		loadNewArena : function(shape,sides,density) {
-			console.log("Load new arena " + shape+" sides="+sides+" density="+density);
+		loadNewArena : function(shape, sides, density) {
+			console.log("Load new arena " + shape + " sides=" + sides + " density=" + density);
 			//deletes current bots in the arena. We might want to change this.
 			app.arena.reset();
-			app.arena = new Arena(shape,sides,density);
+			app.arena = new Arena(shape, sides, density);
 			//This adds brand new bots. Need to change to current bots.
 			app.setPopulation(app.population);
 			//throw("I just set the population?");
