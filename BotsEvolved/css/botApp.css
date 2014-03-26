@@ -28,20 +28,21 @@
 }
 #arena_bar {
 	position: absolute;
-	bottom: 0px;
+	bottom: 50px;
 	width: 1000px;
-	height: 170px;
-	left: 183px;
+	height: 120px;
+	left: 233px;
 }
 .main_canvas {
 	position: absolute;
 	width: 1000px;
-	height: 600px;
+	height: 550px;
 	left: 183px;
+	top: 50px;
 }
 #edit_menus {
 	position: absolute;
-	top: 40px;
+	top: 48px;
 	right: 0px;
 	width: 200px;
 	height: 600px;
@@ -68,7 +69,8 @@
 }
 #switch_modes {
 	position: absolute;
-	right: 0px;
+	right: 100px;
+	top:7px;
 }
 .main_canvas {
 	pointer-events: all;

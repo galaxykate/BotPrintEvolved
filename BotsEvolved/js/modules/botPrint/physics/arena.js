@@ -14,7 +14,7 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
 			switch (shape) {
 				case "rectangle":
 					var width = 990;
-					var height = 590;
+					var height = 540;
 					this.generateArenaRectangular(width, height);
 					break;
 				case "hexagon":
@@ -34,7 +34,7 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
 				case "obstacle":
 					//The arena is a bit larger in this instance because we want to fit obstacles in it and have the bots move around them.
 					var width = 990;
-					var height = 590;
+					var height = 540;
 					this.generateArenaRectangular(width, height);
 					//Now let's populate the world with obstacles.
 					var nObstacles = this.randomRange(3, 10);
@@ -46,7 +46,7 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
 				case "custom":
 					if (sides == 4) {
 						var width = 990;
-						var height = 590;
+						var height = 540;
 						this.generateArenaRectangular(width, height);
 					} else {
 						this.generateArenaPolygonal(sides, false);
@@ -82,10 +82,10 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
 				p.x = this.randomRange(430, 495);
 			}
 			if (p.y <= -300) {
-				p.y = this.randomRange(-230, -295);
+				p.y = this.randomRange(-230, -270);
 			}
 			if (p.y >= 300) {
-				p.y = this.randomRange(230, 295);
+				p.y = this.randomRange(230, 270);
 			}
 			return p;
 		},
@@ -93,7 +93,7 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
 		generateArenaPolygonal : function(sides, isRegular) {
 			var r = 600;
 			if (isRegular == true) {
-				r = 370;
+				r = 340;
 			}
 			for (var i = 0; i < sides; i++) {
 				if (sides % 2 == 1) {
@@ -456,7 +456,7 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
 			g.image(this.lightMap, -g.width / 2, -g.height / 2);
 			//g.image(this.drawingMap, -g.width / 2, -g.height / 2);
 			// Draw the edges
-			var arenaColor = new common.KColor(.2, .6, .2);
+			var arenaColor = new common.KColor(.2, .2, .2);
 			g.strokeWeight(3);
 			arenaColor.stroke(g, .3, .5);
 			arenaColor.fill(g, .5, .85);

@@ -18,6 +18,7 @@
 		<link rel="stylesheet" href="css/main.css">
 		<link rel="stylesheet" href="css/app.css">
 		<link rel="stylesheet" href="css/botApp.css">
+		<link rel="stylesheet" href="css/styledUI.css">
 		<link rel="stylesheet" href="css/jqueryUI/absolution.css">
 		<script src="js/vendor/modernizr-2.6.2.min.js"></script>
 	</head>
@@ -29,13 +30,20 @@
 		<!-- Add your site or application content here -->
 
 		<div id="app" class="app_size" >
+			<div id = "botprint_header">
+				<div id="botprint_logo">
+					<br/>
+					<!-- this is a hack, I need to think this one through later-->
+				</div>
+			</div>
 			<button id="switch_modes">
 				Switch Modes
 			</button>
 
 			<div id="arena" class = "app_size app_overlay">
 				<canvas id="arena_canvas" class="main_canvas"></canvas>
-				ARENA CANVAS
+				<br/>
+				<!-- this is a hack, I need to think this one through later-->
 				<div id="arena_UI" class="app_size app_overlay">
 					<div id="population_panel" class="panel">
 						Current population
@@ -118,8 +126,12 @@
 				</div>
 
 			</div>
-
+			<div id="botprint_footer">
+				<br/>
+				<!-- the br hack strikes again!-->
+			</div>
 		</div>
+
 		<div id="ai_overlay"></div>
 		<!--
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>

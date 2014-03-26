@@ -1,5 +1,5 @@
 body {
-	background-image: url('img/wooddark.jpeg');
+	background-image: url('img/botprint.png');
 	background-repeat: repeat;
 	box-shadow: inset 0 0 100px #000000;
 }
@@ -33,12 +33,13 @@ html, body {
 
 #app {
 	user-select: none;
-	position: absolute;
+	position: relative;
 	top: 0px;
 	left: 0px;
 	border: 2px solid white;
 	overflow: hidden;
 	background: rgba(200, 210, 210, .2);
+	margin: auto; 
 }
 
 .tuning_slider {
