@@ -17,27 +17,57 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
             this.idNumber = botCount;
             botCount++;
 
+            this.childCount = 0;
+
             this.name = makeBotName();
             this.transform = new common.Transform();
             this.lastTransform = new common.Transform();
+            
+            //keeps track of the amount of times this bot has collided.
+            this.amountOfCollisions = 0;
 
             // Create DNA for the bot
-            if (parent)
+            if (parent) {
+                this.parent = parent;
                 this.dna = parent.dna.createMutant(mutationLevel);
-            else
+                this.parent.childCount++;
+                this.generation = parent.generation + 1;
+            } else {
                 this.dna = new DNA(10, 3);
+                this.generation = 0;
+            }
 
             var colorGene = this.dna.genes[0];
             this.idColor = new common.KColor(colorGene[0], colorGene[1] * .4 + .6, colorGene[2]);
             this.setMainChassis(new Chassis(this, {
-                pointCount:10
+                pointCount : 10
             }));
             this.compileAttachments();
         },
-
         createChild : function(instructions) {
             var child = new Bot(this, instructions.mutationLevel);
             return child;
+        },
+
+        //======================================================================================
+        //======================================================================================
+        //======================================================================================
+        // Interaciton
+
+        dragTo : function(p) {
+            this.transform.setTo(p);
+        },
+
+        //======================================================================================
+        //======================================================================================
+        //======================================================================================
+        // Selection
+
+        select : function() {
+            this.selected = true;
+        },
+        deselect : function() {
+            this.selected = false;
         },
 
         //======================================================================================
@@ -53,7 +83,6 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
         transformToGlobal : function(local, global) {
             this.transform.toWorld(local, global);
         },
-
         setMainChassis : function(chassis) {
             this.mainChassis = chassis;
             this.mainChassis.setParent(this);
@@ -71,13 +100,11 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
             this.compileAttachments();
             return bot;
         },
-
         setBrain : function(dtree) {
             this.brain = {
                 defaultTree : dtree
             };
         },
-
         compileAttachments : function() {
             this.attachments = [];
             this.sensors = [];
@@ -126,31 +153,28 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
                 });
             }
         },
-
         render : function(context) {
             var g = context.g;
             g.pushMatrix();
-            this.transform.applyTransform(g);
+            if (!context.centerBot)
+                this.transform.applyTransform(g);
 
             context.useChassisCurves = true;
             this.mainChassis.render(context);
 
             g.popMatrix();
         },
-
         getForceAmt : function() {
             if (this.decisionTree === undefined)
                 return Math.max(100000 * Math.sin(this.arena.time + this.idNumber), 0);
             else
                 return this.decisionTree.makeDecision();
         },
-
         getForces : function() {
             var forces = [];
             this.mainChassis.compileForces(forces);
             return forces;
         },
-
         hover : function(pos) {
             app.moveLog("Hovered " + pos);
             var pt = this.getAt({
@@ -184,10 +208,9 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
             }
             this.selectedPoint = undefined;
         },
-        getAt : function(query) {
-            return this.mainChassis.getAt(query);
+        getAt : function(p, query) {
+            // return this.mainChassis.getAt(query);
         },
-
         createThreeMesh : function() {
             this.mainChassis.path.createThreeMesh({
                 rings : 3,
@@ -205,6 +228,14 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
 
             return this.mesh;
 
+        },
+        
+        incrementCollisionAmount: function(){
+        	this.amountOfCollisions++;
+        },
+        
+        resetCollisionAmount: function(){
+        	this.amountofCollisions = 0;
         },
 
         //========================================================================

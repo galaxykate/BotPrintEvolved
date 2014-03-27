@@ -3,20 +3,69 @@
  */
 
 define(["common", "mousewheel"], function(common, MOUSEWHEEL) {'use strict';
+    var handlerNames = ["up", "down", "enter", "exit", "click", "dblClick", "move", "drag", "scroll", "keyPress"];
+    var traceControls = false;
+    var traceMovement = false;
+    var getMousePosition = function(ev) {
+
+        var x = ev.pageX;
+        var y = ev.pageY;
+        mousePos.setTo(x, y);
+        return mousePos;
+    };
+
+    var setLocalPos = function(localPos, pagePos, div) {
+        var offset = div.offset();
+        localPos.setTo(pagePos.x - offset.left, pagePos.y - offset.top);
+    };
+
     var activateDragDistance = 5;
+
+    //======================================================================
+    //======================================================================
+    //======================================================================
+    // Handler adders
+    var callHandlers = function(name) {
+        if (this.handlers && this.handlers[name]) {
+            var handlers = this.handlers[name];
+            for (var i = 0; i < handlers.length; i++) {
+                handlers[i].call(this);
+            }
+        }
+    };
+
+    // Add a handler
+    var on = function(name, handler) {
+        if (!this.handlers)
+            this.handlers = {};
+        if (!this.handlers[name])
+            this.handlers[name] = [];
+
+        this.handlers[name].push(handler);
+    };
+
+    var addHandlers = function(handlers) {
+        for (var property in handlers) {
+            if (handlers.hasOwnProperty(property)) {
+                this.on(property, handlers[property]);
+            }
+        }
+    };
+
+    var allowHandlers = function(obj) {
+        obj.on = on;
+        obj.callHandlers = callHandlers;
+        obj.addHandlers = addHandlers;
+    }
+    //======================================================================
 
     var Touchable = Class.extend({
         init : function(controls, name, selector) {
 
             var tw = this;
+
             this.name = name;
             this.selector = selector;
-
-            this.selector.mousewheel(function(event, delta) {
-                tw.touchScroll(delta);
-                event.preventDefault();
-
-            });
 
             var offset = this.selector.offset();
             this.rect = new common.Rect(offset.x, offset.y, this.selector.width(), this.selector.height());
@@ -25,160 +74,80 @@ define(["common", "mousewheel"], function(common, MOUSEWHEEL) {'use strict';
             this.controls = controls;
             this.localPos = new Vector();
 
-            this.onDragFxns = [];
-            this.onDownFxns = [];
-            this.onScrollFxns = [];
-            this.onUpFxns = [];
-            this.onMoveFxns = [];
-            this.onDblTapFxns = [];
-            this.onTapFxns = [];
+            this.center = new Vector(this.selector.width() / 2, this.selector.height() / 2);
+
+            allowHandlers(this);
+
+            $.each(handlerNames, function(index, name) {
+                var capName = name.charAt(0).toUpperCase() + name.slice(1);
+                tw.on(name, function() {
+
+                    // set the local pos from the last mouse pos
+                    if (traceControls)
+                        console.log(tw + ": " + name);
+                });
+
+            });
 
             // Record which div is being activated in the touch,
             selector.mousedown(function(event) {
+                controls.isMouseDown = true;
                 tw.activate();
-                event.preventDefault();
+                tw.callHandlers("down");
 
+                return false;
             });
 
             selector.mouseup(function(event) {
+                controls.isMouseDown = false;
+
+                tw.callHandlers("up");
                 tw.deactivate();
-                event.preventDefault();
-            });
 
-            selector.mousemove(function(event) {
-
-                tw.controls.enterTouchable(tw);
-
-                event.preventDefault();
+                return false;
             });
 
             selector.mouseenter(function(event) {
                 tw.controls.enterTouchable(tw);
+                tw.callHandlers("enter");
+                return false;
             });
 
             selector.mouseleave(function(event) {
                 tw.controls.exitTouchable(tw);
+                tw.callHandlers("exit");
+                return false;
             });
 
             selector.click(function(event) {
-
-                $.each(tw.onTapFxns, function(index, f) {
-                    f(tw, tw.localPos);
-                });
+                tw.callHandlers("click");
+                return false;
             });
 
             selector.dblclick(function(event) {
-
-                $.each(tw.onDblTapFxns, function(index, f) {
-                    f(tw, tw.localPos);
-                });
+                tw.callHandlers("dblClick");
+                return false;
             });
 
-            selector.append("something");
+            selector.mousewheel(function(event, delta) {
+                controls.scrollDelta = delta;
+                tw.callHandlers("scroll");
 
+                return false;
+            });
         },
 
-        onScroll : function(fxn) {
-            this.onScrollFxns.push(fxn);
-        },
-
-        onMove : function(fxn) {
-            this.onMoveFxns.push(fxn);
-        },
-
-        onDrag : function(fxn) {
-            this.onDragFxns.push(fxn);
-        },
-
-        onDown : function(fxn) {
-            this.onDownFxns.push(fxn);
-        },
-
-        onUp : function(fxn) {
-            this.onUpFxns.push(fxn);
-        },
-
-        onTap : function(fxn) {
-            this.onTapFxns.push(fxn);
-        },
-        onDblTap : function(fxn) {
-            this.onDblTapFxns.push(fxn);
-        },
-
-        setLocalPos : function(screenPos) {
-            var offset = this.selector.offset();
-            //or $(this).offset(); if you really just want the current element's offset
-            this.localPos.setTo(screenPos);
-            this.localPos.x -= offset.left;
-            this.localPos.y -= offset.top;
-            return this.localPos;
+        updateLocalPos : function() {
+            setLocalPos(this.localPos, this.controls.pagePos, this.selector);
+            this.localPos.sub(this.center);
         },
 
         activate : function() {
-            console.log("Activate " + this.name);
             this.controls.setActiveTouchable(this);
         },
 
         deactivate : function() {
-            console.log("Deactivate to " + this.name);
-        },
-
-        touchUp : function(screenPos) {
-            var tw = this;
-            this.setLocalPos(screenPos);
-
-            $.each(this.onUpFxns, function(index, f) {
-                f(tw, tw.localPos);
-            });
-            console.log(tw + "-up:" + this.localPos);
-        },
-
-        touchDown : function(screenPos) {
-            var tw = this;
-            this.setLocalPos(screenPos);
-
-            $.each(this.onDownFxns, function(index, f) {
-                f(tw, tw.localPos);
-            });
-        },
-
-        touchMove : function(mouseDown, screenPos) {
-
-            var tw = this;
-            this.setLocalPos(screenPos);
-
-            if (mouseDown) {
-                $.each(this.onDragFxns, function(index, f) {
-                    f(tw, tw.localPos);
-                });
-                app.moveLog(tw + "-drag:" + this.localPos);
-            } else {
-                $.each(this.onMoveFxns, function(index, f) {
-                    f(tw, tw.localPos);
-                });
-                app.moveLog(tw + "-move:" + this.localPos);
-            }
-        },
-
-        touchScroll : function(delta) {
-            var tw = this;
-            $.each(this.onScrollFxns, function(index, f) {
-                f(tw, delta);
-            });
-        },
-
-        touchTap : function(delta) {
-            var tw = this;
-            $.each(this.onTapFxns, function(index, f) {
-                f(tw, delta);
-            });
-        },
-
-        touchDblTap : function(delta) {
-            var tw = this;
-            $.each(this.onDblTapFxns, function(index, f) {
-                f(tw, delta);
-            });
+            this.controls.setActiveTouchable(undefined);
         },
 
         toString : function() {
@@ -186,74 +155,53 @@ define(["common", "mousewheel"], function(common, MOUSEWHEEL) {'use strict';
         }
     });
 
-    var createControlSet = function() {
-        return {
-            onKeyPress : {
-
-            },
-            onMove : function(touch) {
-            },
-            onDrag : function(touch) {
-            },
-            onPress : function(touch) {
-            },
-            onRelease : function(touch) {
-            },
-            onTap : function(touch) {
-            },
-            onDoubleTap : function(touch) {
-            },
-            onScroll : function(delta) {
-            },
-        }
-    }
     var Controls = Class.extend({
 
-        init : function(touchDiv, defaultControls) {
-            this.touchDiv = touchDiv;
+        init : function(mainDiv, defaultControls) {
+            var controls = this;
+            this.mainDiv = mainDiv;
             // Default values:
             this.name = "Undefined control scheme";
-            this.defaultControls = createControlSet();
-            if (defaultControls !== undefined)
-                $.extend(this.defaultControls, defaultControls);
+            this.localPos = new Vector();
+            this.pagePos = new Vector();
 
-            this.touch = {
-                pos : new Vector(),
-
-                lastMove : {
-                    pos : new Vector(),
-                    time : 0,
-                    divID : undefined
-                },
-                lastDown : {
-                    pos : new Vector(),
-                    time : 0,
-                    divID : undefined
-                },
-                lastUp : {
-                    pos : new Vector(),
-                    time : 0,
-                    divID : undefined
-                },
-
-                activePos : new Vector(),
-                down : false,
-                dragging : false,
-
-                velocity : new Vector(),
-                offset : new Vector(),
-                dragOffset : new Vector(),
-                draggedDistance : 0,
-            };
+            //  if (defaultControls !== undefined)
+            //    $.extend(this.defaultControls, defaultControls);
 
             // Keep sorted by distance?
             this.touchables = [];
+            this.setMouseHandlers();
+            allowHandlers(this);
 
-            this.setActiveControls();
+            this.addHandlers(defaultControls);
+
+            // Add some fake handers
+            $.each(handlerNames, function(index, name) {
+                var capName = name.charAt(0).toUpperCase() + name.slice(1);
+                controls.on(name, function() {
+                    if (traceControls)
+                        console.log(this + ": " + name);
+                });
+            });
 
         },
 
+        updateAllPositions : function(ev) {
+
+            this.pagePos.setTo(ev.pageX, ev.pageY);
+            if (traceMovement)
+                console.log("page pos: " + this.pagePos);
+            $.each(this.touchables, function(index, tw) {
+
+                tw.updateLocalPos();
+                if (traceMovement)
+                    console.log("  " + tw + ": " + tw.localPos);
+
+            });
+        },
+
         //===============================================================
+        // Manage the current touchable
 
         enterTouchable : function(tw) {
             this.hoveredTouchable = tw;
@@ -280,146 +228,17 @@ define(["common", "mousewheel"], function(common, MOUSEWHEEL) {'use strict';
             this.activeTouchable = undefined;
         },
 
-        //===============================================================
-        setActiveControls : function(customControls) {
-            this.activeControls = { };
-            $.extend(this.activeControls, this.defaultControls);
-            $.extend(this.activeControls, customControls);
+        //============================================================================
+        //============================================================================
+        //============================================================================
 
-        },
-
-        //=================
-        // Window relative
-
-        getPositionRelativeTo : function(element, pos) {
-            var v = new Vector(pos.x - element.offset().left, pos.y - element.offset().top);
-            return v;
-        },
-
-        //================
-
-        touchDown : function(position) {
-
-            var controls = this.activeControls;
-            var touch = this.touch;
-            touch.lastDown.pos.setTo(position);
-            touch.lastDown.time = app.appTime.total;
-            touch.down = true;
-            touch.dragging = false;
-            touch.draggedDistance = 0;
-
-            // Set to the local position of the active element
-            if (this.activeTouchable !== undefined) {
-                this.activeTouchable.touchDown(touch.pos);
-            }
-            controls.onPress(touch);
-        },
-        touchUp : function(position) {
-
-            var controls = this.activeControls;
-            var touch = this.touch;
-            touch.lastUp.pos.setTo(position);
-            touch.lastUp.time = app.appTime.total;
-            touch.down = false;
-            touch.dragging = false;
-
-            var timeDown = touch.lastUp.time - touch.lastDown.time;
-
-            if (timeDown < 200 && touch.draggedDistance < 10) {
-                controls.onTap(touch);
-            }
-
-            // Set to the local position of the active element
-            if (this.activeTouchable !== undefined) {
-                this.activeTouchable.touchUp(touch.pos);
-            }
-
-            touch.draggedDistance = 0;
-            controls.onRelease(touch);
-            this.clearTouchable();
-
-        },
-
-        // drag or move (the same if using touchscreen)
-        touchMove : function(position) {
-            var controls = this;
-            var touch = this.touch;
-
-            touch.pos.setTo(position);
-            app.moveLog("Move: " + touch.pos);
-
-            // Set to the local position of the active element
-            if (!touch.down && this.hoveredTouchable !== undefined) {
-                this.hoveredTouchable.touchMove(touch.down, touch.pos);
-            }
-            if (touch.down && this.activeTouchable !== undefined) {
-                this.activeTouchable.touchMove(touch.down, touch.pos);
-            }
-
-            app.moveLog("Active: " + touch.activeElement + ": " + touch.activePos);
-
-            touch.offset.setToDifference(touch.pos, touch.lastMove.pos);
-            var d = touch.offset.magnitude();
-
-            // velocity
-
-            touch.offset.setToMultiple(touch.offset, 1 / app.appTime.total);
-
-            touch.lastMove.pos.setTo(position);
-            touch.lastMove.time = t;
-
-            if (touch.down) {
-                touch.draggedDistance += d;
-                if (touch.draggedDistance > activateDragDistance) {
-                    touch.dragging = true;
-                }
-            }
-
-            // Do something with this info
-            if (touch.down) {
-                if (touch.dragging) {
-                    controls.activeControls.onDrag(touch);
-                } else {
-                    //   controls.onHold(touch);
-                }
-            } else {
-                controls.activeControls.onMove(touch);
-            }
-        },
-        activate : function() {
+        setMouseHandlers : function() {
 
             var controls = this;
+            var mainDiv = this.mainDiv;
 
-            var touchDiv = this.touchDiv;
+            // Add all the handlers
 
-            // Key handlers
-            $(document).keypress(function(event) {
-                var c = String.fromCharCode(event.which);
-                if (c === " ")
-                    c = "space";
-
-                var keyHandler = controls.activeControls.onKeyPress[c];
-                if (keyHandler !== undefined) {
-                    keyHandler.call(controls.activeControls);
-                }
-
-            });
-
-            this.setMouseResponders();
-
-        },
-
-        setMouseResponders : function() {
-            var controls = this;
-            var mousePos = new Vector();
-            var touchDiv = this.touchDiv;
-            var getMousePosition = function(ev) {
-
-                var x = ev.pageX;
-                var y = ev.pageY;
-                mousePos.setTo(x, y);
-                return mousePos;
-            };
             // Set up the mouse/touch controls
             // Note: these are for things which can't  be done with normal 'click' functions on divs
             //  such as clicking on things in Processing or ThreeJS
@@ -429,44 +248,79 @@ define(["common", "mousewheel"], function(common, MOUSEWHEEL) {'use strict';
             //      Dragging on object to another
             //      Dragging from one point to another (movement in Stellar)
 
+            function startInteraction(ev) {
+                app.ui.moveOutput.clear();
+                      ev.preventDefault();
+            };
+
+            // Key handlers
+            $(document).keypress(function(event) {
+                var c = String.fromCharCode(event.which);
+                if (c === " ")
+                    c = "space";
+                controls.key = c;
+
+                console.log("Key pressed " + c);
+
+                controls.callHandlers("keyPress");
+            });
+
             // Activate processing-style mouse interaction
-            touchDiv.mousemove(function(ev) {
-                ev.preventDefault();
-                app.ui.moveOutput.clear();
+            mainDiv.mousemove(function(ev) {
 
-                var p = getMousePosition(ev);
-                controls.touchMove(p);
+                startInteraction(ev);
 
+                controls.updateAllPositions(ev);
+
+                // Is there an active window?
+                var current = controls;
+                if (controls.activeTouchable) {
+                    current = controls.activeTouchable;
+                }
+
+                if (controls.isMouseDown) {
+                    current.callHandlers("drag");
+                } else {
+                    current.callHandlers("move");
+                }
             });
 
-            touchDiv.mousedown(function(ev) {
-                //  ev.preventDefault();
-                app.ui.moveOutput.clear();
-
-                var p = getMousePosition(ev);
-                controls.touchDown(p);
-
+            mainDiv.mousedown(function(ev) {
+                startInteraction(ev);
+                controls.isMouseDown = true;
+                controls.callHandlers("down");
             });
 
-            touchDiv.mouseup(function(ev) {
-                app.ui.moveOutput.clear();
+            mainDiv.mouseup(function(ev) {
+                startInteraction(ev);
+                controls.isMouseDown = false;
+                controls.callHandlers("up");
+            });
 
-                var p = getMousePosition(ev);
-                controls.touchUp(p);
+            mainDiv.mouseleave(function(ev) {
+                startInteraction(ev);
+                controls.callHandlers("exit");
+            });
 
+            mainDiv.mouseenter(function(ev) {
+                startInteraction(ev);
+                controls.callHandlers("enter");
             });
 
             // Mousewheel zooming
-            touchDiv.mousewheel(function(event, delta) {
-                controls.activeControls.onScroll(delta);
-                event.preventDefault();
+            mainDiv.mousewheel(function(ev, delta) {
+
+                startInteraction(ev);
+                controls.scrollDelta = delta;
+
+                controls.callHandlers("scroll");
 
             });
         },
 
-        deactivate : function() {
-
-        },
+        toString : function() {
+            return "MainControls";
+        }
     });
 
     return Controls;

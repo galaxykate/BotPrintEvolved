@@ -7,6 +7,8 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
     function B2DtoString(v) {
         return "(" + v.get_x().toFixed(2) + ", " + v.get_y().toFixed(2) + ")";
     };
+    
+    var firstTime = true;
 
     var b2Vec2 = Box2D.b2Vec2;
 
@@ -18,11 +20,52 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             this.frame = 0;
             this.gravity = new Box2D.b2Vec2(0.0, gravity);
             this.world = new Box2D.b2World(this.gravity);
+            //this.listener = new Box2D.b2ContactListener();
 
             this.bodies = [];
+            //console.log("I've hit something");
+            this.enableEventListeners();
+
+            var listener = new Box2D.b2ContactListener();
+
+            Box2D.customizeVTable(listener, [{
+                original : Box2D.b2ContactListener.prototype.BeginContact,
+                replacement : function(thsPtr, contactPtr) {
+                    var contact = Box2D.wrapPointer(contactPtr, Box2D.b2Contact);
+                    var fixtureA = contact.GetFixtureA();
+                    var fixtureB = contact.GetFixtureB();
+                    //    console.log("Hit ", fixtureA ,fixtureB);
+                    // now do what you wish with the fixtures
+                }
+            }])
+
+            this.world.SetContactListener(listener);
 
         },
+        
+        
+		//replaces the default event listener with out own custom one
+		enableEventListeners : function(){
+			var listener = new Box2D.b2ContactListener();
 
+            Box2D.customizeVTable(listener, [{
+                original : Box2D.b2ContactListener.prototype.BeginContact,
+                replacement : function(thsPtr, contactPtr) {
+                    var contact = Box2D.wrapPointer(contactPtr, Box2D.b2Contact);
+                    var botA = contact.GetFixtureA().GetBody().parentObject;
+                    var botB = contact.GetFixtureB().GetBody().parentObject;
+                    
+                    //catches when the bot turns undefined
+                    if(typeof(botA) != 'undefined' && typeof(botB) != 'undefined'){
+                    	botA.incrementCollisionAmount();
+                    	botB.incrementCollisionAmount();
+                    }
+                }
+            }]),
+
+            this.world.SetContactListener(listener);
+		},
+		
         removeBodies : function() {
             var world = this.world;
             $.each(this.bodies, function(index, body) {
@@ -52,27 +95,39 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             b2D.set_x(x / this.scale);
             b2D.set_y(y / this.scale);
         },
-        
+
         readIntoTransform : function(body, transform) {
             var bpos = body.GetPosition();
             transform.rotation = body.GetAngle();
-            transform.setTo(bpos.get_x() * this.scale, bpos.get_y() * this.scale);
+            try{
+            	transform.setTo(bpos.get_x() * this.scale, bpos.get_y() * this.scale);
+            }
+            catch(err){
+            	console.log(this.scale);
+            }
         },
-        
+
         toB2Vec : function(p) {
             if (arguments.length === 1)
                 return new b2Vec2(arguments[0].x / this.scale, arguments[0].y / this.scale);
             if (arguments.length === 2)
                 return new b2Vec2(arguments[0] / this.scale, arguments[1] / this.scale);
         },
-        
+
         setBodyPosition : function(bodyDef, p) {
             bodyDef.set_position(this.toB2Vec(p));
         },
-        setBodyToTransform : function(bodyDef, transform) {
 
-            bodyDef.set_position(this.toB2Vec(transform));
-            bodyDef.set_angle(transform.rotation);
+        /**
+         * @method toggleMainMode
+         * Set the body definition to this transform
+         */
+
+        setBodyToTransform : function(body, transform) {
+            var angle = body.GetAngle();
+            if (!isNaN(transform.rotation))
+                angle = transform.rotation;
+            body.SetTransform(this.toB2Vec(transform), angle);
         },
 
         // Add some set of objects that have "getHull" and a "transform"
@@ -86,20 +141,31 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             bodyDef.angularDamping = 10.01;
             bodyDef.set_type(Box2D.b2_dynamicBody);
 
+			//iterates though all the objects i.e bots
             $.each(objects, function(index, obj) {
 
                 var points = obj.getHull();
+
                 // var customShapes = boxWorld.createPolygonShapes(obj.points);
                 var customShapes = boxWorld.createTriFanShapes(points);
 
-                boxWorld.setBodyToTransform(bodyDef, obj.transform);
                 var body = boxWorld.world.CreateBody(bodyDef);
 
+                boxWorld.setBodyToTransform(body, obj.transform);
+
+                $.each(customShapes, function(index, shape) {
+                	var fixtureDef = new Box2D.b2FixtureDef();
+					fixtureDef.set_density( 5.0 );
+					fixtureDef.set_friction( 0.6 );
+					fixtureDef.set_shape( shape );
+					body.CreateFixture( fixtureDef );
+                }),
+    
                 // set the parent object
                 body.parentObject = obj;
-                $.each(customShapes, function(index, shape) {
-                    body.CreateFixture(shape, 5.0);
-                })
+                
+                //body.SetUserData(obj);
+                
                 boxWorld.bodies.push(body);
 
             });
@@ -215,6 +281,11 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
         simulate : function(dt) {
             var boxWorld = this;
+
+            // Set the bodies from the boxes
+            $.each(this.bodies, function(index, body) {
+                boxWorld.setBodyToTransform(body, body.parentObject.transform);
+            });
 
             this.applyForce();
             this.world.Step(dt, 2, 2);

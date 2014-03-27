@@ -8,6 +8,7 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
         init : function() {
             this.idNumber = attachmentCount;
             attachmentCount++;
+
             this.pins = [];
         },
 
@@ -56,16 +57,16 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
 
         },
 
-		//========================================================
-		// add pins
-		addPins : function() {
-			            
-        	//add pins
+        //========================================================
+        // add pins
+        addPins : function() {
+
+            //add pins
         	// each component (right now) gets a positive and a negative pin
-            
-             var positive = new Wiring.Pin({
-                 positive : true,
-                 parent : this,
+
+            var positive = new Wiring.Pin({
+                positive : true,
+                parent : this,
             });
         	this.pins.push(positive);
             
@@ -84,7 +85,7 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
         renderDetails : function(context) {
             var r = 10;
             var g = context.g;
-			        	
+
             g.fill(.7, 1, 1);
             g.stroke(0);
             g.ellipse(0, 0, r * 1.4, r * 1.4);
@@ -96,17 +97,17 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
 
             g.pushMatrix();
             this.attachPoint.applyTransform(g);
-			
+
             this.renderDetails(context);
-            
+
             g.popMatrix();
-            
+
             //render pins
             $.each(this.pins, function(index, pin) {
                 pin.render(context);
             });
         },
-        
+
         //===========================================================
         // Configure Pins
 		compilePins : function(pinList, filter) {
