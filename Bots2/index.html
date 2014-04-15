@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<link rel="stylesheet" href="css/app.css">
+		<link rel="stylesheet" href="css/botapp.css">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>Aequam memento rebus in arduis servare mentem</title>
+	</head>
+	<body>
+
+		<div id="app" class="appsize unselectable">
+			<div id="panel_holder" class="appsize ">
+
+				<div id="arena_panel" class="panel appsize unselectable">
+					<div class="canvas_holder">
+						<canvas id="arena_canvas" class="main_canvas appsize"></canvas>
+
+					</div>
+					<div id="arena_data" class="panel ui">
+						<div id="arena_column">
+							<select id="heuristic">
+
+							</select>
+							<div id="arena_info" class="panel ui">
+
+								Info
+							</div>
+						</div>
+
+						<div id="scoreboard" class="panel ui">
+
+						</div>
+
+					</div>
+					<div id="population_palette" class="panel ui">
+						Population
+
+						<div id="population_current" class="panel ui"></div>
+						<div id="population_next" class="panel ui"></div>
+					</div>
+				</div>
+
+				<div id="edit_panel" class="panel appsize unselectable">
+					<div class="canvas_holder">
+						<canvas id="edit_canvas" class="main_canvas appsize "></canvas>
+					</div>
+					<div id="palette" class="panel ui">
+						<div id="palette_switch" class="panel ui">
+							switch
+						</div>
+
+						<div id="swatches" class="panel ui">
+							<div id="parts_catalog" class="panel ui">
+								parts
+							</div>
+							<div id="chassis_catalog" class="panel ui">
+								chassis
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div
+			id="drawing_overlay" class="overlay appsize">
+				drawing overlay
+			</div>
+
+			<div id="ui_overlay" class="overlay appsize">
+
+				ui overlay
+			</div>
+
+		</div>
+
+	</body>
+
+	<script data-main="js/main" src="js/vendor/require.js"></script>
+
+</html>
