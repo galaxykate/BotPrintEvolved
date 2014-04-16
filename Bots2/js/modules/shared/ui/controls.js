@@ -1,9 +1,9 @@
 /**
  * @author Kate Compton
  */
-var traceControls = false;
+var traceControls = true;
 var traceMovement = false;
-var traceWindows = false;
+var traceWindows = true;
 
 define(["common", "./touch"], function(common, Touch) {'use strict';
 

@@ -96,6 +96,10 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
 
         },
 
+        getDistanceTo : function(p) {
+            return this.getWorldTransform().getDistanceTo(p);
+        },
+
         //========================================================
         //
 
