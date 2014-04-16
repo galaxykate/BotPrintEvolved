@@ -212,9 +212,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                 $.each(customShapes, function(index, shape) {
                     var fixtureDef = new Box2D.b2FixtureDef();
                        fixtureDef.set_density(2.0);
-                    // fixtureDef.set_friction(0.2);
-                    //console.log(bodyDef);
-                   // throw (bodyDef);
+                
                     fixtureDef.set_shape(shape);
                     // magic?
                     body.CreateFixture(fixtureDef);
