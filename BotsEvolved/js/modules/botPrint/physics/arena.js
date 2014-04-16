@@ -11,7 +11,12 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
             this.border = new Graph.Path();
             this.bots = [];
 
-            this.boxWorld = new BoxWorld(0);
+			//this is madness.  But required madness.
+			var tmp = new BoxWorld(0);
+			var box2DWorld = app.getBoxWorldInstance(); 
+            tmp = undefined;
+            
+            this.boxWorld = box2DWorld;
 
             this.obstacles = []; 
             switch (shape){
@@ -150,6 +155,11 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
 
                 }
             }
+            
+            //get the physics model of the world we're using
+            app.getBoxWorld = function(){
+            	return box2DWorld;
+            };
         },
 
         reset : function() {
@@ -206,13 +216,19 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
 
                 t.setToPolar(Math.random() * 400 - 200, Math.random() * 400 - 200);
                 t.rotation = Math.random() * 200;
+                console.log("AddPopulation satate");
+                console.log(bot.transform);
+                
                 bot.transform = t;
+                
+                console.log("After operation:");
+                console.log(bot.transform);
                 arena.scores[index] = {
                     total : 0,
                     individual : bot,
                 };
             });
-
+			
             arena.boxWorld.addObjects(population);
 
         },
@@ -235,6 +251,7 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
             this.time += timestep;
 
             $.each(this.bots, function(index, bot) {
+                console.log(bot);
                 bot.update(time);
             });
 
