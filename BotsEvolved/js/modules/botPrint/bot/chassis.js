@@ -436,22 +436,6 @@ define(["common", "graph", "./wiring", "./tuning", "./attachment/attachments", "
                 	context.g.ellipse(node.x, node.y, d, d);
             	});
         	}
-            else if(app.editMode && app.editChassis) 
-            {
-            	context.g.mouseDragged
-            	context.g.mouseClicked = function() {
-              		var mVector = new common.Vector(g.mouseX - g.width/2, g.mouseY - g.height/2);
-                    console.log(g.mouseX);
-                    /*bot.transform.toLocal(mVector, mVector);
-
-                    var curr = insideCircle(mVector, nodes, d);
-                   	if(curr !== undefined) {
-                    	curr.x = mVector.x;
-                        curr.y = mVector.y;
-                        
-                    }*/
-                };
-            }
             else
             {
             	context.g.mouseDragged = undefined;
