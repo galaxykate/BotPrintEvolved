@@ -23,6 +23,7 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
             this.transform = new common.Transform();
             this.lastTransform = new common.Transform();
             
+			
             //keeps track of the amount of times this bot has collided.
             this.amountOfCollisions = 0;
 
@@ -44,6 +45,7 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
             }));
             this.compileAttachments();
         },
+        
         createChild : function(instructions) {
             var child = new Bot(this, instructions.mutationLevel);
             return child;
@@ -55,7 +57,9 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
         // Interaciton
 
         dragTo : function(p) {
+			
             this.transform.setTo(p);
+
         },
 
         //======================================================================================
@@ -81,8 +85,11 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
 
         // Transform this bot-local position to a global one
         transformToGlobal : function(local, global) {
+
             this.transform.toWorld(local, global);
+            
         },
+        
         setMainChassis : function(chassis) {
             this.mainChassis = chassis;
             this.mainChassis.setParent(this);
@@ -100,11 +107,13 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
             this.compileAttachments();
             return bot;
         },
+        
         setBrain : function(dtree) {
             this.brain = {
                 defaultTree : dtree
             };
         },
+        
         compileAttachments : function() {
             this.attachments = [];
             this.sensors = [];
@@ -125,15 +134,15 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
         getHull : function() {
             return this.mainChassis.path.getHull();
         },
+        
         update : function(time) {
 
             this.mainChassis.update(time);
-
             this.angularVelocity = (this.transform.rotation - this.lastTransform.rotation) / time.ellapsed;
-
             this.lastTransform.cloneFrom(this.transform);
 
         },
+        
         act : function(time) {
             var bot = this;
             if (this.brain !== undefined) {
@@ -153,6 +162,7 @@ define(["common", "./chassis", "three", "./dna"], function(common, Chassis, THRE
                 });
             }
         },
+        
         render : function(context) {
             var g = context.g;
             g.pushMatrix();

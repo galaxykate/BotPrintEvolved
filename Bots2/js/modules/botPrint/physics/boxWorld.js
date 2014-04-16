@@ -1,9 +1,13 @@
 /**
  * @author Kate Compton
+ * Comments by Johnathan Pagnutti
  */
 
 define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
+	/**
+	 * Get the x,y pair of a box2D object 
+	 */
     function B2DtoString(v) {
         return "(" + v.get_x().toFixed(2) + ", " + v.get_y().toFixed(2) + ")";
     };
@@ -12,6 +16,13 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
     var b2Vec2 = Box2D.b2Vec2;
 
+	/**
+	 *Initalization function.  The box2D world is created here, as well as the list of bodies that go into the world.
+	 * Also, the a contact listener is set up to allow the bots to have hit detection.  We're using a custom event listener
+	 * to figure out collisions.
+	 * 
+	 * The scaling factor is also set here
+	 */
     var BoxWorld = Class.extend({
 
         init : function(gravity) {
@@ -43,7 +54,10 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
         },
 
-        //replaces the default event listener with out own custom one
+		/**
+		 * replaces the default event listener with out own custom one
+		 * used to figure out bot collisions 
+		 */
         enableEventListeners : function() {
             var listener = new Box2D.b2ContactListener();
 
@@ -63,6 +77,9 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             }]), this.world.SetContactListener(listener);
         },
 
+		/**
+		 * Removes all bodies from the world 
+		 */
         removeBodies : function() {
             var world = this.world;
             $.each(this.bodies, function(index, body) {
@@ -73,6 +90,10 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             this.bodies = [];
         },
 
+		/**
+		 * Creates a box2D body given an edge ring
+		 * @param points the points that make up the edge 
+		 */
         makeEdgeRing : function(points) {
             var ground = this.world.CreateBody(new Box2D.b2BodyDef());
 
@@ -87,22 +108,43 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             }
             return ground;
         },
-
+		
+		/** 
+		 * Sets the x and y components of a box2D object, scaled down
+		 * 
+		 * @param b2D the box2D object to set
+		 * @param x the x coordinate to scale down and set b2D to
+		 * @param y the y coordinate to scale down and set b2D to
+		 */
         setTo : function(b2D, x, y) {
             b2D.set_x(x / this.scale);
             b2D.set_y(y / this.scale);
         },
 
+		/**
+		 * This function takes a box2D body and sets a transform from the view to this body's position, scaled back up.
+		 * 
+		 * @param body the box2D body to get a position of
+		 * @param transform the transform to update with the scaled up box2D position
+		 */
         readIntoTransform : function(body, transform) {
             var bpos = body.GetPosition();
             transform.rotation = body.GetAngle();
             try {
                 transform.setTo(bpos.get_x() * this.scale, bpos.get_y() * this.scale);
             } catch(err) {
+            	console.log("readIntoTransform() error");
                 console.log(this.scale);
             }
         },
 
+		/**
+		 * Takes an object with some position information, either as seperate x/y arguments, 
+		 * or as a single argument with an x and y property, and scales the position down.  The
+		 * new position is used to create a new b2d vector, which is returned
+		 * 
+		 * @param p either two arguments (first one x, second one y) or a single object that has an x and y parameter
+		 */
         toB2Vec : function(p) {
             if (arguments.length === 1)
                 return new b2Vec2(arguments[0].x / this.scale, arguments[0].y / this.scale);
@@ -110,23 +152,44 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                 return new b2Vec2(arguments[0] / this.scale, arguments[1] / this.scale);
         },
 
+		/**
+		 * Set the position of a body given a position.
+		 * Note: the position is probably ment to come from somewhere else that isn't box2D,
+		 * as the function is 
+		 * 
+		 * @param bodyDef the box2D body we want to reposition
+		 * @param p either a two argument x, y position, or an object with an x and y parameter 
+		 */
         setBodyPosition : function(bodyDef, p) {
             bodyDef.set_position(this.toB2Vec(p));
         },
 
         /**
-         * @method toggleMainMode
-         * Set the body definition to this transform
+         * the inverse of @method readIntoTransform
+         * Sets a box2D body to the same position and angle as a transform
+         * 
+         * @param body the box2D body definition
+         * @param transform the transform to set the box2D body to
          */
 
         setBodyToTransform : function(body, transform) {
             var angle = body.GetAngle();
             if (!isNaN(transform.rotation))
                 angle = transform.rotation;
+            // magic?
             body.SetTransform(this.toB2Vec(transform), angle);
         },
 
-        // Add some set of objects that have "getHull" and a "transform"
+		/**
+		 * Add some set of objects that have "getHull" and a "transform"
+		 * This is done by getting the convex hull of the object, then
+		 * then creating custom shapes based on the hull.
+		 * 
+		 * A box2D body is created and set to the same location as the object's transform,
+		 * then fixtures are created out of the custom shapes, given a density, and set to the body
+		 * 
+ 		 * @param {Object} objects the objects to add
+		 */
         addObjects : function(objects) {
             var boxWorld = this;
 
@@ -153,6 +216,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                     //console.log(bodyDef);
                    // throw (bodyDef);
                     fixtureDef.set_shape(shape);
+                    // magic?
                     body.CreateFixture(fixtureDef);
                 }),
 
@@ -166,6 +230,10 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             });
         },
 
+		/**
+		 * Creates an edge shape based on a set of points.  Note that this uses modulus devision to ensure that the points suppled make a ring
+ 		 * @param {Object} points the points that create a ring
+		 */
         createEdgeShape : function(points) {
             var shape0 = new Box2D.b2EdgeShape();
 
@@ -174,11 +242,22 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             }
         },
 
+		/**
+		 * Magic for creating dynamic shapes
+ 		 * @param {Object} v some object with position information as an x and y parameter
+ 		 * @param {Object} buffer a buffer
+ 		 * @param {Object} offset an offset
+		 */
         setBuffer : function(v, buffer, offset) {
             Box2D.setValue(buffer + (offset), v.x / this.scale, 'float');
             Box2D.setValue(buffer + (offset + 4), v.y / this.scale, 'float');
         },
 
+		/**
+		 * Creates box2D polygon shapes from a set of verticies
+		 * Note that the verticies here are probably from an external source, as they will be scaled
+ 		 * @param {Object} vertices
+		 */
         createPolygonShapes : function(vertices) {
             var boxWorld = this;
             var shape = new Box2D.b2PolygonShape();
@@ -193,6 +272,11 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             return [shape];
         },
 
+		/**
+		 * Creates a triangle fan shape from a set of external vertices
+		 * 
+ 		 * @param {Object} vertices a set of external verticies to create a triangle fan shape
+		 */
         createTriFanShapes : function(vertices) {
             var boxWorld = this;
             if (vertices === undefined)
@@ -221,7 +305,14 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
             return shapes;
         },
-
+        
+        
+		/**
+		 * Simulate the entire world for 2 iterations and icrement frame
+		 * Apply all forces, move everything according to accelerations
+		 * 
+ 		 * @param {Object} dt magic(?)
+		 */
         simulate : function(dt) {
             var boxWorld = this;
 
@@ -244,7 +335,11 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
         },
 
-        // Apply forces to all the bodies
+		/**
+		 * Apply all forces to all bodies.  Forces that should be applied are externally 
+		 * Note: forces will get scaled down
+		 * 
+		 */
         applyForce : function() {
             var boxWorld = this;
             this.forceOffsets = [];

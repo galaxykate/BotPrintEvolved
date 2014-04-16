@@ -68,11 +68,15 @@ define(["ui", "./bot/tuning", "./bot/bot", "./botCard", "./physics/arena", "thre
         createAttachmentList : function() {
 
             // Weights and attachment types: there should be the same number in each array, please!
-            app.attachmentWeights = [.3, .6];
-            app.attachmentTypes = [Attachment.Sensor, Attachment.Actuator];
+            app.attachmentWeights = [.3];
+            app.attachmentTypes = [Attachment.Sensor];
             //app.initModes();
             //console.log("types: " + app.getOption("useTimers"));
 
+			if (app.getOption("useThrusters")){
+				app.attachmentTypes.push(Attachment.Actuator), app.attachmentWeights.push(0.6);
+			}
+			
             if (app.getOption("useTimers")) {
                 app.attachmentTypes.push(Attachment.Sensor.Timer), app.attachmentWeights.push(1);
             }
@@ -83,6 +87,10 @@ define(["ui", "./bot/tuning", "./bot/bot", "./botCard", "./physics/arena", "thre
 
             if (app.getOption("useSharpie")) {
                 app.attachmentTypes.push(Attachment.Actuator.Sharpie), app.attachmentWeights.push(1);
+            }
+            
+            if(app.getOption("useWheel")) {
+            	app.attachmentTypes.push(Attachment.Actuator.Wheel), app.attachmentWeights.push(1);
             }
 
         },
@@ -245,7 +253,7 @@ define(["ui", "./bot/tuning", "./bot/bot", "./botCard", "./physics/arena", "thre
          */
         initModes : function() {
             var ui = app.ui;
-            app.ui.addOption("logWiring", true);
+            app.ui.addOption("logWiring", false);
             app.ui.addOption("logChassis", true);
             app.ui.addOption("drawWiring", true);
             app.ui.addOption("drawComponents", true);
@@ -254,6 +262,7 @@ define(["ui", "./bot/tuning", "./bot/bot", "./botCard", "./physics/arena", "thre
             app.ui.addOption("useTimers", true);
             app.ui.addOption("useColorLerpers", true);
             app.ui.addOption("useSharpie", false);
+            app.ui.addOption("useWheel", true);
             app.ui.addTuningValue("unicornFluffiness", 100, 1, 700, function(key, value) {
                 // do something on change
             });
