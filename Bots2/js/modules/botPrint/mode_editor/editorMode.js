@@ -37,15 +37,23 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
     var isOpen = false;
     var div = $("#edit_panel");
 
+    var subpanels = ["catalog"];
+
     function open() {
         div.addClass("open");
         isOpen = true;
+
+        for (var i = 0; i < subpanels.length; i++) {
+            $("#" + subpanels[i]).show();
+        }
     };
 
     function close() {
         div.removeClass("open");
         isOpen = false;
-
+        for (var i = 0; i < subpanels.length; i++) {
+            $("#" + subpanels[i]).hide();
+        }
     };
 
     //=========================================================================
@@ -132,26 +140,39 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
         controls.createTouchableWindow(div, name, world);
     };
 
+    // Create a palette for either chassis or parts
     function createPalette(entries, paletteDiv) {
-        var controls = app.controls;
 
-        for (var name in entries) {
-            if (entries.hasOwnProperty(name)) {
-                createSwatch(name, entries[name], paletteDiv);
-            }
-        }
     };
 
     function createPalettes() {
+        $(".palette_switch").click(function() {
+            toggleMode();
+        });
 
-        createPalette(catalog.parts, $("#parts_catalog"));
-        createPalette(catalog.chassis, $("#chassis_catalog"));
+        var partsDiv = $("#parts_catalog");
+        var chassisDiv = $("#chassis_catalog");
 
-        var paletteNames = ["vertex", "hamster", "unicorn"];
-        var paletteDiv = $("#palette");
+        for (var i = 0; i < catalog.allParts.length; i++) {
+            var part = catalog.allParts[i];
+            createSwatch(part.name, part, partsDiv);
+        }
+        catalog.allChassis.forEach(function(chassis) {
+            var div = $("<div/>", {
+                html : chassis.name,
+                "class" : "panel"
+            });
+            chassisDiv.append(div);
 
+            div.click(function() {
+                switchChassisType(chassis);
+            });
+        });
     };
 
+    function switchChassisType(type) {
+        console.log("Switch to chassis type " + type.name);
+    };
     //=========================================================================
     // Exposed
 

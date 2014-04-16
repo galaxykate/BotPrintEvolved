@@ -114,10 +114,11 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
             }
             if (query.allowParts) {
                 this.parts.forEach(function(part) {
+
                     var d = part.getDistanceTo(query.screenPos);
                     if (d < closest.dist) {
                         closest.dist = d;
-                        closest.obj = handle;
+                        closest.obj = part;
                     }
                 });
             }

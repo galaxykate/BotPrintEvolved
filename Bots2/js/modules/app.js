@@ -27,8 +27,6 @@ define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./b
             this.editMode.close();
 
             app.toggleMode();
-            app.toggleMode();
-            app.ui.toggleDevMode();
             app.ui.toggleDevMode();
 
         },
@@ -93,7 +91,6 @@ define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./b
         getTime : function() {
             return this.worldTime.total;
         },
-     
     });
 
     return App;

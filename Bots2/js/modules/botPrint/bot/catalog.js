@@ -6,17 +6,25 @@ define(["./attachment/attachments"], function(attachments) {'use strict';
     // Attachments and their costs
     var catalog = {
         chassis : {
-            regular : {}
+            radial : {
+                name : "radial"
+            },
+
+            serpent : {
+                name : "serpent"
+            }
         },
         parts : {
             actuators : {
                 wheel : {
+                    name : "Wheel",
                     cost : 8,
                     createPart : function() {
                         return new attachments.Actuator.Wheel();
                     }
                 },
                 LED : {
+                    name : "LED",
                     cost : 3,
                     createPart : function() {
                         return new attachments.Actuator.Jet();
@@ -24,6 +32,7 @@ define(["./attachment/attachments"], function(attachments) {'use strict';
                 },
 
                 rgbLED : {
+                    name : "RBG LED",
                     cost : 5,
                     createPart : function() {
                         return new attachments.Actuator.Jet();
@@ -33,6 +42,7 @@ define(["./attachment/attachments"], function(attachments) {'use strict';
 
             sensors : {
                 distance : {
+                    name : "Range sensor",
                     cost : 9,
                     createPart : function() {
                         return new attachments.Actuator.Jet();
@@ -40,6 +50,7 @@ define(["./attachment/attachments"], function(attachments) {'use strict';
                 },
 
                 light : {
+                    name : "Light sensor",
                     cost : 3,
                     createPart : function() {
                         return new attachments.Actuator.Jet();
@@ -82,9 +93,11 @@ define(["./attachment/attachments"], function(attachments) {'use strict';
         }
     }
 
-    console.log("AllParts: " + allParts);
-
     return {
+        allParts : allParts,
+
+        allChassis : allChassis,
+
         createRandomActuator : function() {
             return utilities.getRandom(allActuators).createPart();
         },
