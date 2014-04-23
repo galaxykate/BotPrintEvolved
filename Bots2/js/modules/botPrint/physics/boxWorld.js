@@ -278,7 +278,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
         createTriFanShapes : function(vertices) {
             var boxWorld = this;
             if (vertices === undefined)
-                throw "No vertices: can't make B2D triangle-fan";
+                throw "No vertices: can't make B2D trifan";
 
             var center = Vector.average(vertices);
             var shapes = [];
@@ -306,6 +306,27 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
         
         
 		/**
+		 * Cancel a perpendicular velocity on a wheel
+		 *
+		 * @param wheel the b2d Body representation of the wheel in question
+		 */ 
+		 cancelPerpVel : function(wheel) {
+			var aaaa = new b2Vec2();
+			var bbbb = new b2Vec2();
+			var newlocal = new b2Vec2();
+			var newworld = new b2Vec2();
+			
+			aaaa = wheel.GetLinearVelocityFromLocalPoint(new b2Vec2(0, 0));
+			bbbb = wheel.GetLocalVector(aaaa);
+			newlocal.x = -bbbb.x;
+			newlocal.y = bbbb.y;
+			newworld = wheel.GetWorldVector(newlocal);
+			
+			wheel.SetLinearVelocity(newworld);
+		},
+
+        
+		/**
 		 * Simulate the entire world for 2 iterations and icrement frame
 		 * Apply all forces, move everything according to accelerations
 		 * 
@@ -317,6 +338,14 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             // Set the bodies from the boxes
             $.each(this.bodies, function(index, body) {
                 boxWorld.setBodyToTransform(body, body.parentObject.transform);
+            });
+            
+            //additional wheel math goes here
+            $.each(this.bodies, function(index, body) {
+            	if(body.parentObject.type === "wheel"){
+            		//cancel perpendicular velocities
+            		boxWorld.cancelPerpVel(body);
+            	}
             });
 
             this.applyForce();
@@ -330,8 +359,8 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             });
 
             this.frame++;
-
         },
+        
 
 		/**
 		 * Apply all forces to all bodies.  Forces that should be applied are externally 
@@ -351,6 +380,8 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
                 var objTheta = body.parentObject.transform.rotation;
 
+				//debug
+				console.log(body.parentObject);
                 // Get all the forces of the bot
                 var forces = body.parentObject.getForces();
 
@@ -367,7 +398,6 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
                 //  b.ApplyLinearImpulse(force, offset);
                 // b.ApplyAngularImpulse(10000.0, true);
-
             }
         }
     });

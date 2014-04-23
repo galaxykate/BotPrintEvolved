@@ -2,7 +2,7 @@
  * @author Kate Compton
  */
 
-define(["common", "./actuator"], function(common, Actuator) {'use strict';
+define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'use strict';
 
     var Wheel = Actuator.extend({
         init : function() {
@@ -11,11 +11,44 @@ define(["common", "./actuator"], function(common, Actuator) {'use strict';
             this.decay = .5;
             this.id = "Wheel" + this.idNumber;
             this.spinAngle = 0;
+            
+            //some extra info to get the box2D stuff working
+            this.type = "wheel";
+            this.transform = new common.Transform();
+            this.height = 30;
+            this.width = this.height * .3;
+            
+            //a more complete representation for Box2D
+            this.edge = new Graph.Path();
         },
 
         actuate : function(value) {
             this.actuation = value;
         },
+        
+        /**
+         * For box2D integration
+         */
+        getHull : function(){
+        	return this.edge.getHull();
+        },
+        
+        /**
+         * For box2D integration
+         * TODO: this is pretty quick and dirty.  There is probably a better way to handle this
+         */
+        getForces : function(){
+        	return [this.force];
+        },
+        
+        /**
+         * Overloaded for box2D things 
+         */
+        setAttachPoint : function(p) {
+            this.attachPoint.setTo(p.point);
+            this.transform.setTo(this.getWorldTransform());
+        },
+
 
         update : function(time) {
             this._super(time);
@@ -26,6 +59,22 @@ define(["common", "./actuator"], function(common, Actuator) {'use strict';
             this.force.setToPolar(2200 * this.actuation, p.rotation);
 
             this.spinAngle += time.ellapsed * this.actuation;
+        },
+        
+        //overloaded or box2D things
+        render : function(context) {
+            var g = context.g;
+
+            g.pushMatrix();
+            this.transform.applyTransform(g);
+
+            this.renderDetails(context);
+            g.popMatrix();
+
+            //render pins
+            $.each(this.pins, function(index, pin) {
+                pin.render(context);
+            });
         },
 
         renderDetails : function(context) {
@@ -55,7 +104,7 @@ define(["common", "./actuator"], function(common, Actuator) {'use strict';
             g.fill(.3, 0, .5);
             var h = 30;
             var w = .3 * h;
-            g.rect(-h / 2, -w / 2, h, w);
+            g.rect(-this.height / 2, -this.width / 2, this.height, this.width);
 
             // draw lines
             var lines = 10;
@@ -63,8 +112,8 @@ define(["common", "./actuator"], function(common, Actuator) {'use strict';
                 var pct = (i / lines + this.spinAngle) % 1;
                 pct = .5 + .5 * Math.cos(pct * Math.PI);
                 g.stroke(0);
-                var y = h / 2 + -pct * h;
-                g.line(y, -w / 2, y, w / 2);
+                var y = this.height / 2 + -pct * this.height;
+                g.line(y, -this.width / 2, y, this.width / 2);
             }
         },
     });

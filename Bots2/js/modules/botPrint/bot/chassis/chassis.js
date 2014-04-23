@@ -55,7 +55,6 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
 
             // Update all the attachments
             this.parts.forEach(function(part) {
-
                 part.update(time);
             });
         },
@@ -139,7 +138,9 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
 
         addPart : function(part) {
             this.parts.push(part);
-            this.attachmentForces.push(part.force);
+            if(part.type != "wheel"){
+            	this.attachmentForces.push(part.force);
+            }
         },
 
         removePart : function() {
@@ -203,6 +204,13 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
 
             for (var i = 0; i < this.attachmentForces.length; i++) {
                 this.attachmentForces[i].draw(g);
+            }
+            
+            //handle seperate force rendering for parts
+            for (var i = 0; i < this.parts.length; i++) {
+            	if (this.parts[i].type === "wheel" ){
+            		this.parts[i].force.draw(g);
+            	}
             }
 
         },

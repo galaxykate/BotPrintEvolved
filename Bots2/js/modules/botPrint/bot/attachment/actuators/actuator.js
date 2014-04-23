@@ -56,7 +56,7 @@ define(["common", "../attachment"], function(common, Attachment) {'use strict';
             this.stamp = "";
             if (Math.random() > .999)
                 this.stamp = "BotPrint!";
-            this.id = "Sharpie" + this.idNumber;
+            this.id = "Sharpie " + this.idNumber;
 
             this.color = new common.KColor(Math.random(), 1, 1);
         },

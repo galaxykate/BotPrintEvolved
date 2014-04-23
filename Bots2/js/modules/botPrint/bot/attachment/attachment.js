@@ -28,7 +28,6 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             this.idColor.fill(g);
 
             this.center.drawArrow(g, this, .1, 2, 10, 3);
-
         },
     });
 
@@ -142,6 +141,7 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             g.ellipse(0, 0, r * 1.4, r * 1.4);
             g.rect(0, -r / 2, -r * 3, r);
         },
+        
         render : function(context) {
             var g = context.g;
 

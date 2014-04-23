@@ -197,6 +197,7 @@ define(["common", "./edge", "./graph"], function(common, Edge, Graph) {'use stri
             this.addPath(loop1);
 
         },
+        
         addEdgeTo : function(pt) {
             var edge;
             // Make an edge
