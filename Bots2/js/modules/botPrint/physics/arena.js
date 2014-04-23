@@ -194,8 +194,8 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
                     individual : bot,
                 };
             });
-
-            arena.boxWorld.addObjects(population);
+            
+            arena.boxWorld.addObjects(population, 2.0, 0.0, 0.0);
             
             var wheels = [];
             //see if each bot needs wheels, add the wheels to the box2D setup
@@ -207,7 +207,7 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
             	});
             });
             
-            arena.boxWorld.addObjects(wheels);
+            arena.boxWorld.addObjects(wheels, 30.0, 10.0, 0.1);
 
         },
 
