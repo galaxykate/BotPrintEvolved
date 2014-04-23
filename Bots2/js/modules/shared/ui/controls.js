@@ -3,7 +3,7 @@
  */
 var traceControls = true;
 var traceMovement = false;
-var traceWindows = true;
+var traceWindows = false;
 
 define(["common", "./touch"], function(common, Touch) {'use strict';
 
