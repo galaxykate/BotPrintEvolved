@@ -19,7 +19,10 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
             this.width = this.height * .3;
             
             //a more complete representation for Box2D
-            this.edge = new Graph.Path();
+            this.nodes = [];
+            this.path = new Graph.Path();
+            
+            this.refresh();
         },
 
         actuate : function(value) {
@@ -27,10 +30,29 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
         },
         
         /**
-         * For box2D integration
+         * Function to redraw the path after updates 
+         */
+        refresh : function() {
+        	this.nodes = [];
+        	
+        	this.nodes.push(new common.Vector(this.transform.x - (this.width / 2), this.transform.y - (this.height / 2)));
+            this.nodes.push(new common.Vector(this.transform.x - (this.width / 2), this.transform.y + (this.height / 2)));
+            this.nodes.push(new common.Vector(this.transform.x + (this.width / 2), this.transform.y + (this.height / 2)));
+            this.nodes.push(new common.Vector(this.transform.x + (this.width / 2), this.transform.y - (this.height / 2)));
+            
+            var path = this.path;
+            path.clear();
+            this.nodes.forEach(function(node){
+            	path.addEdgeTo(node);
+            });
+            path.close();
+        },
+        
+        /**
+         * Overloaded for box2D integration
          */
         getHull : function(){
-        	return this.edge.getHull();
+        	return this.path.getHull();
         },
         
         /**
@@ -42,11 +64,27 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
         },
         
         /**
-         * Overloaded for box2D things 
+         * Overloaded for box2D integration
+         */
+        getWorldTransform : function() {
+            var global = new common.Transform();
+            //   global.rotation += this.attachPoint.rotation;
+            this.transform.toWorld(global, global);
+
+            this.chassis.transformToGlobal(global, global);
+
+            return global;
+        },
+        
+        /**
+         * Overloaded for box2D integration 
          */
         setAttachPoint : function(p) {
             this.attachPoint.setTo(p.point);
-            this.transform.setTo(this.getWorldTransform());
+            this.transform.setTo(this.attachPoint);
+            
+            this.refresh();
+            //this.transform.setTo(this.getWorldTransform());
         },
 
 
@@ -61,7 +99,9 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
             this.spinAngle += time.ellapsed * this.actuation;
         },
         
-        //overloaded or box2D things
+        /**
+         * Overloaded for box2D integration 
+         */
         render : function(context) {
             var g = context.g;
 

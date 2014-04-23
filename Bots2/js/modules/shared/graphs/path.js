@@ -125,6 +125,7 @@ define(["common", "./edge", "./graph"], function(common, Edge, Graph) {'use stri
 
             return path;
         },
+        
         splitAtIntersections : function() {
             console.log("Split at intersections");
             var intersections = this.findIntersections();
@@ -226,7 +227,7 @@ define(["common", "./edge", "./graph"], function(common, Edge, Graph) {'use stri
         },
 
         // Add a chain of edges from the first node in the list,
-        //    passing through the middle ones, and ending at the last one
+        // passing through the middle ones, and ending at the last one
         spliceIn : function(nodes) {
             var last = nodes[0];
             for (var i = 1; i < nodes.length; i++) {
@@ -348,9 +349,7 @@ define(["common", "./edge", "./graph"], function(common, Edge, Graph) {'use stri
                     g.strokeWeight(1);
 
                     //  point.drawLineTo(g, point.parent);
-
                 }
-
             });
 
             $.each(this.testPoints, function(index, point) {

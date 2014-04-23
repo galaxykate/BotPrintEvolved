@@ -34,6 +34,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             //this.listener = new Box2D.b2ContactListener();
 
             this.bodies = [];
+            this.joints = [];
             //console.log("I've hit something");
             this.enableEventListeners();
 
@@ -179,6 +180,34 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             // magic?
             body.SetTransform(this.toB2Vec(transform), angle);
         },
+        
+        /**
+         * Creates a revolution joint for the wheels, so we can attach them
+         * to the main chassis of the bot, and also turn them.
+         * 
+         * If the joint already exsists, this function does nothing
+         * @param {b2Body} wheel the wheel we want to attach to the bot
+         * @param {b2Body} chassis the chassis we want to attach the wheel too
+         */
+		createRevJoint : function(wheel, chassis) {
+			for (var i = 0; i < this.joints.length; i++) {
+				if ((this.joints[i].GetBody1 === wheel || this.joints[i].GetBody1 === chassis) && (this.joints[i].GetBody2 === wheel || this.joints[i].GetBody2 === chassis)) {
+					// we already have this joint, return with nothing done
+					// or, we've asked for something to be jointed to itself, in which, we still don't want to do anything
+					return;
+				}
+			}
+
+			var revoluteJointDef = new Box2D.b2RevoluteJointDef();
+			revoluteJointDef.Initialize(chassis, wheel, wheel.GetWorldCenter());
+			revoluteJointDef.motorSpeed = 0;
+			revoluteJointDef.maxMotorTorque = 1000;
+			revoluteJointDef.enableMotor = true;
+			revoluteJoint = this.world.CreateJoint(revoluteJointDef);
+			
+			this.joints.push(revoluteJoint);
+		},
+
 
 		/**
 		 * Add some set of objects that have "getHull" and a "transform"
@@ -228,6 +257,24 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                 //body.SetUserData(obj);
 
                 boxWorld.bodies.push(body);
+                
+                //for wheels, create joints to attach them to parent objects, so they don't go flying off into space
+                for(var i = 0; i < boxWorld.bodies.length; i++){
+                	//console.log(boxWorld.bodies[i].parentObject);
+                	if(boxWorld.bodies[i].parentObject.type === "wheel"){
+                		for(var j = 0; j < boxWorld.bodies.length; j++) {
+                			if(boxWorld.bodies[i].parentObject.chassis.bot.name === boxWorld.bodies[j].parentObject.name){
+                				boxWorld.createRevJoint(boxWorld.bodies[i], boxWorld.bodies[j]);
+                			}
+                		}
+                	}
+                }
+                
+                //log check
+                console.log("bodies:");
+                console.log(boxWorld.bodies);
+                console.log("joints:");
+                console.log(boxWorld.joints);
 
             });
         },
@@ -276,10 +323,13 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
 		/**
 		 * Creates a triangle fan shape from a set of external vertices
+		 * This is mostly magic
 		 * 
  		 * @param {Object} vertices a set of external verticies to create a triangle fan shape
 		 */
         createTriFanShapes : function(vertices) {
+            console.log("Logging triVert things:");
+            console.log(vertices);
             var boxWorld = this;
             if (vertices === undefined)
                 throw "No vertices: can't make B2D trifan";
@@ -312,7 +362,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 		/**
 		 * Cancel a perpendicular velocity on a wheel
 		 *
-		 * @param wheel the b2d Body representation of the wheel in question
+		 * @param {b2Body} wheel the b2d Body representation of the wheel in question
 		 */ 
 		 cancelPerpVel : function(wheel) {
 			var aaaa = new b2Vec2();
@@ -384,8 +434,6 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
                 var objTheta = body.parentObject.transform.rotation;
 
-				//debug
-				console.log(body.parentObject);
                 // Get all the forces of the bot
                 var forces = body.parentObject.getForces();
 

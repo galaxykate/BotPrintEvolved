@@ -421,7 +421,7 @@ define(["common", "./edge", "threeUtils"], function(common, Edge, threeUtils) {'
 
             $.each(this.paths, function(index, path) {
                 path.debugOutput();
-            })
+            });
         },
         toString : function() {
             return this.name + "(" + this.nodes.length + " nodes, " + this.edges.length + " edges)";
