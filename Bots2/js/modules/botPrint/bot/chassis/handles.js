@@ -18,12 +18,12 @@ define(["common"], function(common) {'use strict';
 
     var handleCount = 0;
     var Handle = Vector.extend({
-        init : function(type) {
+        init : function(type, parent) {
             this.idNumber = handleCount;
             handleCount++;
-
             // create
             this.type = type;
+            this.parent = parent;
             this.settings = {};
             var settingNames = type;
             for (var i = 0; i < settingNames.length; i++) {
@@ -39,7 +39,6 @@ define(["common"], function(common) {'use strict';
         },
 
         onDrag : function(touch, overObj) {
-
         },
         draw : function(context) {
             var g = context.g;
@@ -69,8 +68,8 @@ define(["common"], function(common) {'use strict';
     });
 
     var RadialHandle = Handle.extend({
-        init : function(r, theta) {
-            this._super(types.radialVertex);
+        init : function(r, theta, parent) {
+            this._super(types.radialVertex, parent);
             this.r = r;
             this.theta = theta;
             this.setToPolar(r, theta);
@@ -97,6 +96,7 @@ define(["common"], function(common) {'use strict';
             touch.follower.html("pct: " + pct.toFixed(2));
             this.r = rRange.getPctValue(pct);
             this.resetPos();
+            this.parent.refresh();
         },
 
         onPickup : function(touch) {
