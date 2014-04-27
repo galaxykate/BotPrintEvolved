@@ -186,6 +186,7 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
         } else {
             // Editing parts
             query.allowParts = true;
+            query.allowEdges = true;
 
         }
         var chassis = app.currentBot.mainChassis;

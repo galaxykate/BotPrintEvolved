@@ -31,9 +31,11 @@ define(["common"], function(common) {'use strict';
 
             }
         },
+
         onTouchEnter : function(touch) {
             console.log("touch enter " + this);
         },
+
         onTouchExit : function(touch) {
             console.log("touch exit " + this);
         },
@@ -41,6 +43,7 @@ define(["common"], function(common) {'use strict';
         onDrag : function(touch, overObj) {
 
         },
+        
         draw : function(context) {
             var g = context.g;
             var r = 10;
@@ -89,6 +92,7 @@ define(["common"], function(common) {'use strict';
         },
 
         onDrag : function(touch, overObj) {
+
             console.log("Drag " + this.name + " over " + overObj);
             var m = touch.screenPos.magnitude();
             var pct = rRange.getPct(m);
@@ -113,7 +117,6 @@ define(["common"], function(common) {'use strict';
 
         resetPos : function() {
             this.setToPolar(this.r, this.theta);
-
         }
     });
 

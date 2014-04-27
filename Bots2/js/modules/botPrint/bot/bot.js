@@ -37,7 +37,7 @@ define(["common", "./chassis/chassis", "three", "./dna", "./catalog"], function(
                 this.generation = 0;
             }
 
-            var colorGene = this.dna.genes[0];
+            var colorGene = this.dna.getData("color");
             this.idColor = new common.KColor(colorGene[0], colorGene[1] * .4 + .6, colorGene[2]);
             this.setMainChassis(new Chassis(this, undefined));
 

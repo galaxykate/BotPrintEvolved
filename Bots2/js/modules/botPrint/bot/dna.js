@@ -6,61 +6,79 @@ define(["common"], function(common) {'use strict';
         return utilities.constrain(v + (Math.random() - .5) * m, 0, 1);
     };
 
-    var DNA = Class.extend({
+    var GeneType = Class.extend({
+        init : function(name, length) {
+            this.complexity = 3;
+            this.length = length;
+        },
 
-        init : function(geneCount, geneLength) {
-            this.geneCount = geneCount;
-            this.geneLength = geneLength;
-            this.genes = [];
-            for (var i = 0; i < this.geneCount; i++) {
-                this.genes[i] = [];
-                for (var j = 0; j < this.geneLength; j++) {
-                    this.genes[i][j] = Math.random();
+        createGene : function() {
+            return new Gene(this);
+        }
+    });
 
+    var geneBorder = 2;
+    var Gene = Class.extend({
+        init : function(gene) {
+            this.gene = gene;
+            this.data = [];
+            for (var i = 0; i < this.gene.length; i++) {
+                this.data[i] = [];
+                for (var j = 0; j < this.gene.complexity; j++) {
+                    this.data[i][j] = Math.random();
                 }
             }
-
+            console.log(this.data);
         },
 
         clone : function(original) {
-            for (var i = 0; i < this.geneCount; i++) {
 
-                for (var j = 0; j < this.geneLength; j++) {
-                    this.genes[i][j] = original.genes[i][j];
-                }
-            }
         },
 
-        mutate : function(mutationLevel) {
-            for (var i = 0; i < this.geneCount; i++) {
-                var mutLevel = .2 * mutateFloat(mutationLevel, .5);
-                for (var j = 0; j < this.geneLength; j++) {
+        draw : function(g) {
+            g.fill(0);
+            g.rect(0, 0, this.gene.length * 2 * geneWidth, this.gene.geneComplexity * geneHeight);
+            g.text(this.gene.name, 0, -2);
+        }
+    });
 
-                    if (Math.random() > .3)
-                        this.genes[i][j] = mutateFloat(this.genes[i][j], mutLevel);
+    var geneTypes = {
+        color : new GeneType("Color", 1),
+        name : new GeneType("Name", 1),
+        chassis : new GeneType("Chassis type", 1),
+        handles : new GeneType("Handles", 10),
+        parts : new GeneType("Parts", 1),
+    };
+
+    var DNA = Class.extend({
+
+        init : function() {
+            this.genes = {};
+            // Create copies of all the genes
+            for (var geneName in geneTypes) {
+                if (geneTypes.hasOwnProperty(geneName)) {
+                    var g = geneTypes[geneName];
+                    this.genes[geneName] = g.createGene();
+
                 }
             }
+
+            console.log(this.genes);
         },
 
-        createMutant : function(mutationLevel) {
-            var mutant = new DNA(this.geneCount, this.geneLength);
-            mutant.clone(this);
-
-            mutant.mutate(mutationLevel);
-            return mutant;
+        getData : function(name, index) {
+            if (index === undefined)
+                index = 0;
+            return this.genes[name].data[index];
         },
 
-        debugOutput : function() {
-            console.log("DNA");
-            for (var j = 0; j < this.geneLength; j++) {
-                var s = "  ";
+        draw : function(g) {
+            g.pushMatrix();
+            this.genes.forEach(function(gene) {
+                gene.draw(g);
+            });
 
-                for (var i = 0; i < this.geneCount; i++) {
-                    s += " " + this.genes[i][j].toFixed(2);
-                }
-                console.log(s);
-            }
-
+            g.popMatrix();
         },
     });
 
