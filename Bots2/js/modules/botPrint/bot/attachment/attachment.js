@@ -107,6 +107,10 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             // Set the force's position
             this.force.center.setToTransform(this.getWorldTransform());
         },
+        
+        refresh : function() {
+        	
+        },
 
         //========================================================
         // add pins
