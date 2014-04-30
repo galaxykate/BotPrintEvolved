@@ -110,7 +110,7 @@ define(["common"], function(common) {'use strict';
                     console.log("Click bot card for " + card.bot.name);
 
                     //   app.setCurrentBot(this.bot);
-                    app.toggleMainMode();
+                //    app.toggleMainMode();
                 }
 
             });

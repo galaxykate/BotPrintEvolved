@@ -37,7 +37,6 @@ define(["common"], function(common) {'use strict';
                     this.data[i][j] = Math.random();
                 }
             }
-            //     console.log(this.data);
         },
 
         clone : function(original) {
@@ -64,6 +63,10 @@ define(["common"], function(common) {'use strict';
             console.log("Mutate " + this.gene.name + ": " + log);
         },
 
+        setData : function(index0, index1, data) {
+            this.data[index0][index1] = data;
+        },
+
         getData : function(index0, index1) {
             if (index0 === undefined) {
                 if (this.data.length === 1)
@@ -76,7 +79,6 @@ define(["common"], function(common) {'use strict';
                 throw ("ERROR: can't get index " + index0 + " from " + this.gene.name + " data of length" + this.data.length);
 
             if (index1 === undefined) {
-                console.log("index " + index0);
                 return this.data[index0];
             }
 
@@ -191,7 +193,7 @@ define(["common"], function(common) {'use strict';
         },
 
         mutate : function(amt) {
-            console.log("Mutate " + this + " " + amt);
+
             // pick a
             var count = utilities.constrain(Math.floor(amt * 5), 1, 10);
             for (var i = 0; i < count; i++) {
@@ -216,6 +218,10 @@ define(["common"], function(common) {'use strict';
 
         getData : function(name, index0, index1) {
             return this.getGene(name).getData(index0, index1);
+        },
+
+        setData : function(name, index0, index1, data) {
+            return this.getGene(name).setData(index0, index1, data);
         },
 
         draw : function(g) {

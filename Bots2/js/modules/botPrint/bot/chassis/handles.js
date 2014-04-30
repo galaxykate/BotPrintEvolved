@@ -33,11 +33,11 @@ define(["common"], function(common) {'use strict';
         },
 
         onTouchEnter : function(touch) {
-            console.log("touch enter " + this);
+            //   console.log("touch enter " + this);
         },
 
         onTouchExit : function(touch) {
-            console.log("touch exit " + this);
+            //  console.log("touch exit " + this);
         },
 
         onDrag : function(touch, overObj) {
@@ -85,22 +85,24 @@ define(["common"], function(common) {'use strict';
 
         setFromDNA : function() {
             var dna = this.parent.getDNA();
-            console.log("Set " + this + " from DNA");
 
             var rPct = dna.getData("handles", this.index, 0);
-            var thetaOffset = dna.getData("handles", this.index, 1);
-            console.log("set from DNA: " + this.index + " " + rPct);
             this.r = rRange.getPctValue(rPct);
+            var thetaOffset = dna.getData("handles", this.index, 1);
             this.resetPos();
         },
 
         setDNAFrom : function() {
+            console.log("Set data from");
+            var rPct = rRange.getPct(this.r);
+
+            var dna = this.parent.getDNA();
+            dna.setData("handles", this.index, 0, rPct);
 
         },
 
         onDrag : function(touch, overObj) {
 
-            console.log("Drag " + this.name + " over " + overObj);
             var m = touch.screenPos.magnitude();
             var pct = rRange.getPct(m);
             pct = utilities.constrain(pct, 0, 1);
@@ -109,6 +111,8 @@ define(["common"], function(common) {'use strict';
             this.r = rRange.getPctValue(pct);
             this.resetPos();
             this.parent.refresh();
+
+            this.setDNAFrom();
         },
 
         onPickup : function(touch) {
