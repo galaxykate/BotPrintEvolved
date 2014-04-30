@@ -43,7 +43,7 @@ define(["common", "./chassis/chassis", "three", "./dna", "./catalog"], function(
 
             this.mainChassis.setFromDNA(this.dna.genes);
 
-            for (var i = 0; i < 2; i++) {
+            for (var i = 0; i < 1; i++) {
                 var part = catalog.createPart();
                 var p = Vector.polar(90 * Math.random(), 100 * Math.random());
                 this.addPart(part, p);

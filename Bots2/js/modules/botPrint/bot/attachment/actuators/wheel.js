@@ -9,7 +9,7 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
             this._super();
             this.actuation = 1;
             this.decay = .5;
-            this.id = "Wheel" + this.idNumber;
+            this.id = "Wheel " + this.idNumber;
             this.spinAngle = 0;
             
             //some extra info to get the box2D stuff working
@@ -22,20 +22,8 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
             this.nodes = [];
             this.path = new Graph.Path();
             
-            this.refresh();
-        },
-
-        actuate : function(value) {
-            this.actuation = value;
-        },
-        
-        /**
-         * Function to redraw the path after updates 
-         */
-        refresh : function() {
-        	this.nodes = [];
-        	
-        	//push the verticies in counter clockwise order, because Box2D is very picky
+            //do box2D things
+            //push the verticies in counter clockwise order, because Box2D is very picky
         	this.nodes.push(new common.Vector(this.transform.x - (this.width / 2), this.transform.y - (this.height / 2)));
             this.nodes.push(new common.Vector(this.transform.x + (this.width / 2), this.transform.y - (this.height / 2)));
             this.nodes.push(new common.Vector(this.transform.x + (this.width / 2), this.transform.y + (this.height / 2)));
@@ -47,6 +35,19 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
             	path.addEdgeTo(node);
             });
             path.close();
+            this.path = path;
+        },
+
+        actuate : function(value) {
+            this.actuation = value;
+        },
+        
+        /**
+         * Function to redraw the path after updates
+         * Stubbed at the moment 
+         */
+        refresh : function() {
+        	return undefined;
         },
         
         /**
@@ -65,27 +66,11 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
         },
         
         /**
-         * Overloaded for box2D integration
-         */
-        getWorldTransform : function() {
-            var global = new common.Transform();
-            //   global.rotation += this.attachPoint.rotation;
-            this.transform.toWorld(global, global);
-
-            this.chassis.transformToGlobal(global, global);
-
-            return global;
-        },
-        
-        /**
          * Overloaded for box2D integration 
          */
         setAttachPoint : function(p) {
             this.attachPoint.setTo(p.point);
-            this.transform.setTo(this.attachPoint);
-            
-            this.refresh();
-            //this.transform.setTo(this.getWorldTransform());
+            this.transform.setTo(p.point);
         },
 
 
@@ -94,10 +79,10 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
 
             // Set the force's position
             var p = this.getWorldTransform();
-
-            this.force.setToPolar(2200 * this.actuation, p.rotation);
-
+            
+            this.force.setToPolar(2200, p.rotation);
             this.spinAngle += time.ellapsed * this.actuation;
+            
         },
         
         /**
@@ -107,7 +92,7 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
             var g = context.g;
 
             g.pushMatrix();
-            this.transform.applyTransform(g);
+            this.attachPoint.applyTransform(g);
 
             this.renderDetails(context);
             g.popMatrix();

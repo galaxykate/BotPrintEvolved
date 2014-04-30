@@ -217,6 +217,8 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 		 * A box2D body is created and set to the same location as the object's transform,
 		 * then fixtures are created out of the custom shapes, given a density, and set to the body
 		 * 
+		 * In addition, an object's get hull method needs to return the vertices in counter-clockeise order
+		 * 
  		 * @param {Object} objects the objects to add
  		 * @param density the density of the b2d object
  		 * @param friction the coefficent of friction of the object
@@ -233,10 +235,20 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             $.each(objects, function(index, obj) {
 
                 var points = obj.getHull();
+                
+				//check to make sure the verticies are in counter-clockwise order
+				//beacuse Box2D is sometimes silly.
+				var checkSum;
+				for(var j = 0; j < points.length; j++) {
+					checkSum += ((points[(j + 1) % points.length].x - points[j].x) * (points[(j + 1) % points.length].y + points[j].y));
+				}
+				
+				if(checkSum < 0)
+					throw "Vertices are not in counter clockwise order!";
 
                 // var customShapes = boxWorld.createPolygonShapes(obj.points);
                 var customShapes = boxWorld.createTriFanShapes(points);
-
+				
                 var body = boxWorld.world.CreateBody(bodyDef);
 
                 boxWorld.setBodyToTransform(body, obj.transform);
@@ -352,12 +364,6 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                 var offset = 0;
 
                 var triVerts = [vertices[j], vertices[(j + 1) % vertices.length], center];
-                console.log("TriVerts:");
-				console.log(triVerts[0].x + ", " + triVerts[0].y);
-				console.log(triVerts[1].x + ", " + triVerts[1].y);
-				console.log(triVerts[2].x + ", " + triVerts[2].y);
-				console.log(triVerts.length);
-				
                 var buffer = Box2D.allocate(triVerts.length * 8, 'float', Box2D.ALLOC_STACK);
 
                 for (var i = 0; i < 3; i++) {
@@ -380,15 +386,15 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 		 * @param {b2Body} wheel the b2d Body representation of the wheel in question
 		 */ 
 		 cancelPerpVel : function(wheel) {
-			var aaaa = new b2Vec2();
-			var bbbb = new b2Vec2();
+			var worldVel = new b2Vec2();
+			var localVel = new b2Vec2();
 			var newlocal = new b2Vec2();
 			var newworld = new b2Vec2();
 			
-			aaaa = wheel.GetLinearVelocityFromLocalPoint(new b2Vec2(0, 0));
-			bbbb = wheel.GetLocalVector(aaaa);
-			newlocal.x = -bbbb.x;
-			newlocal.y = bbbb.y;
+			worldVel = wheel.GetLinearVelocityFromLocalPoint(new b2Vec2(0, 0));
+			localVel = wheel.GetLocalVector(worldVel);
+			newlocal.x = -localVel.x;
+			newlocal.y = localVel.y;
 			newworld = wheel.GetWorldVector(newlocal);
 			
 			wheel.SetLinearVelocity(newworld);
@@ -421,7 +427,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
             this.world.Step(dt, 2, 2);
 
-            // Read box2d data into JS objects
+            // Read box2d data back into BotPrint objects objects
             $.each(this.bodies, function(index, body) {
 
                 boxWorld.readIntoTransform(body, body.parentObject.transform);
@@ -452,7 +458,6 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                 // Get all the forces of the bot
                 var forces = body.parentObject.getForces();
 
-                app.log("Apply " + forces.length + " to " + body);
                 $.each(forces, function(index, force) {
 
                     // forceDir is the direction/strength of the force
@@ -462,7 +467,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
                     body.ApplyForce(forceDir, forceOffset);
                 });
-
+                
                 //  b.ApplyLinearImpulse(force, offset);
                 // b.ApplyAngularImpulse(10000.0, true);
             }
