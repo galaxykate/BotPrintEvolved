@@ -351,7 +351,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
 				for (var i = 0; i < 3; i++) {
 					boxWorld.setBuffer(triVerts[i], buffer, offset);
-
+					console.log(triVerts[i]);
 					offset += 8;
 				}
 

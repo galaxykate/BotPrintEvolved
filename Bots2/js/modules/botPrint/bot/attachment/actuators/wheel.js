@@ -35,10 +35,11 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
         refresh : function() {
         	this.nodes = [];
         	
+        	//push the verticies in counter clockwise order, because Box2D is very picky
         	this.nodes.push(new common.Vector(this.transform.x - (this.width / 2), this.transform.y - (this.height / 2)));
-            this.nodes.push(new common.Vector(this.transform.x - (this.width / 2), this.transform.y + (this.height / 2)));
-            this.nodes.push(new common.Vector(this.transform.x + (this.width / 2), this.transform.y + (this.height / 2)));
             this.nodes.push(new common.Vector(this.transform.x + (this.width / 2), this.transform.y - (this.height / 2)));
+            this.nodes.push(new common.Vector(this.transform.x + (this.width / 2), this.transform.y + (this.height / 2)));
+            this.nodes.push(new common.Vector(this.transform.x - (this.width / 2), this.transform.y + (this.height / 2)));
             
             var path = this.path;
             path.clear();

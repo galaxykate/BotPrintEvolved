@@ -333,20 +333,35 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             var boxWorld = this;
             if (vertices === undefined)
                 throw "No vertices: can't make B2D trifan";
-
+                
+                
+			//check to make sure the verticies are unique
+			for(var j = 0; j < vertices.length; j++){
+				for(var i = 0; i < vertices.length; i++){
+					if(vertices[j].x == vertices[i].x && vertices[j].y == vertices[i].y && i != j){
+						throw "Non-unique verticies: " + vertices[j] + " == " + vertices[i];
+					}
+				}
+			}
+			
             var center = Vector.average(vertices);
             var shapes = [];
             for (var j = 0; j < vertices.length; j++) {
-
+                
                 var shape = new Box2D.b2PolygonShape();
                 var offset = 0;
 
                 var triVerts = [vertices[j], vertices[(j + 1) % vertices.length], center];
+                console.log("TriVerts:");
+				console.log(triVerts[0].x + ", " + triVerts[0].y);
+				console.log(triVerts[1].x + ", " + triVerts[1].y);
+				console.log(triVerts[2].x + ", " + triVerts[2].y);
+				console.log(triVerts.length);
+				
                 var buffer = Box2D.allocate(triVerts.length * 8, 'float', Box2D.ALLOC_STACK);
 
                 for (var i = 0; i < 3; i++) {
                     boxWorld.setBuffer(triVerts[i], buffer, offset);
-
                     offset += 8;
                 }
 
