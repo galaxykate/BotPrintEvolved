@@ -18,7 +18,7 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
             for (var i = 0; i < sideCount; i++) {
                 var r = 50 + Math.random() * 20;
                 var theta = 2 * Math.PI * i / sideCount;
-                this.handles[i] = new Handle.RadialHandle(r, theta);
+                this.handles[i] = new Handle.RadialHandle(r, theta, this);
             }
 
             this.parts = [];
