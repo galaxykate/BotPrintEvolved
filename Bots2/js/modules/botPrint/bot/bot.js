@@ -205,7 +205,6 @@ define(["common", "./chassis/chassis", "three", "./dna", "./catalog"], function(
             this.mesh.add(this.mainChassis.path.mesh);
 
             return this.mesh;
-
         },
 
         incrementCollisionAmount : function() {

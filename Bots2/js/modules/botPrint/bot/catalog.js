@@ -14,6 +14,7 @@ define(["./attachment/attachments"], function(attachments) {'use strict';
                 name : "serpent"
             }
         },
+        
         parts : {
             actuators : {
                 wheel : {
@@ -74,6 +75,7 @@ define(["./attachment/attachments"], function(attachments) {'use strict';
     var allSensors = [];
     var allChassis = [];
     var allActuators = [];
+    var allComponents = [];
     var allParts = [];
     var catalogByName = {};
 
@@ -93,6 +95,15 @@ define(["./attachment/attachments"], function(attachments) {'use strict';
             allSensors.push(p);
             allParts.push(p);
         }
+    }
+    
+    for (var key in catalog.parts.components) {
+    	if (catalog.parts.components.hasOwnProperty(key)) {
+    		var p = catalog.parts.components[key];
+    		catalogByName[key] = p;
+    		allComponents.push(p);
+    		allParts.push(p);
+    	}
     }
 
     for (var key in catalog.chassis) {
@@ -115,6 +126,10 @@ define(["./attachment/attachments"], function(attachments) {'use strict';
         createRandomSensor : function() {
             return utilities.getRandom(allActuators).createPart();
 
+        },
+        
+        createRandomComponent : function() {
+        	return utilities.getRandom(allComponents).createPart();
         },
 
         createPart : function(id) {
