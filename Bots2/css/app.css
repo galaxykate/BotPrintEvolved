@@ -82,7 +82,7 @@ html, body {
 }
 
 #catalog {
-	
+
 	position: absolute;
 	left: -10px;
 	top: 20px;
@@ -176,4 +176,29 @@ html, body {
 	float: left;
 	width: 76%;
 	font-size: x-small;
+}
+
+#editor_card {
+	position: absolute;
+	right: 0px;
+	bottom: 0px;
+}
+
+#arena_card {
+	position: absolute;
+}
+
+.bot_thumbnail {
+	width: 95%;
+	 margin: 0 auto;
+}
+
+.bot_card {
+	box-shadow: 0 0 5px rgba(90, 60, 0, .6);
+	border-radius: 5px;
+	padding: 10px 2px;
+	overflow: all;
+	width: 200px;
+	height: 300px;
+	background-color: rgb(250, 255, 235);
 }
