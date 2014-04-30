@@ -87,7 +87,6 @@ define([], function() {
             var length = array.length;
 
             for (var i = 0; i < length; i++) {
-
                 totalWeight += array[i];
             };
 
@@ -103,6 +102,28 @@ define([], function() {
 
             };
 
+        },
+
+        chooseWeighted : function(array, getWeight) {
+            var totalWeight = 0;
+            var length = array.length;
+
+            for (var i = 0; i < length; i++) {
+                totalWeight += getWeight(array[i]);
+            };
+
+            var target = Math.random() * totalWeight;
+            var cumWeight = 0;
+
+            for (var i = 0; i < length; i++) {
+                cumWeight += getWeight(array[i]);
+
+                if (target <= cumWeight) {
+                    return array[i];
+                }
+
+            };
+            return array[length - 1];
         },
 
         // Get a random, from an array
