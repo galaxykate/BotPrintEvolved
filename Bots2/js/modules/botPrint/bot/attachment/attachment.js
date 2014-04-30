@@ -64,7 +64,12 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
 
         },
 
+        setPosition : function(p) {
+            this.position = p;
+        },
+
         setAttachPoint : function(p) {
+            this.setPosition(p);
             this.attachPoint.setTo(p.point);
         },
 
@@ -109,7 +114,7 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
         },
         
         refresh : function() {
-        	
+            this.position.edge.setToTracer(this.attachPoint, this.position.pct, this.position.offset);
         },
 
         //========================================================

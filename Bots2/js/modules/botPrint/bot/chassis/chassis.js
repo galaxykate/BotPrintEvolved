@@ -75,12 +75,13 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
             // Recalculate the center
             this.path.setToCentroid(this.centroid);
 
-            // Refresh the dependents
+            // Refresh the dependents (attachments, components)
             this.parts.forEach(function(part) {
                 part.refresh();
             });
 
             // Refresh the wiring
+            // TODO
         },
 
         setPathFromHandles : function() {
