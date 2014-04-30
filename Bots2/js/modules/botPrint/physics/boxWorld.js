@@ -52,16 +52,6 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             }]);
 
             this.world.SetContactListener(listener);
-            
-            if(app.debugModeBox2D == true){
-            	var debugDraw = new b2DebugDraw();
-				debugDraw.SetSprite(document.getElementById("arena_canvas").getContext("2d"));
-				debugDraw.SetDrawScale(this.scale);	//define scale
-				debugDraw.SetFillAlpha(0.3);    	//define transparency
-				debugDraw.SetLineThickness(1.0);
-				debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
-				this.world.SetDebugDraw(debugDraw);
-            }
 
         },
 

@@ -81,6 +81,10 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
                 path.addEdgeTo(handle);
             });
             path.close();
+            
+            console.log("Chassis check: ");
+            path.debugOutput();
+            console.log("----");  
         },
 
         compileForces : function(forces) {
