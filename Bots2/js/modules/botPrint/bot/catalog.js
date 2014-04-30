@@ -56,6 +56,16 @@ define(["./attachment/attachments"], function(attachments) {'use strict';
                         return new attachments.Actuator.Jet();
                     }
                 }
+            },
+            
+            components : {
+            	generic : {
+            		name : "generic component",
+            		cost : 0,
+            		createPart : function () {
+            			return new attachments.Component();
+            		}
+            	}
             }
         },
 

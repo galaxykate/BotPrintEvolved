@@ -1,4 +1,6 @@
 /**
+ * This is the core class of what a bot is.  Handles bot DNA, the bot chassis, which parts are attached to the bot, etc.
+ *  
  * @author Kate Compton
  */
 
