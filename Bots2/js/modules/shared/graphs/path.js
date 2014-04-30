@@ -261,7 +261,6 @@ define(["common", "./edge", "./graph"], function(common, Edge, Graph) {'use stri
 
                 var d = Math.abs(found.offset);
                 if (d < closest.dist) {
-                    console.log("Found " + found.edge + " " + found.pct + " " + d);
                     closest = found;
                 }
 

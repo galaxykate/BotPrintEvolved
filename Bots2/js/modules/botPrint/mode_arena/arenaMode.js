@@ -31,7 +31,11 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
     var graph = new ScoreGraph.BarGraph($("#scoreboard"));
 
     function initialize() {
+        console.log("Init Arena Mode");
         createProcessing();
+
+        // Create the botCard
+        app.arenaCard = new app.createBotCard($("#arena_card"));
 
         Population.initUI();
         // Create the graph
@@ -137,7 +141,7 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
 
         arenaInfoDiv.html("");
         app.worldTime.setTo(t);
-        current.simulation.simStep( app.worldTime);
+        current.simulation.simStep(app.worldTime);
 
         var s = current.simulation.testsToString();
         arenaInfoDiv.append(s);

@@ -6,11 +6,16 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
     var realTime = new common.Time("realArenaTime");
 
     function initialize() {
+        console.log("Init Editor Mode");
         createProcessing();
-
         createPalettes();
+
+        // Create the botCard
+        app.editorCard = new app.createBotCard($("#editor_card"));
+
         toggleMode();
         isStarted = true;
+
     };
 
     //============================================================

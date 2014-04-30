@@ -7,6 +7,7 @@ define(["common"], function(common) {'use strict';
     var BotCard = Class.extend({
 
         init : function(parentHolder) {
+            console.log("CREATE BOT CARD");
             var card = this;
 
             // Make all the divs
@@ -43,6 +44,33 @@ define(["common"], function(common) {'use strict';
             this.mainDiv.append(this.thumbnail);
             this.mainDiv.append(this.details);
 
+          
+            var mutateButton = $("<button/>", {
+                html : "mutate"
+            });
+            var mutateMoreButton = $("<button/>", {
+                html : "mutateMore"
+            });
+
+            this.dnaDiv = $("<div/>", {
+                html : "DNA",
+                "class" : "panel"
+            });
+            this.mainDiv.append(this.dnaDiv);
+
+            this.dnaDiv.append(mutateButton);
+            this.dnaDiv.append(mutateMoreButton);
+
+
+            mutateButton.click(function() {
+                card.bot.dna.mutate(.3);
+                card.bot.setFromDNA(card.bot.dna);
+            });
+            mutateMoreButton.click(function() {
+                card.bot.dna.mutate(2);
+                card.bot.setFromDNA(card.bot.dna);
+            });
+
             // Add processing
             var div = this.thumbnail;
             var canvas = div.get(0);
@@ -60,22 +88,26 @@ define(["common"], function(common) {'use strict';
                         g : g,
                         centerBot : true,
                         useChassisCurves : true,
-
                     };
+
                     g.pushMatrix();
                     g.translate(g.width / 2, g.height / 2);
-                    g.scale(.8);
-                    if (card.bot) {
-                        card.bot.render(context);
-                    }
                     g.popMatrix();
-                }
+
+                    if (card.bot) {
+                        g.pushMatrix();
+                        g.translate(4, 10);
+                        card.bot.dna.draw(g);
+                        g.popMatrix();
+                    }
+
+                };
             });
 
             // Interactions
             this.mainDiv.dblclick(function() {
                 if (card.bot) {
-                    console.log("Click bot card for " + card.bot.name)
+                    console.log("Click bot card for " + card.bot.name);
 
                     //   app.setCurrentBot(this.bot);
                     app.toggleMainMode();
@@ -85,8 +117,17 @@ define(["common"], function(common) {'use strict';
 
         },
 
-        setBot : function(bot) {
-            this.bot = bot;
+        open : function() {
+            this.mainDiv.show();
+
+        },
+
+        close : function() {
+            this.mainDiv.hide();
+        },
+
+        update : function() {
+            this.bot = app.currentBot;
             this.title.html(this.bot.name);
 
             if (this.bot.parent) {

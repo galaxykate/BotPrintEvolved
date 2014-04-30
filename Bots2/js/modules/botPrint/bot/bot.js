@@ -26,28 +26,34 @@ define(["common", "./chassis/chassis", "three", "./dna", "./catalog"], function(
             //keeps track of the amount of times this bot has collided.
             this.amountOfCollisions = 0;
 
-            // Create DNA for the bot
-            if (parent) {
-                this.parent = parent;
-                this.dna = parent.dna.createMutant(mutationLevel);
-                this.parent.childCount++;
-                this.generation = parent.generation + 1;
-            } else {
-                this.dna = new DNA(10, 3);
-                this.generation = 0;
-            }
-
-            var colorGene = this.dna.getData("color");
-            this.idColor = new common.KColor(colorGene[0], colorGene[1] * .4 + .6, colorGene[2]);
             this.setMainChassis(new Chassis(this, undefined));
-
-            this.mainChassis.setFromDNA(this.dna.genes);
 
             for (var i = 0; i < 2; i++) {
                 var part = catalog.createPart();
                 var p = Vector.polar(90 * Math.random(), 100 * Math.random());
                 this.addPart(part, p);
             }
+
+            // Create DNA for the bot
+            if (parent) {
+                this.parent = parent;
+                this.parent.childCount++;
+                this.generation = parent.generation + 1;
+                this.setFromDNA(parent.dna.createMutant(mutationLevel));
+            } else {
+                this.generation = 0;
+                this.setFromDNA(new DNA());
+            }
+
+        },
+
+        setFromDNA : function(dna) {
+            this.dna = dna;
+            var colorGene = this.dna.getData("color");
+            this.idColor = new common.KColor(colorGene[0], colorGene[1] * .4 + .6, colorGene[2]);
+
+            this.mainChassis.setFromDNA(this.dna);
+
         },
 
         //======================================================================================
