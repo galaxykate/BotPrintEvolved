@@ -2,7 +2,7 @@
  * @author Kate Compton
  */
 
-define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./botPrint/mode_editor/editorMode"], function(common, UI, arenaMode, editMode) {
+define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./botPrint/mode_editor/editorMode", "./botPrint/botCard"], function(common, UI, arenaMode, editMode, BotCard) {
 
     var App = Class.extend({
 
@@ -20,10 +20,11 @@ define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./b
 
             // Create the modes
             this.arenaMode = arenaMode;
-            this.arenaMode.initialize();
-            this.arenaMode.open();
             this.editMode = editMode;
+            this.arenaMode.initialize();
             this.editMode.initialize();
+
+            this.arenaMode.open();
             this.editMode.close();
 
             app.toggleMode();
@@ -64,10 +65,20 @@ define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./b
 
         },
 
+        //========================================================
+        // Bot selection
+
+        createBotCard : function(parentDiv) {
+            return new BotCard(parentDiv);
+        },
+
         setCurrentBot : function(bot) {
             console.log("Set bot ", bot);
             // load into the bot card
             app.currentBot = bot;
+            app.arenaCard.update();
+            app.editorCard.update();
+
         },
 
         editBot : function(bot) {
@@ -87,7 +98,6 @@ define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./b
             //  app.worldTime.setTime(t);
             app.controls.touch.update();
         },
-
         getTime : function() {
             return this.worldTime.total;
         },

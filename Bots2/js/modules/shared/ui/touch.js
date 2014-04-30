@@ -25,8 +25,8 @@ define(["common", "mousewheel"], function(common, MOUSEWHEEL) {'use strict';
             this.screenPos = new Vector();
             this.worldPos = new Vector();
             this.tw = tw;
-            if (!tw)
-                console.log("Create window pos with undefined tw");
+            //if (!tw)
+              //  console.log("Create window pos with undefined tw");
 
         },
 
