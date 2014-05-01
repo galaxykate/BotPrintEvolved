@@ -75,6 +75,7 @@ define(["common", "./chassis/chassis", "three", "./dna", "./catalog"], function(
 
         addPart : function(part, position) {
             this.mainChassis.attachPartAt(part, position);
+            
         },
 
         //======================================================================================

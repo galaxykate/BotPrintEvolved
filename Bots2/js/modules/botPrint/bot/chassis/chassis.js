@@ -136,11 +136,20 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
         },
 
         attachPartAt : function(part, p) {
+            console.log("Attach " + part + " at " + p);
             if (part.chassis !== this) {
                 part.detach();
                 part.attachTo(this);
+
             }
-         },
+
+            // Don't allow an arbitrary offset of p
+            if (p.refresh) {
+                p.offset = utilities.constrain(p.offset, -18, -8);
+                p.refresh();
+            }
+            part.setAttachPoint(p);
+        },
 
         addPart : function(part) {
             this.parts.push(part);

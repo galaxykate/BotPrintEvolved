@@ -65,7 +65,10 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
         },
 
         setAttachPoint : function(p) {
-            this.attachPoint.setTo(p.point);
+            console.log("Set attach point " + this.attachPoint + " to " + p);
+            this.attachPoint.setTo(p);
+            if (p.rotation)
+                this.attachPoint.rotation = p.rotation;
         },
 
         //========================================================
@@ -107,9 +110,9 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             // Set the force's position
             this.force.center.setToTransform(this.getWorldTransform());
         },
-        
+
         refresh : function() {
-        	
+
         },
 
         //========================================================

@@ -114,11 +114,18 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
         });
 
         // Create a default object to be dropped on stuff
+
+        var heldPart;
         var obj = {
             name : name,
             onDrag : function(touch, overObj) {
+                if (!heldPart) {
+                    heldPart = entry.createPart();
+                }
                 var found = app.currentBot.getClosestEdgePosition(touch.screenPos);
                 console.log("Drag " + this.name + " over " + overObj + " at " + found);
+                if (found)
+                    app.currentBot.addPart(heldPart, found);
 
             },
 
