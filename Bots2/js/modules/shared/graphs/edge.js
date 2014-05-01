@@ -4,7 +4,39 @@
 
 // Reusable Vector class
 
-define(["common"], function(common) {
+define(["common", "./position"], function(common, Position) {
+
+    function isValidIntersection(pts) {
+        return pts[0].pct >= 0 && pts[0].pct <= 1 && pts[1].pct >= 0 && pts[1].pct <= 1;
+        // return true;
+    };
+
+    // start, direction, start, direction
+    function computeRayIntersection(u, v, p, q) {
+        //   console.log("Compute intersection " + u.toSimpleString() + " " + v.toSimpleString());
+        // console.log("   " + p.toSimpleString() + " " + q.toSimpleString());
+
+        var sx = p.x - u.x;
+        var sy = p.y - u.y;
+        var m = (sy / v.y - sx / v.x) / (q.x / v.x - q.y / v.y);
+
+        var n0 = sx / v.x + m * q.x / v.x;
+        var n1 = sy / v.y + m * q.y / v.y;
+
+        //     console.log("   " + n0 + " " + n1);
+
+        return [{
+            start : u,
+            direction : v,
+            pct : m,
+        }, {
+            start : p,
+            direction : q,
+            pct : n0,
+        }];
+
+    }
+
     var numToString = function(num) {
         if (isNaN(num))
             return num + "";
@@ -286,57 +318,14 @@ define(["common"], function(common) {
         //========================================
         //
 
-        getClosestPosition : function(target) {
-            var u = this.edge;
-            var v = this.normal;
-
-            var s = this.start.getOffsetTo(target);
-
-            var m = (s.y / v.y - s.x / v.x) / (u.y / v.y - u.x / v.x);
-            var n0 = s.x / v.x - m * u.x / v.x;
-            var n1 = s.y / v.y - m * u.y / v.y;
-
-            m = utilities.constrain(m, 0, 1);
-            var point = Vector.addMultiples(u, m, v, n0);
-            var offset = point.getDistanceTo(target);
-
-            var found = {
-                point : point,
-                pct : m,
-                edge : this,
-                offset : offset,
-            };
-
-            found.point.add(this.start);
-            return found;
-        },
+        //========================================
+        //========================================
+        //
 
         //========================================
         //========================================
         //========================================
         // Intersections
-
-        computeIntersection : function(edge) {
-            var s = this.start.getOffsetTo(edge.start);
-            var u = this.getOffset();
-            var v = edge.getOffset();
-            var m = (s.x / v.x - s.y / v.y) / (u.x / v.x - u.y / v.y);
-            var n0 = (m * u.x - s.x) / v.x;
-            var n1 = (m * u.y - s.y) / v.y;
-            var p0 = Vector.addMultiples(edge.start, 1, v, n0);
-            var p1 = Vector.addMultiples(this.start, 1, u, m);
-
-            return {
-                edges : [this, edge],
-                pcts : [m, n0],
-                position : p0,
-                onEdges : function() {
-                    var m = this.pcts[0];
-                    var n = this.pcts[1];
-                    return (m >= 0 && m <= 1) && (n >= 0 && n <= 1)
-                }
-            }
-        },
 
         //========================================
         //========================================
@@ -442,8 +431,54 @@ define(["common"], function(common) {
             return this.start.getOffsetTo(this.end);
         },
 
+        getNormal : function() {
+            var v = this.start.getOffsetTo(this.end);
+            var temp = v.x;
+            v.x = v.y;
+            v.y = -temp;
+            v.normalize();
+            return v;
+        },
+
         getAngle : function() {
             return this.start.getAngleTo(this.end);
+        },
+
+        getClosestEdgePosition : function(target, range, allowEnds) {
+            var pos = this.getProjectedEdgePosition(target);
+
+            // On the edge? Then if it's within range, return this pos, otherwise, return undefined
+            if (pos.pct >= 0 && pos.pct <= 1) {
+                if (range !== undefined || Math.abs(pos.offset) < range)
+                    return pos;
+                return undefined;
+            }
+
+            if (allowEnds) {
+                //
+                if (pos.pct > 1) {
+                    if (this.start.getDistanceTo(target) < range) {
+                        pos.pct = 1;
+                        return pos;
+                    }
+                }
+
+                if (pos.pct < 0) {
+                    if (this.end.getDistanceTo(target) < range) {
+                        pos.pct = 0;
+                        return pos;
+                    }
+                }
+            }
+
+        },
+
+        getProjectedEdgePosition : function(target) {
+            var intersection = computeRayIntersection(this.start, this.getOffset(), target, this.getNormal());
+            var pct = intersection[1].pct;
+            var offset = -intersection[0].pct;
+            return new Position(this, pct, offset);
+
         },
 
         //==============================================================================
@@ -540,6 +575,13 @@ define(["common"], function(common) {
 
             return p;
         },
+
+        //===================================
+
+        getPosition : function(target, range) {
+
+        },
+
         //==============================================================================
         //==============================================================================
         //==============================================================================

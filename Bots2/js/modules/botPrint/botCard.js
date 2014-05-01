@@ -44,7 +44,9 @@ define(["common"], function(common) {'use strict';
             this.mainDiv.append(this.thumbnail);
             this.mainDiv.append(this.details);
 
-          
+            var spawnButton = $("<button/>", {
+                html : "spawn"
+            });
             var mutateButton = $("<button/>", {
                 html : "mutate"
             });
@@ -58,9 +60,13 @@ define(["common"], function(common) {'use strict';
             });
             this.mainDiv.append(this.dnaDiv);
 
+            this.dnaDiv.append(spawnButton);
             this.dnaDiv.append(mutateButton);
             this.dnaDiv.append(mutateMoreButton);
 
+            spawnButton.click(function() {
+                card.bot.dna.createMutant();
+            });
 
             mutateButton.click(function() {
                 card.bot.dna.mutate(.3);
@@ -110,7 +116,7 @@ define(["common"], function(common) {'use strict';
                     console.log("Click bot card for " + card.bot.name);
 
                     //   app.setCurrentBot(this.bot);
-                //    app.toggleMainMode();
+                    app.toggleMainMode();
                 }
 
             });
