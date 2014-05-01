@@ -249,25 +249,54 @@ define(["common", "./edge", "./graph"], function(common, Edge, Graph) {'use stri
             centroid.div(this.nodes.length);
         },
 
-        getClosestEdgePosition : function(p) {
-            var closest = {
-                edge : undefined,
-                pct : 0,
-                dist : 999,
-            };
+        //============================================================
+        //============================================================
 
-            this.edges.forEach(function(edge) {
-                var found = edge.getClosestPosition(p);
+        getClosestEdgePosition : function(target, range, allowEnds) {
+            var closest;
 
-                var d = Math.abs(found.offset);
-                if (d < closest.dist) {
-                    closest = found;
+            var dist = range ? range : 9999;
+
+            for (var i = 0; i < this.edges.length; i++) {
+                var found = this.edges[i].getClosestEdgePosition(target, 100, allowEnds);
+                if (found) {
+                    var d = found.getEdgePoint().getDistanceTo(target);
+
+                    // Replace with newly found closest position
+                    if (d < dist) {
+                        app.log(found + ": " + d.toFixed(2));
+                        closest = found;
+                        dist = d;
+                    }
                 }
+            }
 
-            });
             return closest;
+
         },
 
+        compileAllEdgePositions : function(target, list) {
+
+            for (var i = 0; i < this.edges.length; i++) {
+                var found = this.edges[i].getClosestEdgePosition(target, 100, true);
+                if (found)
+                    list.push(found);
+            }
+        },
+
+        getClosestPointInPath : function(target) {
+            if (this.contains(target)) {
+                return new Vector(target);
+            } else {
+                return new Vector(getClosestEdgePosition(target).getEdgePoint);
+            }
+        },
+
+        contains : function(target) {
+            return true;
+        },
+
+        //============================================================
         //============================================================
 
         createThreeMesh : function(context) {
@@ -284,7 +313,6 @@ define(["common", "./edge", "./graph"], function(common, Edge, Graph) {'use stri
             return this.mesh;
 
         },
-
         drawFilled : function(context) {
             var g = context.g;
 
@@ -309,7 +337,6 @@ define(["common", "./edge", "./graph"], function(common, Edge, Graph) {'use stri
              */
 
         },
-
         drawDetails : function(context) {
 
             this._super(context);

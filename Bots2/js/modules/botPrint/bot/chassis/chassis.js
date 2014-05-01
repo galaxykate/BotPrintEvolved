@@ -140,10 +140,7 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
                 part.detach();
                 part.attachTo(this);
             }
-
-            var pos = this.path.getClosestEdgePosition(p);
-            part.setAttachPoint(pos);
-        },
+         },
 
         addPart : function(part) {
             this.parts.push(part);

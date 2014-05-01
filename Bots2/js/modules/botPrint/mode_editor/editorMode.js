@@ -117,7 +117,8 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
         var obj = {
             name : name,
             onDrag : function(touch, overObj) {
-                console.log("Drag " + this.name + " over " + overObj);
+                var found = app.currentBot.getClosestEdgePosition(touch.screenPos);
+                console.log("Drag " + this.name + " over " + overObj + " at " + found);
 
             },
 
@@ -141,6 +142,7 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
                 return obj;
             }
         };
+
         paletteDiv.append(div);
         controls.createTouchableWindow(div, name, world);
     };
@@ -182,7 +184,7 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
     // Exposed
 
     function getTouchableAt(query) {
-        query.allowBots = true;
+        query.searchChassis = true;
         // return the closest bot
 
         if (editChassisMode) {
@@ -194,8 +196,8 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
             query.allowEdges = true;
 
         }
-        var chassis = app.currentBot.mainChassis;
-        var found = chassis.getTouchableAt(query).obj;
+        var found = app.currentBot.getTouchableAt(query).obj;
+
         return found;
 
     };
