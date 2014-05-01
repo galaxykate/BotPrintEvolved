@@ -13,7 +13,6 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
             this.parent = parent;
 
             this.handles = [];
-
             var sideCount = 10;
             for (var i = 0; i < sideCount; i++) {
                 var r = 50 + Math.random() * 20;
@@ -148,6 +147,7 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
         addPart : function(part) {
             this.parts.push(part);
             this.attachmentForces.push(part.force);
+            part.chassis = this;
         },
 
         removePart : function() {

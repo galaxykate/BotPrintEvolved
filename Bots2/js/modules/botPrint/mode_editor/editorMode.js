@@ -132,7 +132,10 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
                 console.log("Drop " + this.name + " on " + overObj);
                 touch.follower.hide();
                 div.removeClass("activated");
-
+				console.log(overObj);
+                var curChassis = overObj.parent;
+                var newActuator = catalog.createRandomActuator();
+                curChassis.addPart(newActuator);
             }
         };
 
