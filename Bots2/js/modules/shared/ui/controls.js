@@ -1,7 +1,7 @@
 /**
  * @author Kate Compton
  */
-var traceControls = true;
+var traceControls = false;
 var traceMovement = false;
 var traceWindows = false;
 

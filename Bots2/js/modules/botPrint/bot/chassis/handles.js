@@ -18,12 +18,12 @@ define(["common"], function(common) {'use strict';
 
     var handleCount = 0;
     var Handle = Vector.extend({
-        init : function(type) {
+        init : function(type, parent) {
             this.idNumber = handleCount;
             handleCount++;
-
             // create
             this.type = type;
+            this.parent = parent;
             this.settings = {};
             var settingNames = type;
             for (var i = 0; i < settingNames.length; i++) {
@@ -31,16 +31,18 @@ define(["common"], function(common) {'use strict';
 
             }
         },
+
         onTouchEnter : function(touch) {
-            console.log("touch enter " + this);
+            //   console.log("touch enter " + this);
         },
+
         onTouchExit : function(touch) {
-            console.log("touch exit " + this);
+            //  console.log("touch exit " + this);
         },
 
         onDrag : function(touch, overObj) {
-
         },
+
         draw : function(context) {
             var g = context.g;
             var r = 10;
@@ -69,9 +71,10 @@ define(["common"], function(common) {'use strict';
     });
 
     var RadialHandle = Handle.extend({
-        init : function(r, theta) {
-            this._super(types.radialVertex);
+        init : function(r, theta, parent, index) {
+            this._super(types.radialVertex, parent);
             this.r = r;
+            this.index = index;
             this.theta = theta;
             this.setToPolar(r, theta);
             this.z = 0;
@@ -80,16 +83,26 @@ define(["common"], function(common) {'use strict';
 
         },
 
-        setFromDNA : function(dna) {
-            if (dna.length < this.dnaSize)
-                throw ("Wrong DNA size! " + dna.length + ", should be " + this.dnaSize);
+        setFromDNA : function() {
+            var dna = this.parent.getDNA();
 
-            this.r = rRange.getPctValue(dna[0]);
+            var rPct = dna.getData("handles", this.index, 0);
+            this.r = rRange.getPctValue(rPct);
+            var thetaOffset = dna.getData("handles", this.index, 1);
             this.resetPos();
         },
 
+        setDNAFrom : function() {
+            console.log("Set data from");
+            var rPct = rRange.getPct(this.r);
+
+            var dna = this.parent.getDNA();
+            dna.setData("handles", this.index, 0, rPct);
+
+        },
+
         onDrag : function(touch, overObj) {
-            console.log("Drag " + this.name + " over " + overObj);
+
             var m = touch.screenPos.magnitude();
             var pct = rRange.getPct(m);
             pct = utilities.constrain(pct, 0, 1);
@@ -97,6 +110,9 @@ define(["common"], function(common) {'use strict';
             touch.follower.html("pct: " + pct.toFixed(2));
             this.r = rRange.getPctValue(pct);
             this.resetPos();
+            this.parent.refresh();
+
+            this.setDNAFrom();
         },
 
         onPickup : function(touch) {
@@ -113,7 +129,9 @@ define(["common"], function(common) {'use strict';
 
         resetPos : function() {
             this.setToPolar(this.r, this.theta);
-
+            if (!this.isValid()) {
+                throw ("Invalid handle! r: " + this.r + " theta: " + this.theta);
+            }
         }
     });
 

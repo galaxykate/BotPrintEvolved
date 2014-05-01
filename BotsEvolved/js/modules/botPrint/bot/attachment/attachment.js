@@ -56,6 +56,10 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
         update : function(time) {
 
         },
+        
+        refresh : function() {
+        	
+        },
 
         //========================================================
         // add pins

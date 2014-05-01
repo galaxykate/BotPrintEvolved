@@ -189,8 +189,11 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 		 * then fixtures are created out of the custom shapes, given a density, and set to the body
 		 * 
  		 * @param {Object} objects the objects to add
+ 		 * @param density the density of the b2d object
+ 		 * @param friction the coefficent of friction of the object
+ 		 * @param restitution the restitution of the object
 		 */
-        addObjects : function(objects) {
+        addObjects : function(objects, density, friction, restitution) {
             var boxWorld = this;
 
             var bodyDef = new Box2D.b2BodyDef();
@@ -211,8 +214,9 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
                 $.each(customShapes, function(index, shape) {
                     var fixtureDef = new Box2D.b2FixtureDef();
-                       fixtureDef.set_density(2.0);
-                
+                    fixtureDef.set_density(density);
+                	fixtureDef.set_friction(friction);
+                	fixtureDef.set_restitution(restitution);	
                     fixtureDef.set_shape(shape);
                     // magic?
                     body.CreateFixture(fixtureDef);

@@ -18,7 +18,7 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
             for (var i = 0; i < sideCount; i++) {
                 var r = 50 + Math.random() * 20;
                 var theta = 2 * Math.PI * i / sideCount;
-                this.handles[i] = new Handle.RadialHandle(r, theta);
+                this.handles[i] = new Handle.RadialHandle(r, theta, this, i);
             }
 
             this.parts = [];
@@ -35,10 +35,18 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
         setFromDNA : function(dna) {
             var chassis = this;
 
-            for (var i = 0; i < dna.length; i++) {
+            for (var i = 0; i < this.handles.length; i++) {
 
-                this.handles[i].setFromDNA(dna[i]);
+                this.handles[i].setFromDNA(dna);
             };
+        },
+
+        setDNAFrom : function() {
+
+        },
+
+        getDNA : function() {
+            return this.bot.dna;
         },
 
         //========================================================================

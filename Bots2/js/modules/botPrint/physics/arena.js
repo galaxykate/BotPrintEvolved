@@ -195,7 +195,7 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
                 };
             });
 
-            arena.boxWorld.addObjects(population);
+            arena.boxWorld.addObjects(population, 2.0, 0.0, 0.0);
 
         },
 
