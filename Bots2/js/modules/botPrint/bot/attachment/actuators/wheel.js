@@ -80,7 +80,7 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
             // Set the force's position
             var p = this.getWorldTransform();
             
-            this.force.setToPolar(2200, p.rotation);
+            this.force.setToPolar(2200 * this.actuation, p.rotation);
             this.spinAngle += time.ellapsed * this.actuation;
             
         },
