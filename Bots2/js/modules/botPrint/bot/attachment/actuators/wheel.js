@@ -9,7 +9,7 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
             this._super();
             this.actuation = 1;
             this.decay = .5;
-            this.id = "Wheel " + this.idNumber;
+            this.id = "wheel " + this.idNumber;
             this.spinAngle = 0;
             
             //some extra info to get the box2D stuff working
@@ -69,8 +69,13 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
          * Overloaded for box2D integration 
          */
         setAttachPoint : function(p) {
-            this.attachPoint.setTo(p.point);
-            this.transform.setTo(p.point);
+            this.attachPoint.setTo(p);
+            this.transform.setTo(p);
+            
+            if (p.rotation){
+            	this.attachPoint.rotation = p.rotation;
+            	this.transform.rotation = p.rotation;
+            }
         },
 
 

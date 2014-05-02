@@ -198,6 +198,7 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
             arena.boxWorld.addObjects(population, 2.0, 0.0, 0.0);
             
             var wheels = [];
+            
             //see if each bot needs wheels, add the wheels to the box2D setup
             $.each(arena.bots, function(index, bot) {
             	$.each(bot.mainChassis.parts, function(index, part) {
@@ -208,12 +209,9 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
             });
             
             arena.boxWorld.addObjects(wheels, 4.0, 0.0, 0.0);
-
         },
 
     
-      
-
         //-------------------------------------------
         //  Light maps and drawing maps
 

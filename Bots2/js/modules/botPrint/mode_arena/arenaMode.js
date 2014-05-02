@@ -53,7 +53,7 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
         console.log("Start a new simulation");
         if (!current.simulation) {
             if (!current.population)
-                current.population = new Population(1);
+            	current.population = new Population(1);    
 
             current.population.updateUI();
 
@@ -120,6 +120,7 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
                     g.ellipse(0, 0, 50, 50);
                     var context = {
                         g : g,
+                        drawForces : true,
                     };
 
                     drawArena(context);

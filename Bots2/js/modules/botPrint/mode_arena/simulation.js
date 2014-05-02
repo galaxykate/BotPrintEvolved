@@ -40,8 +40,8 @@ define(["common", "../physics/arena", "./test"], function(common, Arena, Test) {
         },
 
         start : function() {
+        	console.log("Start is getting called on switch!");
             // clear the arena, put the bots in it
-
             this.arena.reset();
             this.arena.addPopulation(this.population);
             app.setCurrentBot(this.population[0]);
