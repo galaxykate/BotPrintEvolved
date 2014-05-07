@@ -39,6 +39,7 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
 
                 this.handles[i].setFromDNA(dna);
             };
+            this.isStale = true;
         },
 
         setDNAFrom : function() {
@@ -149,7 +150,8 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
                 p.offset = utilities.constrain(p.offset, -18, -8);
                 p.refresh();
             }
-            part.setAttachPoint(p);
+            var pos = {pct: .5, offset: 0, edge:this.path.edges[0]};
+            part.setAttachPoint(pos);
         },
 
         addPart : function(part) {

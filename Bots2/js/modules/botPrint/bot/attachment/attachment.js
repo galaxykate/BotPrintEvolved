@@ -64,6 +64,7 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
 
         },
 
+        //p is an object with pct, offset, edge, thetaOffset and point
         setPosition : function(p) {
             this.position = p;
         },
@@ -74,6 +75,12 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             this.attachPoint.setTo(p.point);
             if (p.rotation)
                 this.attachPoint.rotation = p.rotation;
+            this.updateFromPosition();
+
+        },
+
+        updateFromPosition : function() {
+            this.attachPoint.setToLerp(this.position.edge.start, this.position.edge.end, this.position.pct);
         },
 
         //========================================================
@@ -117,11 +124,7 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
         },
 
         refresh : function() {
-<<<<<<< HEAD
             this.position.edge.setToTracer(this.attachPoint, this.position.pct, this.position.offset);
-=======
-
->>>>>>> master
         },
 
         //========================================================
@@ -153,6 +156,7 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             var r = 10;
             var g = context.g;
 
+
             g.fill(.7, 1, 1);
             g.stroke(0);
             g.ellipse(0, 0, r * 1.4, r * 1.4);
@@ -162,7 +166,11 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             var g = context.g;
 
             g.pushMatrix();
-            this.attachPoint.applyTransform(g);
+            //this.attachPoint.applyTransform(g);
+
+            g.fill(.7, 2, 1);
+            g.stroke(0);
+            g.ellipse(this.attachPoint.x, this.attachPoint.y, 5, 5);
 
             this.renderDetails(context);
 
