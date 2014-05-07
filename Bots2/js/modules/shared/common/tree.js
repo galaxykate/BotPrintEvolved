@@ -9,7 +9,7 @@ define(["common"], function(common) {
         init : function() {
             // Set the depth if there's a parent
             this.depth = 0;
-
+			this.className = "Tree";
             this.idNumber = nodeCount;
             this.children = [];
             nodeCount++;

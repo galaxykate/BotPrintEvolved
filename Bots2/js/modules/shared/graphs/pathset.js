@@ -5,7 +5,7 @@ define(["common", "./curvepath", "./pathregion"], function(common, CurvePath, Pa
     var PathSet = Class.extend({
         init : function() {
             this.paths = [];
-
+			this.className = "PathSet";
         },
 
         parseSVG : function(filename, callback) {

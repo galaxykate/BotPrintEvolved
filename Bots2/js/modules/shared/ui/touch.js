@@ -25,6 +25,7 @@ define(["common", "mousewheel"], function(common, MOUSEWHEEL) {'use strict';
             this.screenPos = new Vector();
             this.worldPos = new Vector();
             this.tw = tw;
+            this.className = "WindowPos";
             //if (!tw)
               //  console.log("Create window pos with undefined tw");
 
@@ -83,7 +84,7 @@ define(["common", "mousewheel"], function(common, MOUSEWHEEL) {'use strict';
             this.lastDown = undefined;
             this.lastDownRel = undefined;
             this.lastUp = undefined;
-
+			this.className = "Touch";
             this.follower = $("<div/>", {
                 id : "touch_attached",
                 html : "touch",

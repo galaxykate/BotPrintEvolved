@@ -12,6 +12,7 @@ define(["common"], function(common) {'use strict';
             this.timesteps = 10;
             this.height = 90;
             this.width = 430;
+            this.className = "BarGraph";
             this.createWindow(parent);
 
         },

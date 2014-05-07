@@ -16,7 +16,7 @@ define(["common", "graph", "./tuning", "./wiring"], function(common, Graph, Tuni
             this.idNumber = componentCount;
             this.idColor = common.KColor.makeIDColor(this.idNumber);
             componentCount++;
-
+			this.className = "Component";
             //the shape of the component
             this.path = new Graph.Path();
 
@@ -108,6 +108,7 @@ define(["common", "graph", "./tuning", "./wiring"], function(common, Graph, Tuni
 		init : function(){
             this._super();
             this.id = "Battery " + this.idNumber;
+            this.className = "Battery";
 		},
 
 		//build the actual shape of the core component block
@@ -145,6 +146,7 @@ define(["common", "graph", "./tuning", "./wiring"], function(common, Graph, Tuni
 		init : function(){
 			this._super();
 			this.id = "Orangutan " + this.idNumber;
+            this.className = "Orangutan";
 		},
 		
 		//build the actual shape of the core component block

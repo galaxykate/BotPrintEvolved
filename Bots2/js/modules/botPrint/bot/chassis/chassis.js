@@ -13,7 +13,7 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
             this.parent = parent;
 
             this.handles = [];
-
+			this.className = "Chassis";
             var sideCount = 10;
             for (var i = 0; i < sideCount; i++) {
                 var r = 50 + Math.random() * 20;

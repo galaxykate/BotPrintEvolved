@@ -10,6 +10,7 @@ define(["common", "./actuator"], function(common, Actuator) {'use strict';
             this.actuation = 1;
             this.decay = .5;
             this.id = "Jet" + this.idNumber;
+            this.className = "Jet";
         },
 
         actuate : function(value) {

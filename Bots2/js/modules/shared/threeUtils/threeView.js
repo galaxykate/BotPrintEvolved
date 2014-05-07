@@ -13,7 +13,7 @@ define(["common", "three", "./threeCam"], function(common, THREE, ThreeCam) {'us
 
             var view = this;
             this.prerender = prerender;
-
+			this.className = "ThreeView";
             this.w = div.width();
             this.h = div.height();
 

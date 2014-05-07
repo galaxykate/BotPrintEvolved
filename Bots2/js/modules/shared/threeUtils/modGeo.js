@@ -10,6 +10,7 @@ define(["common", "three"], function(common, THREE) {'use strict';
         init : function() {
             this.geom = new THREE.Geometry();
             this.geom.dynamic = true;
+            this.className = "ModGeo";
         },
 
         update : function() {
@@ -40,6 +41,7 @@ define(["common", "three"], function(common, THREE) {'use strict';
             this.capCenters = [];
             this.edgeVertCount = sides * (rings + 1);
             this.capVertCount = sides * capRings + 1;
+            this.className = "Cylinder";
 
             // Store the edge vertices in a way that we can access them easily
             for (var i = 0; i < rings + 1; i++) {
