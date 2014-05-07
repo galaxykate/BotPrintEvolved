@@ -62,6 +62,8 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
             current.simulation.start();
             current.simulation.run(1, .04);
             setCurrentHeuristic("mostBlue");
+        }else{
+        	current.simulation.refreshBots();
         }
     };
 
