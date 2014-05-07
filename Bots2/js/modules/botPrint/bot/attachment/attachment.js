@@ -10,6 +10,7 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             this.attachment = attachment;
             this.idColor = new common.KColor((.145 * attachment.idNumber + .2) % 1, 1, 1);
             this.center = new common.Transform();
+            this.className = "AttachmentForce";
         },
 
         draw : function(g) {
@@ -39,7 +40,7 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             attachmentCount++;
 
             this.attachPoint = new common.Transform();
-
+			this.className = "Attachment";
             this.pins = [];
             this.force = new AttachmentForce(this);
         },

@@ -9,6 +9,7 @@ define(["common"], function(COMMON) {'use strict';
         init : function(div) {
             this.div = div;
             this.div.html("");
+            this.className = "Output";
         },
 
         log : function(line) {

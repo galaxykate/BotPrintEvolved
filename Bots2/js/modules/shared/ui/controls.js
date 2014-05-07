@@ -15,7 +15,7 @@ define(["common", "./touch"], function(common, Touch) {'use strict';
 
         init : function(mainDiv, defaultControls) {
             var controls = this;
-
+			this.className = "Controls";
             this.touch = new Touch();
             app.touch = this.touch;
 

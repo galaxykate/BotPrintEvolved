@@ -227,6 +227,7 @@ define(["common", "./position"], function(common, Position) {
         init : function(start, end) {
             this.start = start;
             this.end = end;
+            this.className = "Edge";
 
             // Verify that the start and end points are valid
             if (!start || !start.isValid()) {
@@ -625,6 +626,7 @@ define(["common", "./position"], function(common, Position) {
         init : function(edges) {
             this.subEdges = edges;
             this._super(edges[0].start, edges[edges.length - 1].end, true);
+            this.className = "EdgeChain";
         },
 
         updatePosition : function() {
@@ -648,6 +650,7 @@ define(["common", "./position"], function(common, Position) {
             this.side = side;
             this.angle = 0;
             this.radius = 0;
+            this.className = "Handle";
         },
 
         copy : function(original) {

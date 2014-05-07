@@ -18,6 +18,7 @@ define(["common", "processing", prefix + "panel", prefix + "controls", prefix + 
             ui.panelGroups[name] = this;
             this.name = name;
             this.panels = [];
+            this.className = "PanelGroup";
         },
 
         open : function() {
@@ -96,7 +97,7 @@ define(["common", "processing", prefix + "panel", prefix + "controls", prefix + 
             var ui = this;
             this.options = {};
             this.tuningValues = {};
-
+			this.className = "UI";
             this.panelGroups = {};
 
             $.extend(this, context);

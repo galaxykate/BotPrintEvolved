@@ -6,6 +6,7 @@ define(["d3"], function(_d3) {
 
     var DTreeViz = Class.extend({
         init : function() {
+        this.className = "DTreeViz";
         },
 
         updateText : function() {

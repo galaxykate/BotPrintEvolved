@@ -37,7 +37,7 @@ define(["common"], function(common) {'use strict';
                 "class" : "bot_thumbnail",
 
             });
-
+			this.className = "BotCard";
             parentHolder.append(this.mainDiv);
 
             this.mainDiv.append(this.title);
