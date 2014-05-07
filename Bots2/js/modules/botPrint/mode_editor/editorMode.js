@@ -9,7 +9,6 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
         console.log("Init Editor Mode");
         createProcessing();
         createPalettes();
-
         // Create the botCard
         app.editorCard = new app.createBotCard($("#editor_card"));
 
@@ -140,7 +139,7 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
                 console.log("Drop " + this.name + " on " + overObj);
                 touch.follower.hide();
                 div.removeClass("activated");
-
+				heldPart = undefined;
             }
         };
 
