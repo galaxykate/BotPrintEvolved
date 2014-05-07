@@ -46,6 +46,12 @@ define(["common", "../physics/arena", "./test"], function(common, Arena, Test) {
             this.arena.addPopulation(this.population);
             app.setCurrentBot(this.population[0]);
         },
+        
+        refreshBots : function() {
+        	console.log("Refreshing bots");
+        	this.arena.reset();
+        	this.arena.addPopulation(this.population);
+        },
 
         run : function(totalTime, timestep) {
             var sim = this;
