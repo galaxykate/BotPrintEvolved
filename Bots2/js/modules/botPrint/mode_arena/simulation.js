@@ -26,16 +26,13 @@ define(["common", "../physics/arena", "./test"], function(common, Arena, Test) {
         },
 
         getTest : function(name) {
-            console.log("Get test " + name);
             var found;
             this.tests.forEach(function(test) {
-                console.log(test.heuristic.name + " " + name);
                 if (test.heuristic.name === name) {
                     found = test;
                 }
             });
 
-            console.log("found: " + found.heuristic.name);
             return found;
         },
 

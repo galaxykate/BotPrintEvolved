@@ -122,6 +122,7 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
                     g.ellipse(0, 0, 50, 50);
                     var context = {
                         g : g,
+                       
                     };
 
                     drawArena(context);

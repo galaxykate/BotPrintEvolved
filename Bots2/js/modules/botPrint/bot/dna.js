@@ -1,7 +1,10 @@
 /**
  * @author Kate Compton
  */
-define(["common"], function(common) {'use strict';
+define(["common", "./genetype"], function(common, GeneType) {'use strict';
+
+    var botGene = GeneType.createDNA();
+ 
     var mutateFloat = function(v, m) {
         return utilities.constrain(v + (Math.random() - .5) * m, 0, 1);
     };
@@ -120,6 +123,7 @@ define(["common"], function(common) {'use strict';
             g.fill(0, 0, 0);
             g.text(this.gene.name, 0, -4);
             //   g.text(this.gene.geneComplexity, 4, 10);
+
         },
 
         dataToString : function() {
@@ -228,25 +232,29 @@ define(["common"], function(common) {'use strict';
         },
 
         draw : function(g) {
-
+            /*
             g.fill(0);
             // g.ellipse(0, 0, 40, 40);
             g.pushMatrix();
             for (var i = 0; i < this.genes.length; i++) {
 
-                this.genes[i].draw(g);
-                g.translate(this.genes[i].getWidth() + geneSpacing, 0);
+            this.genes[i].draw(g);
+            g.translate(this.genes[i].getWidth() + geneSpacing, 0);
             }
 
             g.text(this.genes.length, 0, 0);
 
             g.popMatrix();
             if (this.mutant) {
-                g.pushMatrix();
-                g.translate(0, 55);
-                this.mutant.draw(g);
-                g.popMatrix();
+            g.pushMatrix();
+            g.translate(0, 55);
+            this.mutant.draw(g);
+            g.popMatrix();
             }
+            */
+
+            // Draw the test gene instead
+            botGene.drawData(g);
         },
 
         debugOutput : function() {

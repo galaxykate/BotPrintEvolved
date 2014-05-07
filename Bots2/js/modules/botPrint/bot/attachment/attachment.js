@@ -50,7 +50,6 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
 
         detach : function() {
             if (this.chassis) {
-                console.log("Detach " + this + " from " + this.chassis);
                 this.chassis.removePart(this);
                 this.chassis = undefined;
             }
@@ -66,7 +65,6 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
         },
 
         setAttachPoint : function(p) {
-            console.log("Set attach point " + this.attachPoint + " to " + p);
             this.attachPoint.setTo(p);
             if (p.rotation)
                 this.attachPoint.rotation = p.rotation;
