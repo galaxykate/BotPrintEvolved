@@ -151,10 +151,9 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
         
         render : function(context) {
             var g = context.g;
-
             g.pushMatrix();
+            
             this.attachPoint.applyTransform(g);
-
             this.renderDetails(context);
 
             g.popMatrix();

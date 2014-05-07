@@ -80,7 +80,6 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
     function open() {
         div.addClass("open");
         isOpen = true;
-
         startSimulation();
     };
 
