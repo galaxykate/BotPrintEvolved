@@ -199,13 +199,15 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 			}
 
 			var revoluteJointDef = new Box2D.b2RevoluteJointDef();
-			revoluteJointDef.Initialize(chassis, wheel, wheel.GetWorldCenter());
+			revoluteJointDef.Initialize(chassis, wheel, wheel.GetPosition());
 			revoluteJointDef.motorSpeed = 0;
 			revoluteJointDef.maxMotorTorque = 1000;
 			revoluteJointDef.enableMotor = true;
 			revoluteJoint = this.world.CreateJoint(revoluteJointDef);
-			
+		
 			this.joints.push(revoluteJoint);
+			
+			return revoluteJoint;
 		},
 
 
@@ -238,6 +240,14 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                 
                 console.log("Box2D points: ");
                 console.log(points);
+				console.log("Transform: ");
+				console.log(obj.transform.x + ", " + obj.transform.y);
+				
+				if(obj.attachPoint != undefined){
+					console.log("Attach Point: ");
+					console.log(obj.attachPoint.x + ", " + obj.attachPoint.y);	
+				}
+				
 				
 				//check to make sure the verticies are in counter-clockwise order
 				//beacuse Box2D is sometimes silly.
@@ -251,19 +261,14 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
                 // var customShapes = boxWorld.createPolygonShapes(obj.points);
                 var customShapes = boxWorld.createTriFanShapes(points);
-				
                 var body = boxWorld.world.CreateBody(bodyDef);
 
                 boxWorld.setBodyToTransform(body, obj.transform);
 				
 				console.log("Box2D Transform information: ");
-				console.log("Transform: ");
-				console.log(obj.transform.x + ", " + obj.transform.y);
-				console.log("Body: ");
-				var tmp = body.GetWorldPoint(new b2Vec2(0,0));
+				console.log("Body: ");				
+				var tmp = body.GetPosition();
 				console.log(tmp.get_x() + ", " + tmp.get_y());
-				var tmp2 = body.GetCenterPosition();
-				console.log(tmp2.get_x() + ", " + tmp2.get_y());
 				
                 $.each(customShapes, function(index, shape) {
                     var fixtureDef = new Box2D.b2FixtureDef();
@@ -288,7 +293,8 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                 	if(boxWorld.bodies[i].parentObject.type === "wheel"){
                 		for(var j = 0; j < boxWorld.bodies.length; j++) {
                 			if(boxWorld.bodies[i].parentObject.chassis.bot.name === boxWorld.bodies[j].parentObject.name){
-                				boxWorld.createRevJoint(boxWorld.bodies[i], boxWorld.bodies[j]);
+                				var joint = boxWorld.createRevJoint(boxWorld.bodies[i], boxWorld.bodies[j]);
+                				
                 			}
                 		}
                 	}
@@ -425,6 +431,22 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             // Set the bodies from the boxes
             $.each(this.bodies, function(index, body) {
                 boxWorld.setBodyToTransform(body, body.parentObject.transform);
+                
+                //check to make sure everything is still lining up
+                if(body.parentObject.type === "wheel"){
+                	console.log("Check to make sure the centers are still lining up (after setup): ");
+                	console.log(body.parentObject.attachPoint.x + ", " + body.parentObject.attachPoint.y);
+                	console.log(body.parentObject.transform.x + ", " + body.parentObject.transform.y);
+                	
+                	console.log("In box2D: ");
+                	console.log(body.GetPosition().get_x() + ", " + body.GetPosition().get_y());
+                	$.each(boxWorld.joints, function(index, joint) {
+                		if(joint.GetBodyA().parentObject === body.parentObject || joint.GetBodyB().parentObject === body.parentObject){
+                			console.log(joint.GetAnchorA().get_x() + ", " + joint.GetAnchorA().get_y());
+                			console.log(joint.GetAnchorB().get_x() + ", " + joint.GetAnchorB().get_y());
+                		}
+                	});
+                }
             });
             
             //additional wheel math goes here
@@ -441,11 +463,28 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
             // Read box2d data back into BotPrint objects objects
             $.each(this.bodies, function(index, body) {
-
                 boxWorld.readIntoTransform(body, body.parentObject.transform);
+                
+                // check to make sure everything is still lining up
+                if(body.parentObject.type === "wheel"){
+                    console.log("Check to make sure the centers are still lineing up (after updates): ");
+                	console.log(body.parentObject.attachPoint.x + ", " + body.parentObject.attachPoint.y);
+                	console.log(body.parentObject.transform.x + ", " + body.parentObject.transform.y);
+                	
+                	console.log("In box2D: ");
+					console.log(body.GetPosition().get_x() + ", " + body.GetPosition().get_y());
+                	$.each(boxWorld.joints, function(index, joint) {
+                		if(joint.GetBodyA().parentObject === body.parentObject || joint.GetBodyB().parentObject === body.parentObject){
+                			console.log(joint.GetAnchorA().get_x() + ", " + joint.GetAnchorA().get_y());
+                			console.log(joint.GetAnchorB().get_x() + ", " + joint.GetAnchorB().get_y());
+                		}
+                	});                	
+            	}
             });
 
             this.frame++;
+            
+            debugger;
         },
         
 
