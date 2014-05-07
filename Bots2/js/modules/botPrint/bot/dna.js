@@ -11,6 +11,7 @@ define(["common"], function(common) {'use strict';
             this.name = name;
             this.complexity = 3;
             this.length = length;
+            this.className = "GeneType";
         },
 
         createGene : function() {
@@ -31,6 +32,7 @@ define(["common"], function(common) {'use strict';
         init : function(gene) {
             this.gene = gene;
             this.data = [];
+            this.className = "Gene";
             for (var i = 0; i < this.gene.length; i++) {
                 this.data[i] = [];
                 for (var j = 0; j < this.gene.complexity; j++) {
@@ -177,6 +179,7 @@ define(["common"], function(common) {'use strict';
             this.idNumber = dnaCount;
             dnaCount++;
             this.genes = [];
+            this.className = "DNA";
             // Create copies of all the genes
             for (var i = 0; i < geneNames.length; i++) {
                 var name = geneNames[i];

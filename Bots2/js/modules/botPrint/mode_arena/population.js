@@ -44,7 +44,7 @@ define(["common", "../bot/bot"], function(common, Bot) {'use strict';
             generation++;
             // Create some bots
             this.bots = [];
-
+			this.className = "Population";
             for (var i = 0; i < randomCount; i++) {
                 var b = new Bot();
                 this.bots.push(b);

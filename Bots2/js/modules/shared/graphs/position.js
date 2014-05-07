@@ -6,11 +6,12 @@ define(["common"], function(common) {
         init : function(edge, pct, offset, thetaOffset) {
             this._super();
             this.edge = edge;
-
+			this.className = "Position";
             this.pct = isNaN(pct) ? .5 : pct;
             this.offset = isNaN(offset) ? 0 : offset;
             this.thetaOffset = isNaN(thetaOffset) ? 0 : thetaOffset;
             this.refresh();
+            this.className = "Position";
         },
 
         refresh : function() {

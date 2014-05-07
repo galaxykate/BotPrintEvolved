@@ -8,6 +8,7 @@ define(["./vector"], function(Vector) {
     var Map = Class.extend({
         init : function() {
             this.values = [];
+            this.className = "Map";
         },
 
         setDimensions : function(width, height, spacing) {

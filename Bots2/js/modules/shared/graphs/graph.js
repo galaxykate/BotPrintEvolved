@@ -38,6 +38,7 @@ define(["common", "./edge"], function(common, Edge) {'use strict';
         init : function(name) {
             this.name = name;
             this.idNumber = graphCount;
+            this.className = "Graph";
             graphCount++;
 
             this.clear();

@@ -53,6 +53,7 @@ define(["common", "./edge", "./graph"], function(common, Edge, Graph) {'use stri
         init : function(name) {
             this._super(name);
             this.closed = false;
+            this.className = "Path";
         },
         getFirstNode : function() {
             return this.nodes[0];
