@@ -12,6 +12,7 @@ define(["common", "./chassis/chassis", "three", "./dna", "./catalog"], function(
     };
 
     var botCount = 0;
+
     var Bot = Class.extend({
         init : function(parent, mutationLevel) {
             this.idNumber = botCount;
@@ -45,6 +46,7 @@ define(["common", "./chassis/chassis", "three", "./dna", "./catalog"], function(
                 this.setFromDNA(new DNA());
             }
 
+            this.testPoints = [];
         },
 
         setFromDNA : function(dna) {
@@ -73,6 +75,7 @@ define(["common", "./chassis/chassis", "three", "./dna", "./catalog"], function(
 
         addPart : function(part, position) {
             this.mainChassis.attachPartAt(part, position);
+            
         },
 
         //======================================================================================
@@ -131,14 +134,24 @@ define(["common", "./chassis/chassis", "three", "./dna", "./catalog"], function(
             context.useChassisCurves = true;
             this.mainChassis.render(context);
 
+            for (var i = 0; i < this.testPoints.length; i++) {
+                g.fill(.9, 1, 1);
+                g.stroke(.9, .2, 1);
+                g.strokeWeight(2);
+                this.testPoints[i].drawCircle(g, 10);
+            }
+
+            // Non rotated
             if (context.drawNames) {
                 g.rotate(-this.transform.rotation);
                 g.text(this.name, 10, 10);
             }
+
             g.popMatrix();
 
             // draw globally positioned stuff
-            this.mainChassis.drawForces(context);
+            if (context.drawForces)
+                this.mainChassis.drawForces(context);
 
         },
 
@@ -154,18 +167,36 @@ define(["common", "./chassis/chassis", "three", "./dna", "./catalog"], function(
             return p.getDistanceTo(this.transform);
         },
 
+        getClosestEdgePosition : function(target) {
+            this.testPoints = [];
+            this.testPoints.push(target);
+
+            var path = this.mainChassis.path;
+            //    var found = path.getClosestEdgePosition(query.screenPos, 99);
+            //  path.compileAllEdgePositions(query.screenPos, this.testPoints);
+            var found = path.getClosestEdgePosition(target, 100, true);
+            if (found)
+                this.testPoints.push(found);
+            return found;
+        },
+
         getTouchableAt : function(query) {
             if (query.not === this)
                 return undefined;
 
-            // localize the position
-            var localQuery = new Vector();
-            this.transform.toLocal(query.screenPos, localQuery);
+            if (query.searchChassis)
+                return this.mainChassis.getTouchableAt(query);
 
-            return {
-                obj : this,
-                dist : localQuery.magnitude(),
-            };
+            if (query.searchBots) {
+                // localize the position
+                var localQuery = new Vector();
+                this.transform.toLocal(query.screenPos, localQuery);
+
+                return {
+                    obj : this,
+                    dist : localQuery.magnitude(),
+                };
+            }
         },
 
         onTouchEnter : function() {
