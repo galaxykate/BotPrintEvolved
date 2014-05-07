@@ -461,6 +461,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                     boxWorld.setTo(forceDir, force.x, force.y);
                     boxWorld.setTo(forceOffset, force.center.x, force.center.y);
 
+					//apply forces
                     body.ApplyForce(forceDir, forceOffset);  
                 });
                 
