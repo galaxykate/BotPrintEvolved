@@ -225,10 +225,10 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
  		 * @param restitution the restitution of the object
 		 */
         addObjects : function(objects, density, friction, restitution) {
+            console.log("Add Objects is getting called!");
             var boxWorld = this;
 
             var bodyDef = new Box2D.b2BodyDef();
-            //
             bodyDef.set_type(Box2D.b2_dynamicBody);
             bodyDef.set_angularDamping(3);
             //iterates though all the objects i.e bots
@@ -236,6 +236,9 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
                 var points = obj.getHull();
                 
+                console.log("Box2D points: ");
+                console.log(points);
+				
 				//check to make sure the verticies are in counter-clockwise order
 				//beacuse Box2D is sometimes silly.
 				var checkSum;
@@ -252,7 +255,16 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                 var body = boxWorld.world.CreateBody(bodyDef);
 
                 boxWorld.setBodyToTransform(body, obj.transform);
-
+				
+				console.log("Box2D Transform information: ");
+				console.log("Transform: ");
+				console.log(obj.transform.x + ", " + obj.transform.y);
+				console.log("Body: ");
+				var tmp = body.GetWorldPoint(new b2Vec2(0,0));
+				console.log(tmp.get_x() + ", " + tmp.get_y());
+				var tmp2 = body.GetCenterPosition();
+				console.log(tmp2.get_x() + ", " + tmp2.get_y());
+				
                 $.each(customShapes, function(index, shape) {
                     var fixtureDef = new Box2D.b2FixtureDef();
                     fixtureDef.set_density(density);

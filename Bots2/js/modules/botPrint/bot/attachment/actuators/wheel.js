@@ -22,20 +22,6 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
             this.nodes = [];
             this.path = new Graph.Path();
             
-            //do box2D things
-            //push the verticies in counter clockwise order, because Box2D is very picky
-        	this.nodes.push(new common.Vector(this.transform.x - (this.width / 2), this.transform.y - (this.height / 2)));
-            this.nodes.push(new common.Vector(this.transform.x + (this.width / 2), this.transform.y - (this.height / 2)));
-            this.nodes.push(new common.Vector(this.transform.x + (this.width / 2), this.transform.y + (this.height / 2)));
-            this.nodes.push(new common.Vector(this.transform.x - (this.width / 2), this.transform.y + (this.height / 2)));
-            
-            var path = this.path;
-            path.clear();
-            this.nodes.forEach(function(node){
-            	path.addEdgeTo(node);
-            });
-            path.close();
-            this.path = path;
         },
 
         actuate : function(value) {
@@ -72,18 +58,31 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
             this.attachPoint.setTo(p);
             this.transform.setTo(p);
             
-            console.log("Transform and attach point things:");
-            console.log("Transform: ");
-            console.log(this.transform);
-            console.log("Attach Point: ");
-            console.log(this.attachPoint);
-            console.log("Point list: ");
-            console.log(this.nodes);
+            console.log("Transform location at setAttachPoint():");
+            console.log(this.transform.x + ", " + this.transform.y);
             
             if (p.rotation){
             	this.attachPoint.rotation = p.rotation;
             	this.transform.rotation = p.rotation;
             }
+            
+            //do box2D things
+            //push the verticies in counter clockwise order, because Box2D is very picky
+        	this.nodes.push(new common.Vector(this.transform.x - (this.width / 2), this.transform.y - (this.height / 2)));
+            this.nodes.push(new common.Vector(this.transform.x + (this.width / 2), this.transform.y - (this.height / 2)));
+            this.nodes.push(new common.Vector(this.transform.x + (this.width / 2), this.transform.y + (this.height / 2)));
+            this.nodes.push(new common.Vector(this.transform.x - (this.width / 2), this.transform.y + (this.height / 2)));
+            
+            console.log("Hull points: ");
+            console.log(this.nodes);
+            
+            var path = this.path;
+            path.clear();
+            this.nodes.forEach(function(node){
+            	path.addEdgeTo(node);
+            });
+            path.close();
+            this.path = path;
         },
 
 
