@@ -8,6 +8,7 @@ define(["common", "../attachment"], function(common, Attachment) {'use strict';
             this._super();
             this.actuation = 1;
             this.decay = .5;
+            this.className = "Actuator";
             this.id = "Actuator" + this.idNumber;
         },
 
@@ -56,8 +57,9 @@ define(["common", "../attachment"], function(common, Attachment) {'use strict';
             this.stamp = "";
             if (Math.random() > .999)
                 this.stamp = "BotPrint!";
-            this.id = "Sharpie " + this.idNumber;
-
+            this.id = "Sharpie" + this.idNumber;
+			this.className = "Sharpie";
+			
             this.color = new common.KColor(Math.random(), 1, 1);
         },
 

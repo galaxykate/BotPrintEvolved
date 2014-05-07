@@ -22,7 +22,7 @@ define(["common", "three"], function(common, THREE) {'use strict';
             this.forward = new THREE.Vector3(0, 1, 0);
             this.right = new THREE.Vector3(1, 0, 0);
             this.up = new THREE.Vector3(0, 0, 1);
-
+			this.className = "ThreeCam";
             this.screenCenter = new Vector(w * .5, h * .5);
 
             // Make a camera

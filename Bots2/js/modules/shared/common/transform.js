@@ -9,6 +9,7 @@ define(["./vector"], function(Vector) {
             this._super();
             this.rotation = 0;
             this.scale = 1;
+            this.className = "Transform";
 
         },
 

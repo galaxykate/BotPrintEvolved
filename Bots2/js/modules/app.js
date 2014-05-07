@@ -23,6 +23,7 @@ define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./b
             this.editMode = editMode;
             this.arenaMode.initialize();
             this.editMode.initialize();
+            this.className = "App";
 
             this.arenaMode.open();
             this.editMode.close();

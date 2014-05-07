@@ -13,7 +13,7 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
             this.bots = [];
 
             this.boxWorld = new BoxWorld(0);
-
+			this.className = "Arena";
             this.obstacles = [];
             this.shape = shape;
             switch (shape) {

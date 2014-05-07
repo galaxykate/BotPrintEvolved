@@ -17,7 +17,7 @@ define(["common", "./chassis/chassis", "three", "./dna", "./catalog"], function(
         init : function(parent, mutationLevel) {
             this.idNumber = botCount;
             botCount++;
-
+			this.className = "Bot";
             this.childCount = 0;
 
             this.name = makeBotName();

@@ -31,6 +31,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             this.frame = 0;
             this.gravity = new Box2D.b2Vec2(0.0, gravity);
             this.world = new Box2D.b2World(this.gravity);
+            this.className = "BoxWorld";
             //this.listener = new Box2D.b2ContactListener();
 
             this.bodies = [];
@@ -227,7 +228,6 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
  		 * @param restitution the restitution of the object
 		 */
         addObjects : function(objects, density, friction, restitution) {
-            console.log("Add Objects is getting called!");
             var boxWorld = this;
 
             var bodyDef = new Box2D.b2BodyDef();
@@ -238,17 +238,6 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
                 var points = obj.getHull();
                 
-                console.log("Box2D points: ");
-                console.log(points);
-				console.log("Transform: ");
-				console.log(obj.transform.x + ", " + obj.transform.y);
-				
-				if(obj.attachPoint != undefined){
-					console.log("Attach Point: ");
-					console.log(obj.attachPoint.x + ", " + obj.attachPoint.y);	
-				}
-				
-				
 				//check to make sure the verticies are in counter-clockwise order
 				//beacuse Box2D is sometimes silly.
 				var checkSum;
@@ -264,11 +253,6 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                 var body = boxWorld.world.CreateBody(bodyDef);
 
                 boxWorld.setBodyToTransform(body, obj.transform);
-				
-				console.log("Box2D Transform information: ");
-				console.log("Body: ");				
-				var tmp = body.GetPosition();
-				console.log(tmp.get_x() + ", " + tmp.get_y());
 				
                 $.each(customShapes, function(index, shape) {
                     var fixtureDef = new Box2D.b2FixtureDef();
@@ -299,13 +283,6 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                 		}
                 	}
                 }
-                
-                //log check
-                console.log("bodies:");
-                console.log(boxWorld.bodies);
-                console.log("joints:");
-                console.log(boxWorld.joints);
-
             });
         },
 
@@ -428,25 +405,10 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
         simulate : function(dt) {
             var boxWorld = this;
 
+			var initAttachPoints = [];
             // Set the bodies from the boxes
             $.each(this.bodies, function(index, body) {
                 boxWorld.setBodyToTransform(body, body.parentObject.transform);
-                
-                //check to make sure everything is still lining up
-                if(body.parentObject.type === "wheel"){
-                	console.log("Check to make sure the centers are still lining up (after setup): ");
-                	console.log(body.parentObject.attachPoint.x + ", " + body.parentObject.attachPoint.y);
-                	console.log(body.parentObject.transform.x + ", " + body.parentObject.transform.y);
-                	
-                	console.log("In box2D: ");
-                	console.log(body.GetPosition().get_x() + ", " + body.GetPosition().get_y());
-                	$.each(boxWorld.joints, function(index, joint) {
-                		if(joint.GetBodyA().parentObject === body.parentObject || joint.GetBodyB().parentObject === body.parentObject){
-                			console.log(joint.GetAnchorA().get_x() + ", " + joint.GetAnchorA().get_y());
-                			console.log(joint.GetAnchorB().get_x() + ", " + joint.GetAnchorB().get_y());
-                		}
-                	});
-                }
             });
             
             //additional wheel math goes here
@@ -458,33 +420,16 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             });
 
             this.applyForce();
-
+			
             this.world.Step(dt, 2, 2);
 
+			
             // Read box2d data back into BotPrint objects objects
             $.each(this.bodies, function(index, body) {
-                boxWorld.readIntoTransform(body, body.parentObject.transform);
-                
-                // check to make sure everything is still lining up
-                if(body.parentObject.type === "wheel"){
-                    console.log("Check to make sure the centers are still lineing up (after updates): ");
-                	console.log(body.parentObject.attachPoint.x + ", " + body.parentObject.attachPoint.y);
-                	console.log(body.parentObject.transform.x + ", " + body.parentObject.transform.y);
-                	
-                	console.log("In box2D: ");
-					console.log(body.GetPosition().get_x() + ", " + body.GetPosition().get_y());
-                	$.each(boxWorld.joints, function(index, joint) {
-                		if(joint.GetBodyA().parentObject === body.parentObject || joint.GetBodyB().parentObject === body.parentObject){
-                			console.log(joint.GetAnchorA().get_x() + ", " + joint.GetAnchorA().get_y());
-                			console.log(joint.GetAnchorB().get_x() + ", " + joint.GetAnchorB().get_y());
-                		}
-                	});                	
-            	}
+                boxWorld.readIntoTransform(body, body.parentObject.transform);          	
             });
 
             this.frame++;
-            
-            debugger;
         },
         
 
@@ -509,14 +454,14 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                 // Get all the forces of the bot
                 var forces = body.parentObject.getForces();
 
-                $.each(forces, function(index, force) {
-
+                $.each(forces, function(index, force) { 
+					
                     // forceDir is the direction/strength of the force
                     // forceOffset is the world-relative point at which it is applied
                     boxWorld.setTo(forceDir, force.x, force.y);
                     boxWorld.setTo(forceOffset, force.center.x, force.center.y);
 
-                    body.ApplyForce(forceDir, forceOffset);
+                    body.ApplyForce(forceDir, forceOffset);  
                 });
                 
                 //  b.ApplyLinearImpulse(force, offset);

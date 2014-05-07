@@ -21,7 +21,7 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
             //a more complete representation for Box2D
             this.nodes = [];
             this.path = new Graph.Path();
-            
+            this.className = "Wheel";
         },
 
         actuate : function(value) {
@@ -74,7 +74,7 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
             this.nodes.push(new common.Vector(this.transform.x - (this.width / 2), this.transform.y + (this.height / 2)));
             
             console.log("Hull points: ");
-            console.log(this.nodes);
+            //console.log(this.nodes);
             
             var path = this.path;
             path.clear();
