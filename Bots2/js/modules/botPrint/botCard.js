@@ -7,7 +7,7 @@ define(["common"], function(common) {'use strict';
     var BotCard = Class.extend({
 
         init : function(parentHolder) {
-            console.log("CREATE BOT CARD");
+         //   console.log("CREATE BOT CARD");
             var card = this;
 
             // Make all the divs

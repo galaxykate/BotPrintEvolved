@@ -6,7 +6,6 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
     var realTime = new common.Time("realArenaTime");
 
     function initialize() {
-        console.log("Init Editor Mode");
         createProcessing();
         createPalettes();
 
@@ -106,8 +105,6 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
 
     function createSwatch(name, entry, paletteDiv) {
         var controls = app.controls;
-
-        console.log("name " + name);
         var div = $("<div/>", {
             class : "palette_swatch",
             html : name,
