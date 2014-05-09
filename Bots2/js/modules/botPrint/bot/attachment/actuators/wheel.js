@@ -155,7 +155,7 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
             }
             
             // DEBUG: marking where the transform is
-            this.transform.drawCenter(g, 5);
+            this.transform.drawCircle(g, 5);
         },
     });
 
