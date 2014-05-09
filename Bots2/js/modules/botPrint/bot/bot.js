@@ -17,7 +17,7 @@ define(["common", "./chassis/chassis", "three", "./dna", "./catalog"], function(
         init : function(parent, mutationLevel) {
             this.idNumber = botCount;
             botCount++;
-			this.className = "Bot";
+            this.className = "Bot";
             this.childCount = 0;
 
             this.name = makeBotName();
@@ -80,7 +80,7 @@ define(["common", "./chassis/chassis", "three", "./dna", "./catalog"], function(
 
         addPart : function(part, position) {
             this.mainChassis.attachPartAt(part, position);
-            
+
         },
 
         //======================================================================================
@@ -224,6 +224,15 @@ define(["common", "./chassis/chassis", "three", "./dna", "./catalog"], function(
                 overObj.addBot(this);
             }
             //  this.transform.setTo(touch.screenPos);
+        },
+
+        onClick : function(touch) {
+            console.log("CLICK " + this);
+        },
+
+        onDblClick : function(touch) {
+            console.log("DBLCLICK " + this);
+            app.editBot(this);
         },
 
         //=======================================================
