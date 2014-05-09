@@ -134,7 +134,6 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
             }
 
             return closest;
-
         },
 
         attachPartAt : function(part, p) {
@@ -142,7 +141,6 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
             if (part.chassis !== this) {
                 part.detach();
                 part.attachTo(this);
-
             }
 
             // Don't allow an arbitrary offset of p
@@ -150,8 +148,7 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
                 p.offset = utilities.constrain(p.offset, -18, -8);
                 p.refresh();
             }
-            var pos = {pct: .5, offset: 0, edge:this.path.edges[0]};
-            part.setAttachPoint(pos);
+            part.setAttachPoint(p);
         },
 
         addPart : function(part) {
