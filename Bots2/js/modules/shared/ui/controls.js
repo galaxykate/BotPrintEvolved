@@ -15,7 +15,7 @@ define(["common", "./touch"], function(common, Touch) {'use strict';
 
         init : function(mainDiv, defaultControls) {
             var controls = this;
-			this.className = "Controls";
+            this.className = "Controls";
             this.touch = new Touch();
             app.touch = this.touch;
 
@@ -71,6 +71,19 @@ define(["common", "./touch"], function(common, Touch) {'use strict';
             tw.name = name;
             tw.world = world;
             tw.controls = this;
+
+            tw.click(function(e) {
+                if (traceWindows)
+                    console.log("Click in " + tw.name);
+                touch.click(tw, e);
+            });
+
+            tw.dblclick(function(e) {
+                if (traceWindows)
+                    console.log("DBLClick in " + tw.name);
+                touch.dblClick(tw, e);
+            });
+
             tw.mousemove(function(e) {
                 if (traceWindows)
                     console.log("Move in " + tw.name);
