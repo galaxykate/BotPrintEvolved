@@ -170,9 +170,11 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             //this.attachPoint.applyTransform(g);
 
             //ATTACHPOINT
-            g.fill(.7, 2, 1);
-            g.stroke(0);
-            g.ellipse(this.attachPoint.x, this.attachPoint.y, 5, 5);
+            //g.fill(.7, 2, 1);
+            //g.stroke(0);
+            //g.ellipse(this.attachPoint.x, this.attachPoint.y, 5, 5);
+
+            this.position.drawCircle(g);
 
             this.renderDetails(context);
 

@@ -36,7 +36,7 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
                 edge = utilities.getRandom(this.mainChassis.path.edges);
                 pct = .5;
                 offset = 0;
-                thetaOffset = 5;
+                thetaOffset = 0;
                 var p = new graph.Position(edge, pct, offset, thetaOffset);
                 this.addPart(part, p);
             }

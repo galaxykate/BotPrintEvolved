@@ -64,7 +64,6 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
 
             // Update all the attachments
             this.parts.forEach(function(part) {
-
                 part.update(time);
             });
         },
