@@ -65,9 +65,9 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
 
         setAttachPoint : function(p) {
             console.log("Set attach point " + this.attachPoint + " to " + p);
-            if(this.attachPoint !== undefined) {
+            /*if(this.attachPoint !== undefined) {
                 throw new Error("Attachpoint already set");
-            }
+            }*/
             this.attachPoint = p;
             this.updateFromPosition();
 
@@ -178,6 +178,29 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
                 pin.render(context);
             });
         },
+
+		onPickup : function(touch) {
+        	console.log("HI!");
+            console.log(this.name);
+            touch.follower.html(this.id);
+            touch.follower.show();
+        },
+        
+        onDrag : function(touch, overObj) {
+        	console.log("WHEEEE~");
+            console.log(overObj);
+            //console.log(touch);
+            //console.log(overObj);
+            var found = app.currentBot.getClosestEdgePosition(touch.screenPos);
+            console.log("Drag " + this.id + " over " + overObj + " at " + found);
+            if (found)
+                app.currentBot.addPart(this, found);
+        },
+        
+        onDrop : function(touch, overObj) {
+        	console.log("Bye!");
+            touch.follower.hide();
+            },
 
         //===========================================================
         // Configure Pins
