@@ -135,6 +135,7 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
             return closest;
         },
 
+        //p is a Position
         attachPartAt : function(part, p) {
             console.log("Attach " + part + " at " + p);
             if (part.chassis !== this) {
