@@ -91,7 +91,6 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             var global = new common.Transform();
             //   global.rotation += this.attachPoint.rotation;
             this.attachPoint.toWorld(global, global);
-
             this.chassis.transformToGlobal(global, global);
 
             return global;
@@ -163,7 +162,6 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             var g = context.g;
             g.pushMatrix();
             
-            this.attachPoint.applyTransform(g);
             //this.attachPoint.drawCircle(g);
             this.attachPoint.applyTransform(g);
 

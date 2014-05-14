@@ -61,12 +61,6 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
             this.idColor = new common.KColor(colorGene[0], colorGene[1] * .4 + .6, colorGene[2]);
 
             this.mainChassis.setFromDNA(this.dna);
-
-            for (var i = 0; i < 1; i++) {
-                var part = catalog.createPart();
-                var p = Vector.polar(90 * Math.random(), 100 * Math.random());
-                this.addPart(part, p);
-            }
         },
 
         //======================================================================================
