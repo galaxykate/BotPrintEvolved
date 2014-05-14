@@ -66,9 +66,9 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
 
         setAttachPoint : function(p) {
             console.log("Set attach point " + this.attachPoint + " to " + p);
-            if(this.attachPoint !== undefined) {
+            /*if(this.attachPoint !== undefined) {
                 throw new Error("Attachpoint already set");
-            }
+            }*/
             this.attachPoint = p;
             this.updateFromPosition();
 
