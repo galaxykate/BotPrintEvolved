@@ -9,6 +9,7 @@ define(["three", "inheritance", "box2D"], function(THREE, Inheritance, Box2D) {
     Vector = Class.extend({
 
         init : function(x, y, z) {
+        	this.className = "Vector";
             // actually another vector, clone it
             if (x === undefined) {
                 this.x = 0;

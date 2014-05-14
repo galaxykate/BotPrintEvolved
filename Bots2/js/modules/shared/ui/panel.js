@@ -15,7 +15,7 @@ define(["common"], function(common) {'use strict';
         init : function(options) {
 
             // Default options
-
+			this.className = "Panel";
             this.id = "id";
             this.title = "Unlabeled Panel";
             this.description = "Does something of interest";

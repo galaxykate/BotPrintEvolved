@@ -6,11 +6,12 @@ define(["common"], function(common) {
         init : function(edge, pct, offset, thetaOffset) {
             this._super();
             this.edge = edge;
-
+            this.className = "Position";
             this.pct = isNaN(pct) ? .5 : pct;
             this.offset = isNaN(offset) ? 0 : offset;
             this.thetaOffset = isNaN(thetaOffset) ? 0 : thetaOffset;
             this.refresh();
+            this.className = "Position";
         },
 
         refresh : function() {
@@ -31,7 +32,6 @@ define(["common"], function(common) {
             this._super(g, r * .4);
             var linePos = this.edge.start.lerp(this.edge.end, this.pct);
             linePos.drawLineTo(g, this);
-
             //     g.line(this.x, this.y, this.x + r * Math.cos(this.rotation), this.y + r * Math.sin(this.rotation));
         },
 

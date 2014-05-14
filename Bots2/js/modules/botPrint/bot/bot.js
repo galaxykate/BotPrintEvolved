@@ -17,7 +17,7 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
         init : function(parent, mutationLevel) {
             this.idNumber = botCount;
             botCount++;
-
+            this.className = "Bot";
             this.childCount = 0;
 
             this.name = makeBotName();
@@ -224,6 +224,15 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
                 overObj.addBot(this);
             }
             //  this.transform.setTo(touch.screenPos);
+        },
+
+        onClick : function(touch) {
+            console.log("CLICK " + this);
+        },
+
+        onDblClick : function(touch) {
+            console.log("DBLCLICK " + this);
+            app.editBot(this);
         },
 
         //=======================================================

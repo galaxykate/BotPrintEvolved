@@ -14,6 +14,7 @@ define(["common", "../physics/arena"], function(common, Arena) {'use strict';
             this.population = population;
             this.heuristic = heuristic;
             this.currentIndex = 0;
+            this.className = "Test";
             for (var i = 0; i < this.population.length; i++) {
                 this.resultsOverTime[i] = [];
             }

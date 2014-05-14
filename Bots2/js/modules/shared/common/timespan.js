@@ -12,6 +12,7 @@ define(["inheritance"], function(Inheritance) {
             // default values
             this.lifespan = 1;
             this.total = 0;
+            this.className = "TimeSpan";
             // Translate all the context into this
             $.extend(this, context);
         },

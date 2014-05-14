@@ -31,6 +31,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             this.frame = 0;
             this.gravity = new Box2D.b2Vec2(0.0, gravity);
             this.world = new Box2D.b2World(this.gravity);
+            this.className = "BoxWorld";
             //this.listener = new Box2D.b2ContactListener();
 
             this.bodies = [];

@@ -10,6 +10,7 @@ define(["common", "../attachment"], function(common, Attachment) {'use strict';
             this.id = "Sensor" + this.idNumber;
             this.decay = .7;
             this.senseValue = 1;
+            this.className = "Sensor";
         },
 
         sense : function() {

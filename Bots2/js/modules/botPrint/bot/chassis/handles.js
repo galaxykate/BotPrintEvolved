@@ -25,6 +25,7 @@ define(["common"], function(common) {'use strict';
             this.type = type;
             this.parent = parent;
             this.settings = {};
+            this.className = "Handle";
             var settingNames = type;
             for (var i = 0; i < settingNames.length; i++) {
                 this.settings[settingNames[i]] = new Setting(name);
@@ -78,6 +79,7 @@ define(["common"], function(common) {'use strict';
             this.theta = theta;
             this.setToPolar(r, theta);
             this.z = 0;
+            this.className = "RadialHandle";
             this.name = "RH" + this.idNumber;
             this.resetPos();
 

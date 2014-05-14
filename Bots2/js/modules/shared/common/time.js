@@ -6,7 +6,7 @@ define(["inheritance", "./timespan"], function(Inheritance, TimeSpan) {
             this.frameCount = 0;
             this.total = 0;
             this.timespans = new TimeSpan.Manager();
-
+			this.className = "Time";
         },
 
         addTimeSpan : function(timespan) {
