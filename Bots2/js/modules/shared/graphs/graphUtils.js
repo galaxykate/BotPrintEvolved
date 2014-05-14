@@ -1,7 +1,8 @@
 var prefix = "modules/shared/graphs/";
 
-define([prefix + "edge", prefix + "graph", prefix + "path", prefix + "svgLoader"], function(Edge, Graph, Path, SVG) {
+define([prefix + "edge", prefix + "graph", prefix + "path", prefix + "svgLoader", prefix + "position"], function(Edge, Graph, Path, SVG, Position) {
     Graph.Path = Path;
+    Graph.Position = Position;
 
     Graph.makeRectangle = function(center, w, h) {
         var path = new Path();

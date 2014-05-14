@@ -39,7 +39,6 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             this.idNumber = attachmentCount;
             attachmentCount++;
 
-            this.attachPoint = new common.Transform();
 			this.className = "Attachment";
             this.pins = [];
             this.force = new AttachmentForce(this);
@@ -67,9 +66,17 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
 
         setAttachPoint : function(p) {
             console.log("Set attach point " + this.attachPoint + " to " + p);
-            this.attachPoint.setTo(p);
-            if (p.rotation)
-                this.attachPoint.rotation = p.rotation;
+            if(this.attachPoint !== undefined) {
+                throw new Error("Attachpoint already set");
+            }
+            this.attachPoint = p;
+            this.updateFromPosition();
+
+        },
+
+        updateFromPosition : function() {
+            this.attachPoint.refresh();
+            //this.attachPoint.setToLerp(this.position.edge.start, this.position.edge.end, this.position.pct);
         },
 
         //========================================================
@@ -113,7 +120,8 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
         },
 
         refresh : function() {
-
+            this.attachPoint.refresh();
+            //this.position.edge.setToTracer(this.attachPoint, this.position.pct, this.position.offset);
         },
 
         //========================================================
@@ -145,16 +153,25 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             var r = 10;
             var g = context.g;
 
+
             g.fill(.7, 1, 1);
             g.stroke(0);
             g.ellipse(0, 0, r * 1.4, r * 1.4);
             g.rect(0, -r / 2, -r * 3, r);
         },
+
         render : function(context) {
             var g = context.g;
 
             g.pushMatrix();
+            //this.attachPoint.drawCircle(g);
             this.attachPoint.applyTransform(g);
+
+            //ATTACHPOINT
+            //g.fill(.7, 2, 1);
+            //g.stroke(0);
+            //g.ellipse(this.attachPoint.x, this.attachPoint.y, 5, 5);
+
 
             this.renderDetails(context);
 

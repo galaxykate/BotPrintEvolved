@@ -1,9 +1,6 @@
 /**
  * @author Kate Compton
  */
-/**
- * @author Kate Compton
- */
 
 require.config({
     paths : {
