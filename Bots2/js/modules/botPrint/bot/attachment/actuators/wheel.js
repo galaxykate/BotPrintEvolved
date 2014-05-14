@@ -55,8 +55,15 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
          * Overloaded for box2D integration 
          */
         setAttachPoint : function(p) {
-            this.attachPoint.setTo(p);
-            this.transform.setTo(p);
+            console.log("Set attach point " + this.attachPoint + " to " + p);
+            if(this.attachPoint !== undefined) {
+                throw new Error("Attachpoint already set");
+            }
+            
+            this.attachPoint = p;
+            this.updateFromPosition();
+            
+            this.transform.setTo(this.attachPoint);
             
             console.log("Transform location at setAttachPoint():");
             console.log(this.transform.x + ", " + this.transform.y);
@@ -72,7 +79,6 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
             this.nodes.push(new common.Vector(this.transform.x + (this.width / 2), this.transform.y - (this.height / 2)));
             this.nodes.push(new common.Vector(this.transform.x + (this.width / 2), this.transform.y + (this.height / 2)));
             this.nodes.push(new common.Vector(this.transform.x - (this.width / 2), this.transform.y + (this.height / 2)));
-            
             console.log("Hull points: ");
             //console.log(this.nodes);
             
@@ -81,6 +87,7 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
             this.nodes.forEach(function(node){
             	path.addEdgeTo(node);
             });
+            
             path.close();
             this.path = path;
         },
