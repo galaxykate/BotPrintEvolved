@@ -107,6 +107,7 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
                 dist : 9999,
             };
 
+
             // Search the handles
             if (query.allowHandles) {
                 this.handles.forEach(function(handle) {

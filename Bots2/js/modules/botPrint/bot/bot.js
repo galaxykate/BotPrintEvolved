@@ -180,6 +180,7 @@ define(["common", "./chassis/chassis", "three", "./dna", "./catalog"], function(
             return found;
         },
 
+		//Finds the closest 'touchable' to the query
         getTouchableAt : function(query) {
             if (query.not === this)
                 return undefined;

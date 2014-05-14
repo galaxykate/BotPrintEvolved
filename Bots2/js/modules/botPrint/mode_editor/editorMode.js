@@ -193,13 +193,16 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
         query.searchChassis = true;
         // return the closest bot
 
-        if (editChassisMode) {
+        if (!editChassisMode) {
             // Find the closest handle on the path
             query.allowHandles = true;
+            query.allowParts = false;
+            query.allowEdges = false;
         } else {
             // Editing parts
             query.allowParts = true;
             query.allowEdges = true;
+            query.allowHandles = false;
 
         }
         var found = app.currentBot.getTouchableAt(query).obj;

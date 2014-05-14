@@ -166,6 +166,29 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             });
         },
 
+		onPickup : function(touch) {
+        	console.log("HI!");
+            console.log(this.name);
+            touch.follower.html(this.id);
+            touch.follower.show();
+        },
+        
+        onDrag : function(touch, overObj) {
+        	console.log("WHEEEE~");
+            console.log(overObj);
+            //console.log(touch);
+            //console.log(overObj);
+            var found = app.currentBot.getClosestEdgePosition(touch.screenPos);
+            console.log("Drag " + this.id + " over " + overObj + " at " + found);
+            if (found)
+                app.currentBot.addPart(overObj, found);
+        },
+        
+        onDrop : function(touch, overObj) {
+        	console.log("Bye!");
+            touch.follower.hide();
+            },
+
         //===========================================================
         // Configure Pins
         compilePins : function(pinList, filter) {
