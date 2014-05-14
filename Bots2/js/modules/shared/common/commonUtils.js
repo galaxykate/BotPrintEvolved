@@ -14,8 +14,7 @@ define('common', ["inheritance", prefix + "time", "noise", prefix + "transform",
         Range : _Range,
         Rect : _Rect,
         Time : _Time,
-        Transform : _Transform,
-
+        Transform : _Transform
     }
 
     //=============================================================

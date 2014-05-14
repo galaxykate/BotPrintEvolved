@@ -39,6 +39,7 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
 
                 this.handles[i].setFromDNA(dna);
             };
+            this.isStale = true;
         },
 
         setDNAFrom : function() {
@@ -74,12 +75,13 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
             // Recalculate the center
             this.path.setToCentroid(this.centroid);
 
-            // Refresh the dependents
+            // Refresh the dependents (attachments, components)
             this.parts.forEach(function(part) {
                 part.refresh();
             });
 
             // Refresh the wiring
+            // TODO
         },
 
         setPathFromHandles : function() {
@@ -135,15 +137,14 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
             }
 
             return closest;
-
         },
 
+        //p is a Position
         attachPartAt : function(part, p) {
             console.log("Attach " + part + " at " + p);
             if (part.chassis !== this) {
                 part.detach();
                 part.attachTo(this);
-
             }
 
             // Don't allow an arbitrary offset of p
