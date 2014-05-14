@@ -153,9 +153,6 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
                 var y = this.height / 2 + -pct * this.height;
                 g.line(y, -this.width / 2, y, this.width / 2);
             }
-            
-            // DEBUG: marking where the transform is
-            this.transform.drawCircle(g, 5);
         },
     });
 

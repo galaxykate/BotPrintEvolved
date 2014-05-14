@@ -151,9 +151,9 @@ define(["common", "./chassis/chassis", "three", "./dna", "./catalog"], function(
                 g.rotate(-this.transform.rotation);
                 g.text(this.name, 10, 10);
             }
-
+            
             g.popMatrix();
-
+            
             // draw globally positioned stuff
             if (context.drawForces)
                 this.mainChassis.drawForces(context);

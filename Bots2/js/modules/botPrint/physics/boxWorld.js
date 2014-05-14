@@ -405,10 +405,16 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
         simulate : function(dt) {
             var boxWorld = this;
 
-			var initAttachPoints = [];
+			var initBodyPoints = [];
+            var initAttachPoints = [];
             // Set the bodies from the boxes
             $.each(this.bodies, function(index, body) {
                 boxWorld.setBodyToTransform(body, body.parentObject.transform);
+                initBodyPoints.push(body.GetPosition());
+            });
+            
+            $.each(this.joints , function(index, joint) {
+            	initAttachPoints.push(joint);
             });
             
             //additional wheel math goes here
@@ -418,12 +424,11 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             		boxWorld.cancelPerpVel(body);
             	}
             });
-
+			
             this.applyForce();
 			
             this.world.Step(dt, 2, 2);
 
-			
             // Read box2d data back into BotPrint objects objects
             $.each(this.bodies, function(index, body) {
                 boxWorld.readIntoTransform(body, body.parentObject.transform);          	
