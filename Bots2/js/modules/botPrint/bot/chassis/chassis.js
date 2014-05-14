@@ -108,6 +108,7 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
                 dist : 9999,
             };
 
+
             // Search the handles
             if (query.allowHandles) {
                 this.handles.forEach(function(handle) {
@@ -122,16 +123,22 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
                 });
             }
             if (query.allowParts) {
+            	app.log("Screen Pos: " + query.screenPos);
                 this.parts.forEach(function(part) {
-
-                    var d = part.getDistanceTo(query.screenPos);
-                    if (d < closest.dist) {
-                        closest.dist = d;
-                        closest.obj = part;
+					if (query.not !== part) {
+                      var d = part.attachPoint.getDistanceTo(query.screenPos);
+                      var p = part.attachPoint;
+                      app.log("Distance to p " + p.toSimpleString());
+                      app.log("Distance to " + part + " " + d);
+                      //app.log("Distance to part " + part.toSimpleString());
+                      if (d < closest.dist) {
+                          closest.dist = d;
+                          closest.obj = part;
+                      }
                     }
                 });
             }
-
+			
             return closest;
         },
 
