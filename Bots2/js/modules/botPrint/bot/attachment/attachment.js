@@ -162,7 +162,6 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             var g = context.g;
             g.pushMatrix();
             
-            this.attachPoint.applyTransform(g);
             //this.attachPoint.drawCircle(g);
             this.attachPoint.applyTransform(g);
 
