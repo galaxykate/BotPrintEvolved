@@ -181,7 +181,7 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             var found = app.currentBot.getClosestEdgePosition(touch.screenPos);
             console.log("Drag " + this.id + " over " + overObj + " at " + found);
             if (found)
-                app.currentBot.addPart(overObj, found);
+                app.currentBot.addPart(this, found);
         },
         
         onDrop : function(touch, overObj) {
