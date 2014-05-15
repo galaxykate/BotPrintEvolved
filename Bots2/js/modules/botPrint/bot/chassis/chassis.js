@@ -39,6 +39,7 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
 
                 this.handles[i].setFromDNA(dna);
             };
+            this.isStale = true;
         },
 
         setDNAFrom : function() {
@@ -63,7 +64,6 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
 
             // Update all the attachments
             this.parts.forEach(function(part) {
-
                 part.update(time);
             });
         },
@@ -75,12 +75,13 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
             // Recalculate the center
             this.path.setToCentroid(this.centroid);
 
-            // Refresh the dependents
+            // Refresh the dependents (attachments, components)
             this.parts.forEach(function(part) {
                 part.refresh();
             });
 
             // Refresh the wiring
+            // TODO
         },
 
         setPathFromHandles : function() {
@@ -107,6 +108,7 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
                 dist : 9999,
             };
 
+
             // Search the handles
             if (query.allowHandles) {
                 this.handles.forEach(function(handle) {
@@ -121,26 +123,31 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
                 });
             }
             if (query.allowParts) {
+            	app.log("Screen Pos: " + query.screenPos);
                 this.parts.forEach(function(part) {
-
-                    var d = part.getDistanceTo(query.screenPos);
-                    if (d < closest.dist) {
-                        closest.dist = d;
-                        closest.obj = part;
+					if (query.not !== part) {
+                      var d = part.attachPoint.getDistanceTo(query.screenPos);
+                      var p = part.attachPoint;
+                      app.log("Distance to p " + p.toSimpleString());
+                      app.log("Distance to " + part + " " + d);
+                      //app.log("Distance to part " + part.toSimpleString());
+                      if (d < closest.dist) {
+                          closest.dist = d;
+                          closest.obj = part;
+                      }
                     }
                 });
             }
-
+			
             return closest;
-
         },
 
+        //p is a Position
         attachPartAt : function(part, p) {
             console.log("Attach " + part + " at " + p);
             if (part.chassis !== this) {
                 part.detach();
                 part.attachTo(this);
-
             }
 
             // Don't allow an arbitrary offset of p
