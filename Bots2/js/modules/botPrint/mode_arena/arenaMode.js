@@ -73,7 +73,7 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
 
         app.ui.createSlider(settingsDiv, "simspeed", 1, 0, 7, function(key, val) {
             simulationSpeed = val * val;
-         });
+        });
 
     };
 
@@ -98,7 +98,10 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
     function setArena(type) {
         console.log("Create arena: " + type);
         current.arena = new Arena(type);
-        current.simulation.refreshBots();
+
+        current.simulation = new Simulation(current.population.bots, current.arena, heuristics);
+        current.simulation.start();
+        current.simulation.run(1, .04);
     };
 
     function setCurrentHeuristic(name) {
