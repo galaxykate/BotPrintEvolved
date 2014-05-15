@@ -6,21 +6,7 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
     var arenaInfoDiv = $("#arena_info");
     var heuristics = heuristic.heuristics;
     var currentHeuristic = heuristics.mostBlue;
-
-    // Add all the heuristics to the menu
-    var heuristicSelect = $("#heuristic");
-
-    heuristics.forEach(function(heuristic) {
-        heuristicSelect.append($('<option>', {
-            value : heuristic.name,
-            text : heuristic.name,
-        }));
-
-    });
-
-    heuristicSelect.change(function() {
-        setCurrentHeuristic(this.value);
-    });
+    var simulationSpeed = 1;
 
     var current = {
         population : undefined,
@@ -33,6 +19,7 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
     function initialize() {
         console.log("Init Arena Mode");
         createProcessing();
+        createArenaUI();
 
         // Create the botCard
         app.arenaCard = new app.createBotCard($("#arena_card"));
@@ -49,6 +36,47 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
         };
     };
 
+    function createArenaUI() {
+        // Add all the heuristics to the menu
+        var heuristicSelect = $("#heuristic");
+
+        heuristics.forEach(function(heuristic) {
+            heuristicSelect.append($('<option>', {
+                value : heuristic.name,
+                text : heuristic.name,
+            }));
+
+        });
+
+        heuristicSelect.change(function() {
+            setCurrentHeuristic(this.value);
+        });
+
+        //=======================================
+        // Arena selection
+        var typeSelect = $("#arena_type");
+
+        var types = ["rectangle", "hexagon", "circle"];
+        for (var i = 0; i < types.length; i++) {
+            typeSelect.append($('<option>', {
+                value : types[i],
+                text : types[i],
+            }));
+
+        }
+
+        typeSelect.change(function() {
+            setArena(this.value);
+        });
+
+        var settingsDiv = $("#arena_time_settings");
+
+        app.ui.createSlider(settingsDiv, "simspeed", 1, 0, 7, function(key, val) {
+            simulationSpeed = val * val;
+         });
+
+    };
+
     function startSimulation() {
         console.log("Start a new simulation");
         if (!current.simulation) {
@@ -62,9 +90,15 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
             current.simulation.start();
             current.simulation.run(1, .04);
             setCurrentHeuristic("mostBlue");
-        }else{
-        	current.simulation.refreshBots();
+        } else {
+            current.simulation.refreshBots();
         }
+    };
+
+    function setArena(type) {
+        console.log("Create arena: " + type);
+        current.arena = new Arena(type);
+        current.simulation.refreshBots();
     };
 
     function setCurrentHeuristic(name) {
@@ -109,10 +143,20 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
             arenaWindow.center = new Vector(w / 2, h / 2);
             g.colorMode(g.HSB, 1);
             g.ellipseMode(g.CENTER_RADIUS);
+
+            var last = 0;
             g.draw = function() {
                 if (isOpen) {
                     app.update();
-                    update(g.millis() * .001);
+
+                    if (!app.paused) {
+                        var ellapsed = last - g.millis();
+                        ellapsed = utilities.constrain(ellapsed, .01, .1);
+
+                        ellapsed *= simulationSpeed;
+
+                        update(ellapsed);
+                    }
 
                     g.background(.69, .72, 1);
                     g.pushMatrix();
@@ -139,10 +183,10 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
 
     //=========================================================================
     // Updates and experiments
-    function update(t) {
+    function update(ellapsed) {
 
         arenaInfoDiv.html("");
-        app.worldTime.setTo(t);
+        app.worldTime.addEllapsed(ellapsed);
         current.simulation.simStep(app.worldTime);
 
         var s = current.simulation.testsToString();
