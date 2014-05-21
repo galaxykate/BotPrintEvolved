@@ -62,6 +62,10 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             this.chassis.addPart(this);
 
         },
+        
+        remove : function() {
+        	this.chassis.removePart(this);
+        },
 
         setAttachPoint : function(p) {
             console.log("Set attach point " + this.attachPoint + " to " + p);
