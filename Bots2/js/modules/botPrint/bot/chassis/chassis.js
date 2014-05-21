@@ -169,9 +169,22 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
             	this.attachmentForces.push(part.force);
             }
         },
-
-        removePart : function() {
-
+        
+        findPartIndex : function(part) {
+        	var rVal = -1;
+            for (var i = 0; i < this.parts.length; i++)
+            {
+            	if (part === this.parts[i])
+                {
+                	rVal = i;
+                }
+            }
+            return rVal
+        },
+        
+        removePart : function(part) {
+        	var index = this.findPartIndex(part);
+        	this.parts.splice(index, 1);
         },
         
         transformToGlobal : function(local, global) {
