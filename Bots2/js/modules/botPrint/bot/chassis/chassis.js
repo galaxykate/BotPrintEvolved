@@ -36,7 +36,6 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
             var chassis = this;
 
             for (var i = 0; i < this.handles.length; i++) {
-
                 this.handles[i].setFromDNA(dna);
             };
             this.isStale = true;

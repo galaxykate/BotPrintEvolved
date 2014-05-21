@@ -29,17 +29,6 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
 
             this.setMainChassis(new Chassis(this, undefined));
 
-            for (var i = 0; i < 2; i++) {
-                var part = catalog.createPart();
-                //The position should be set intelligently later on
-                var edge, pct, offset, thetaOffset;
-                edge = utilities.getRandom(this.mainChassis.path.edges);
-                pct = .5;
-                offset = 0;
-                thetaOffset = 0;
-                var p = new graph.Position(edge, pct, offset, thetaOffset);
-                this.addPart(part, p);
-            }
 
             // Create DNA for the bot
             if (parent) {
@@ -60,8 +49,29 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
             var colorGene = this.dna.getData("color");
             this.idColor = new common.KColor(colorGene[0], colorGene[1] * .4 + .6, colorGene[2]);
 
+            this.makeAttachments(dna);
             this.mainChassis.setFromDNA(this.dna);
 
+        },
+
+        makeAttachments : function(dna) {
+            if(dna.attachments !== undefined) {
+                //Set attachments from DNA
+            } else {
+                this.attachments = [];
+                //TODO: MAKE A SMARTER VERSION
+                for (var i = 0; i < 2; i++) {
+                    var part = catalog.createPart();
+                    //The position should be set intelligently later on
+                    var edge, pct, offset, thetaOffset;
+                    edge = utilities.getRandom(this.mainChassis.path.edges);
+                    pct = .5;
+                    offset = 0;
+                    thetaOffset = 0;
+                    var p = new graph.Position(edge, pct, offset, thetaOffset);
+                    this.addPart(part, p);
+                }
+            }
         },
 
         //======================================================================================
@@ -77,10 +87,11 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
         //======================================================================================
         //======================================================================================
         //======================================================================================
-        // Interaciton
+        // Interaction
 
         addPart : function(part, position) {
             this.mainChassis.attachPartAt(part, position);
+            this.attachments.push(part);
         },
 
         //======================================================================================

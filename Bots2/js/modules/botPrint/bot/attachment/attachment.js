@@ -204,7 +204,7 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
         onDrop : function(touch, overObj) {
         	console.log("Bye!");
             touch.follower.hide();
-            },
+        },
 
         //===========================================================
         // Configure Pins
@@ -213,6 +213,10 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
                 if (filter(pin))
                     pinList.push(pin);
             });
+        },
+
+        setFromDNA : function(dna) {
+
         }
     });
 

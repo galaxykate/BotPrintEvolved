@@ -197,7 +197,7 @@ define(["common"], function(common) {'use strict';
 
         mutate : function(amt) {
 
-            // pick a
+            // pick how many mutations to do
             var count = utilities.constrain(Math.floor(amt * 5), 1, 10);
             for (var i = 0; i < count; i++) {
                 var gene = utilities.chooseWeighted(this.genes, function(obj) {

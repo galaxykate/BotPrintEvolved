@@ -85,8 +85,8 @@ define(["common"], function(common) {'use strict';
 
         },
 
-        setFromDNA : function() {
-            var dna = this.parent.getDNA();
+        setFromDNA : function(dna) {
+            dna = dna || this.parent.getDNA();
 
             var rPct = dna.getData("handles", this.index, 0);
             this.r = rRange.getPctValue(rPct);
