@@ -115,6 +115,7 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
         // Create a default object to be dropped on stuff
 
         var heldPart;
+        if (entry != null) {
         var obj = {
             name : name,
             onDrag : function(touch, overObj) {
@@ -142,7 +143,34 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
 				heldPart = undefined;
             }
         };
+		}
+        else
+        {
+        	var obj = {
+            name : name,
+            onDrag : function(touch, overObj) {
+                var found = app.currentBot.getClosestEdgePosition(touch.screenPos);
+                console.log("Drag " + this.name + " over " + overObj + " at " + found);
 
+            },
+
+            onPickup : function(touch) {
+                console.log("Picked up  " + this.name);
+                touch.follower.html(name);
+                touch.follower.show();
+                div.addClass("activated");
+            },
+
+            onDrop : function(touch, overObj) {
+                console.log("Drop " + this.name + " on " + overObj);
+                touch.follower.hide();
+                div.removeClass("activated");
+				heldPart = undefined;
+                //Remove overObj form the Chassis
+                overObj.remove();
+            }
+        };
+        }
         var world = {
             getTouchableAt : function() {
                 return obj;
@@ -165,7 +193,7 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
 
         var partsDiv = $("#parts_catalog");
         var chassisDiv = $("#chassis_catalog");
-
+		createSwatch("Remove Part", null, partsDiv);
         for (var i = 0; i < catalog.allParts.length; i++) {
             var part = catalog.allParts[i];
             createSwatch(part.name, part, partsDiv);
