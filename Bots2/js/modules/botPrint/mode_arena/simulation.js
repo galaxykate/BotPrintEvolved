@@ -3,6 +3,8 @@
  */
 define(["common", "../physics/arena", "./test"], function(common, Arena, Test) {'use strict';
 
+    var traceSimulation = false;
+
     // One simulation may have multiple tests
     var Simulation = Class.extend({
 
@@ -18,7 +20,7 @@ define(["common", "../physics/arena", "./test"], function(common, Arena, Test) {
             sim.step = 0;
             sim.testRate = 5;
             // Calculate scores every N steps
-			this.className = "Simulation";
+            this.className = "Simulation";
             heuristics.forEach(function(heuristic) {
                 sim.tests.push(new Test(population, heuristic));
             });
@@ -40,23 +42,32 @@ define(["common", "../physics/arena", "./test"], function(common, Arena, Test) {
         },
 
         start : function() {
-        	console.log("Start is getting called on switch!");
+            if (traceSimulation)
+                console.log("Start simulation");
+
             // clear the arena, put the bots in it
             this.arena.reset();
             this.arena.addPopulation(this.population);
             app.setCurrentBot(this.population[0]);
+
         },
-        
+
         refreshBots : function() {
-        	console.log("Refreshing bots");
-        	this.arena.reset();
-        	this.arena.addPopulation(this.population);
+            if (traceSimulation)
+                console.log("Refresh arena: remove and re-add bots");
+
+            this.arena.reset();
+            this.arena.addPopulation(this.population);
         },
 
         run : function(totalTime, timestep) {
+
             var sim = this;
             var count = Math.ceil(totalTime / timestep);
             var timestep = totalTime / count;
+            if (traceSimulation)
+                console.log("... run simulation for " + count + " steps of " + timestep.toFixed(2) + ", total " + totalTime);
+
             for (var i = 0; i < count; i++) {
                 sim.time.addEllapsed(timestep);
                 sim.simStep(sim.time);
@@ -68,8 +79,10 @@ define(["common", "../physics/arena", "./test"], function(common, Arena, Test) {
 
         // Actually simulate and run tests
         simStep : function(time) {
-            app.log(time + ": simulate " + this.step);
             this.step++;
+
+            if (traceSimulation)
+                console.log("...... simStep " + this.step + ": " + time.total.toFixed(2) + " " + time.ellapsed.toFixed(2));
 
             // Update all the bots
             this.population.forEach(function(bot) {
@@ -80,6 +93,8 @@ define(["common", "../physics/arena", "./test"], function(common, Arena, Test) {
             this.arena.boxWorld.simulate(time.ellapsed);
 
             if (this.step % this.testRate === 0) {
+                if (traceSimulation)
+                    console.log(".......... evaluate " + this.step + "/" + this.testRate);
 
                 this.tests.forEach(function(test) {
                     test.evaluate(time);

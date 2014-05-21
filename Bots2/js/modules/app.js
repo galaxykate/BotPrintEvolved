@@ -29,9 +29,10 @@ define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./b
             this.editMode.close();
 
             app.toggleMode();
+            app.toggleMode();
             app.ui.toggleDevMode();
 
-        },
+          },
 
         createControls : function() {
             var appDiv = $("#app");
@@ -48,6 +49,9 @@ define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./b
                         case 'm':
                             app.toggleMode();
                             break;
+
+                        case 'space' :
+                            app.paused = !app.paused;
                     }
                 }
             });
@@ -99,6 +103,7 @@ define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./b
             //  app.worldTime.setTime(t);
             app.controls.touch.update();
         },
+
         getTime : function() {
             return this.worldTime.total;
         },
