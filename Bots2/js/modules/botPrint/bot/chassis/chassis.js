@@ -92,9 +92,9 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
             });
             path.close();
             
-            console.log("Chassis check: ");
-            path.debugOutput();
-            console.log("----");  
+            //console.log("Chassis check: ");
+            //path.debugOutput();
+            //console.log("----");  
         },
 
         compileForces : function(forces) {
@@ -173,8 +173,9 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
         removePart : function() {
 
         },
+        
         transformToGlobal : function(local, global) {
-
+			
             this.bot.transform.toWorld(local, global);
 
         },

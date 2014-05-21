@@ -53,7 +53,6 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             }]);
 
             this.world.SetContactListener(listener);
-
         },
 
 		/**
@@ -131,12 +130,22 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 		 */
         readIntoTransform : function(body, transform) {
             var bpos = body.GetPosition();
-            transform.rotation = body.GetAngle();
+            var bangle = body.GetAngle();
+            
+            //FIXME:sometimes we come out of the magic of box2D with NaN values.  in this case, just don't set the transforms.
+            //I realize this is bad.
+            if(isNaN(bangle)){
+            	console.log("Correcting for a NaN frame");
+            	return;
+            }
+            
+            transform.rotation = bangle;
             try {
-                transform.setTo(bpos.get_x() * this.scale, bpos.get_y() * this.scale);
+           		transform.setTo(bpos.get_x() * this.scale, bpos.get_y() * this.scale);	            	
             } catch(err) {
             	console.log("readIntoTransform() error");
                 console.log(this.scale);
+                console.log(bpos.get_x() + ", " + bpos.get_y());
             }
         },
 
@@ -179,6 +188,9 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             if (!isNaN(transform.rotation))
                 angle = transform.rotation;
             // magic?
+            if(isNaN(transform.x) || isNaN(transform.y) || isNaN(transform.rotation)){
+            	throw "Passed in transform has NaN values, crashing hard...";
+            }
             body.SetTransform(this.toB2Vec(transform), angle);
         },
         
@@ -319,10 +331,12 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             var shape = new Box2D.b2PolygonShape();
             var buffer = Box2D.allocate(vertices.length * 8, 'float', Box2D.ALLOC_STACK);
             var offset = 0;
+            
             for (var i = 0; i < vertices.length; i++) {
                 boxWorld.setBuffer(vertices[i], buffer, offset);
                 offset += 8;
             }
+            
             var ptr_wrapped = Box2D.wrapPointer(buffer, Box2D.b2Vec2);
             shape.Set(ptr_wrapped, vertices.length);
             return [shape];
@@ -381,6 +395,9 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 		 * @param {b2Body} wheel the b2d Body representation of the wheel in question
 		 */ 
 		 cancelPerpVel : function(wheel) {
+		 	var wheelPos = wheel.GetPosition();
+		 	var wheelAngle = wheel.GetAngle(); 
+		 	
 			var worldVel = new b2Vec2();
 			var localVel = new b2Vec2();
 			var newlocal = new b2Vec2();
@@ -388,9 +405,23 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 			
 			worldVel = wheel.GetLinearVelocityFromLocalPoint(new b2Vec2(0, 0));
 			localVel = wheel.GetLocalVector(worldVel);
-			newlocal.x = -localVel.x;
-			newlocal.y = localVel.y;
+			newlocal.Set(-localVel.get_x(), localVel.get_y());
+			
+			if(isNaN(newlocal.get_x()) || isNaN(newlocal.get_y())){
+				console.log("Gonna do a big dump of everything in this method real quick...");
+				console.log(wheel);
+				console.log(B2DtoString(worldVel));
+				console.log(B2DtoString(localVel));
+				console.log(B2DtoString(newlocal));
+				console.log(B2DtoString(newworld));
+				throw "Unable to get a new local vector.  Because software hates you.";
+			}
+			
 			newworld = wheel.GetWorldVector(newlocal);
+			
+			if(isNaN(newworld.get_x()) || isNaN(newworld.get_y())){
+				throw "Wheel velocity canceling has gone horridly wrong.";
+			}
 			
 			wheel.SetLinearVelocity(newworld);
 		},
@@ -402,20 +433,22 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 		 * 
  		 * @param {Object} dt magic(?)
 		 */
-        simulate : function(dt) {
+        simulate : function(dt) {        	
             var boxWorld = this;
 
 			var initBodyPoints = [];
             var initAttachPoints = [];
-            // Set the bodies from the boxes
+            
+            // Set the bodies from the bo(xes
             $.each(this.bodies, function(index, body) {
                 boxWorld.setBodyToTransform(body, body.parentObject.transform);
                 initBodyPoints.push(body.GetPosition());
             });
             
-            $.each(this.joints , function(index, joint) {
-            	initAttachPoints.push(joint);
-            });
+            // joints!
+            //$.each(this.joints , function(index, joint) {
+            	//initAttachPoints.push(joint);
+            //});
             
             //additional wheel math goes here
             $.each(this.bodies, function(index, body) {
@@ -428,6 +461,16 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             this.applyForce();
 			
             this.world.Step(dt, 2, 2);
+
+			//check to see if any bodies have NaN values before the simulation step
+        	//$.each(this.bodies, function(index, body){
+        		//var bpos = body.GetPosition();
+        		//var bangle = body.GetAngle();
+        		//if (isNaN(bpos.get_x()) || isNaN(bpos.get_y()) || isNaN(bangle)){
+        			//console.log(body);
+        			//throw "Simulate has generated NaN values for above body after steping through time.";
+        		//}
+        	//});
 
             // Read box2d data back into BotPrint objects objects
             $.each(this.bodies, function(index, body) {

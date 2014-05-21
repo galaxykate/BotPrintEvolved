@@ -91,7 +91,13 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             var global = new common.Transform();
             //   global.rotation += this.attachPoint.rotation;
             this.attachPoint.toWorld(global, global);
+            if(isNaN(global.x) || isNaN(global.y)){
+            	throw "Error transforming attach point to global";
+            }
             this.chassis.transformToGlobal(global, global);
+			if(isNaN(global.x) || isNaN(global.y)){
+            	throw "Error transforming chassis to global";
+            }
 
             return global;
         },
@@ -114,6 +120,10 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
 
         update : function(time) {
             // Set the force's position
+            if(isNaN(this.getWorldTransform().x) || isNaN(this.getWorldTransform().y)){
+            	throw "Getting an invalid world transform";
+            }
+            
             this.force.center.setToTransform(this.getWorldTransform());
         },
 

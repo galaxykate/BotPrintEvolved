@@ -65,8 +65,8 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
             
             this.transform.setTo(this.attachPoint);
             
-            console.log("Transform location at setAttachPoint():");
-            console.log(this.transform.x + ", " + this.transform.y);
+            //console.log("Transform location at setAttachPoint():");
+            //console.log(this.transform.x + ", " + this.transform.y);
             
             if (p.rotation){
             	this.attachPoint.rotation = p.rotation;
