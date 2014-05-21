@@ -89,6 +89,24 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                 }
             });
             this.bodies = [];
+            
+            //also, remove all joints.
+            if(this.joints.length > 0){
+            	$.each(this.joints, function(index, joint){
+            		world.DestroyJoint(joint);
+            	});
+            	this.joints = [];
+            }
+        },
+        
+        /**
+         * Remove a particular body from the world model 
+         */
+        removeBody : function(parentObject){
+        	var world = this.world;
+        	$.each(this.bodies, function(index, body){
+        		
+        	});
         },
 
 		/**
