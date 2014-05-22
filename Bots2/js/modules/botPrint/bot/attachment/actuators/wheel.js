@@ -5,8 +5,8 @@
 define(["common", "./actuator"], function(common, Actuator) {'use strict';
 
     var Wheel = Actuator.extend({
-        init : function() {
-            this._super();
+        init : function(parent) {
+            this._super(parent);
             this.actuation = 1;
             this.decay = .5;
             this.id = "Wheel" + this.idNumber;

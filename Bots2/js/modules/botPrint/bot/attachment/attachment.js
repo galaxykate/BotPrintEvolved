@@ -35,10 +35,11 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
 
     var attachmentCount = 0;
     var Attachment = Class.extend({
-        init : function() {
+        init : function(parent) {
             this.idNumber = attachmentCount;
             attachmentCount++;
 
+            this.parent = parent;
 			this.className = "Attachment";
             this.pins = [];
             this.force = new AttachmentForce(this);
@@ -216,7 +217,7 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
         },
 
         setFromDNA : function(dna) {
-
+            throw ("Can't set an abstract attachment from DNA!");
         }
     });
 

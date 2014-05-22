@@ -5,8 +5,8 @@
 define(["common", "../attachment"], function(common, Attachment) {'use strict';
 
     var Sensor = Attachment.extend({
-        init : function() {
-            this._super();
+        init : function(parent) {
+            this._super(parent);
             this.id = "Sensor" + this.idNumber;
             this.decay = .7;
             this.senseValue = 1;
@@ -49,15 +49,28 @@ define(["common", "../attachment"], function(common, Attachment) {'use strict';
         },
 
         toString : function() {
-
             return this.id;
+        },
 
+        setFromDNA : function(dna, index) {
+            dna = dna || this.parent.getDNA();
+            this.senseValue = dna.getData("attachments", index, 0);
+            this.decay = dna.getData("attachments", index, 1);
+        },
+
+        setDNAFrom : function(index) {
+            if(index === undefined) {
+                throw ("Index undefined");
+            }
+            var dna = this.parent.getDNA();
+            dna.setData("attachments", index, 0, this.senseValue);
+            dna.setData("attachments", index, 1, this.decay);
         }
     });
 
     var Timer = Sensor.extend({
-        init : function() {
-            this._super();
+        init : function(parent) {
+            this._super(parent);
             this.id = "Timer" + this.idNumber;
         },
 
@@ -69,8 +82,8 @@ define(["common", "../attachment"], function(common, Attachment) {'use strict';
     });
 
     var ColorLerper = Sensor.extend({
-        init : function() {
-            this._super();
+        init : function(parent) {
+            this._super(parent);
             this.id = "ColorLerper" + this.idNumber;
         },
 

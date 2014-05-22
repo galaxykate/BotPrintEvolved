@@ -19,23 +19,23 @@ define(["./attachment/attachments"], function(attachments) {'use strict';
                 wheel : {
                     name : "Wheel",
                     cost : 8,
-                    createPart : function() {
-                        return new attachments.Actuator.Wheel();
+                    createPart : function(parent) {
+                        return new attachments.Actuator.Wheel(parent);
                     }
                 },
                 LED : {
                     name : "LED",
                     cost : 3,
-                    createPart : function() {
-                        return new attachments.Actuator.Jet();
+                    createPart : function(parent) {
+                        return new attachments.Actuator.Jet(parent);
                     }
                 },
 
                 rgbLED : {
                     name : "RBG LED",
                     cost : 5,
-                    createPart : function() {
-                        return new attachments.Actuator.Jet();
+                    createPart : function(parent) {
+                        return new attachments.Actuator.Jet(parent);
                     }
                 }
             },
@@ -44,16 +44,16 @@ define(["./attachment/attachments"], function(attachments) {'use strict';
                 distance : {
                     name : "Range sensor",
                     cost : 9,
-                    createPart : function() {
-                        return new attachments.Actuator.Jet();
+                    createPart : function(parent) {
+                        return new attachments.Actuator.Jet(parent);
                     }
                 },
 
                 light : {
                     name : "Light sensor",
                     cost : 3,
-                    createPart : function() {
-                        return new attachments.Actuator.Jet();
+                    createPart : function(parent) {
+                        return new attachments.Actuator.Jet(parent);
                     }
                 }
             }
@@ -98,23 +98,23 @@ define(["./attachment/attachments"], function(attachments) {'use strict';
 
         allChassis : allChassis,
 
-        createRandomActuator : function() {
-            return utilities.getRandom(allActuators).createPart();
+        createRandomActuator : function(parent) {
+            return utilities.getRandom(allActuators).createPart(parent);
         },
 
-        createRandomSensor : function() {
-            return utilities.getRandom(allActuators).createPart();
+        createRandomSensor : function(parent) {
+            return utilities.getRandom(allActuators).createPart(parent);
 
         },
 
-        createPart : function(id) {
+        createPart : function(id, parent) {
             if (id === undefined)
-                return utilities.getRandom(allParts).createPart();
+                return utilities.getRandom(allParts).createPart(parent);
 
             if (isNaN(id))
-                return catalogByName[id].createPart();
+                return catalogByName[id].createPart(parent);
             else
-                return allParts[id].createPart();
+                return allParts[id].createPart(parent);
 
         },
 

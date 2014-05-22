@@ -61,7 +61,13 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
                 this.attachments = [];
                 //TODO: MAKE A SMARTER VERSION
                 for (var i = 0; i < 2; i++) {
-                    var part = catalog.createPart();
+                    //TODO:Is parent supposed to be this?
+                    //or this.parent?
+                    //or this.dna?
+                    var parent = this;
+                    var part = catalog.createPart(undefined, parent);
+
+
                     //The position should be set intelligently later on
                     var edge, pct, offset, thetaOffset;
                     edge = utilities.getRandom(this.mainChassis.path.edges);
