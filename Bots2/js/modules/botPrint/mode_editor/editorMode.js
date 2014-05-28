@@ -141,6 +141,7 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
                 touch.follower.hide();
                 div.removeClass("activated");
 				heldPart = undefined;
+                app.currentBot.clearTestPoints();
             }
         };
 		}
