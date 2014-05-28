@@ -116,62 +116,60 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
 
         var heldPart;
         if (entry != null) {
-        var obj = {
-            name : name,
-            onDrag : function(touch, overObj) {
-                if (!heldPart) {
-                    heldPart = entry.createPart();
+            var obj = {
+                name : name,
+                onDrag : function(touch, overObj) {
+                    if (!heldPart) {
+                        heldPart = entry.createPart();
+                    }
+                    var found = app.currentBot.getClosestEdgePosition(touch.screenPos);
+                    console.log("Drag " + this.name + " over " + overObj + " at " + found);
+                    if (found)
+                        app.currentBot.addPart(heldPart, found);
+
+                },
+
+                onPickup : function(touch) {
+                    console.log("Picked up  " + this.name);
+                    touch.follower.html(name);
+                    touch.follower.show();
+                    div.addClass("activated");
+                },
+
+                onDrop : function(touch, overObj) {
+                    console.log("Drop " + this.name + " on " + overObj);
+                    touch.follower.hide();
+                    div.removeClass("activated");
+                    heldPart = undefined;
+                    app.currentBot.clearTestPoints();
                 }
-                var found = app.currentBot.getClosestEdgePosition(touch.screenPos);
-                console.log("Drag " + this.name + " over " + overObj + " at " + found);
-                if (found)
-                    app.currentBot.addPart(heldPart, found);
+            };
+        } else {
+            var obj = {
+                name : name,
+                onDrag : function(touch, overObj) {
+                    var found = app.currentBot.getClosestEdgePosition(touch.screenPos);
+                    console.log("Drag " + this.name + " over " + overObj + " at " + found);
 
-            },
+                },
 
-            onPickup : function(touch) {
-                console.log("Picked up  " + this.name);
-                touch.follower.html(name);
-                touch.follower.show();
-                div.addClass("activated");
-            },
+                onPickup : function(touch) {
+                    console.log("Picked up  " + this.name);
+                    touch.follower.html(name);
+                    touch.follower.show();
+                    div.addClass("activated");
+                },
 
-            onDrop : function(touch, overObj) {
-                console.log("Drop " + this.name + " on " + overObj);
-                touch.follower.hide();
-                div.removeClass("activated");
-				heldPart = undefined;
-                app.currentBot.clearTestPoints();
-            }
-        };
-		}
-        else
-        {
-        	var obj = {
-            name : name,
-            onDrag : function(touch, overObj) {
-                var found = app.currentBot.getClosestEdgePosition(touch.screenPos);
-                console.log("Drag " + this.name + " over " + overObj + " at " + found);
-
-            },
-
-            onPickup : function(touch) {
-                console.log("Picked up  " + this.name);
-                touch.follower.html(name);
-                touch.follower.show();
-                div.addClass("activated");
-            },
-
-            onDrop : function(touch, overObj) {
-                console.log("Drop " + this.name + " on " + overObj);
-                touch.follower.hide();
-                div.removeClass("activated");
-				heldPart = undefined;
-                //Remove overObj form the Chassis
-                overObj.remove();
-                app.currentBot.clearTestPoints();
-            }
-        };
+                onDrop : function(touch, overObj) {
+                    console.log("Drop " + this.name + " on " + overObj);
+                    touch.follower.hide();
+                    div.removeClass("activated");
+                    heldPart = undefined;
+                    //Remove overObj form the Chassis
+                    overObj.remove();
+                    app.currentBot.clearTestPoints();
+                }
+            };
         }
         var world = {
             getTouchableAt : function() {
@@ -195,61 +193,70 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
 
         var partsDiv = $("#parts_catalog");
         var chassisDiv = $("#chassis_catalog");
-		createSwatch("Remove Part", null, partsDiv);
-		for (var i = 0; i < catalog.allParts.length; i++) {
-			var part = catalog.allParts[i];
-			createSwatch(part.name, part, partsDiv);
-		}
-		catalog.allChassis.forEach(function(chassis) {
-			var div = $("<div/>", {
-				html : chassis.name,
-				"class" : "panel"
-			});
-			chassisDiv.append(div);
+        createSwatch("Remove Part", null, partsDiv);
+        for (var i = 0; i < catalog.allParts.length; i++) {
+            var part = catalog.allParts[i];
+            createSwatch(part.name, part, partsDiv);
+        }
+        catalog.allChassis.forEach(function(chassis) {
+            var div = $("<div/>", {
+                html : chassis.name,
+                "class" : "panel"
+            });
+            chassisDiv.append(div);
 
-			div.click(function() {
-				switchChassisType(chassis);
-			});
-		});
-	};
+            div.click(function() {
+                switchChassisType(chassis);
+            });
+        });
+    };
 
-	function switchChassisType(type) {
-		console.log("Switch to chassis type " + type.name);
-	};
-	//=========================================================================
-	// Exposed
+    function switchChassisType(type) {
+        console.log("Switch to chassis type " + type.name);
+    };
+    //=========================================================================
+    // Exposed
 
-	function getTouchableAt(query) {
-		query.searchChassis = true;
-		// return the closest bot
+    function getTouchableAt(query) {
+        query.searchChassis = true;
+        // return the closest bot
 
-		if (!editChassisMode) {
-			// Find the closest handle on the path
-			query.allowHandles = true;
-			query.allowParts = false;
-			query.allowEdges = false;
-		} else {
-			// Editing parts
-			query.allowParts = true;
-			query.allowEdges = true;
-			query.allowHandles = false;
+        if (!editChassisMode) {
+            // Find the closest handle on the path
+            query.allowHandles = true;
+            query.allowParts = false;
+            query.allowEdges = false;
+        } else {
+            // Editing parts
+            query.allowParts = true;
+            query.allowEdges = true;
+            query.allowHandles = false;
 
-		}
-		var found = app.currentBot.getTouchableAt(query).obj;
+        }
+        var found = app.currentBot.getTouchableAt(query).obj;
 
-		return found;
+        return found;
 
-	};
+    };
 
-	var mode = {
-		initialize : initialize,
-		getTouchableAt : getTouchableAt,
-		open : open,
-		close : close,
-		isOpen : function() {
-			return isOpen;
-		},
-	};
-	// interface (all other functions are hidden)
-	return mode;
+    var mode = {
+        initialize : initialize,
+        getTouchableAt : getTouchableAt,
+        open : open,
+        close : close,
+        isOpen : function() {
+            return isOpen;
+        },
+
+        keyPress : function(key) {
+            switch(key) {
+
+                case 'p':
+                    break;
+
+            }
+        }
+    };
+    // interface (all other functions are hidden)
+    return mode;
 });
