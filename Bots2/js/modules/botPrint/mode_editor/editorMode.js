@@ -141,6 +141,7 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
                     touch.follower.hide();
                     div.removeClass("activated");
                     heldPart = undefined;
+                    app.currentBot.clearTestPoints();
                 }
             };
         } else {
@@ -166,6 +167,7 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
                     heldPart = undefined;
                     //Remove overObj form the Chassis
                     overObj.remove();
+                    app.currentBot.clearTestPoints();
                 }
             };
         }
@@ -257,4 +259,4 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
     };
     // interface (all other functions are hidden)
     return mode;
-});
+}); 
