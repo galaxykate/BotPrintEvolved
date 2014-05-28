@@ -3,7 +3,16 @@
  */
 
 define(["common", "./simulation", "../physics/arena", "./population", "./heuristic", "./scoreGraph"], function(common, Simulation, Arena, Population, heuristic, ScoreGraph) {'use strict';
-    var arenaInfoDiv = $("#arena_info");
+    var arenaInfoDiv = $("#arena_data");
+    var arenaSidebar = $("#arena_sidebar");
+    var populationPanel = $("#population_panel");
+
+    arenaInfoDiv.hide();
+    //  arenaSidebar.hide();
+    populationPanel.hide();
+    var populationMode = false;
+    var devMode = false;
+
     var heuristics = heuristic.heuristics;
     var currentHeuristic = heuristics.mostBlue;
     var simulationSpeed = 1;
@@ -13,6 +22,28 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
         arena : undefined,
         simulation : undefined,
     };
+
+    function toggleDevMode() {
+        console.log("TOGGLE DEV MODE");
+        devMode = !devMode;
+        if (devMode) {
+            arenaInfoDiv.show();
+        } else {
+            arenaInfoDiv.hide();
+        }
+    }
+
+    function togglePopulationMode() {
+        populationMode = !populationMode;
+        if (populationMode) {
+            populationPanel.show();
+            app.paused = true;
+        } else {
+            populationPanel.hide();
+
+            app.paused = false;
+        }
+    }
 
     var graph = new ScoreGraph.BarGraph($("#scoreboard"));
 
@@ -174,6 +205,11 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
                     drawArena(context);
 
                     g.popMatrix();
+                    // Draw a shaded rectangle
+                    if (app.paused) {
+                        g.fill(0, 0, 0, .4);
+                        g.rect(0, 0, g.width, g.height);
+                    }
                 }
             };
         });
@@ -223,6 +259,19 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
         isOpen : function() {
             return isOpen;
         },
+
+        keyPress : function(key) {
+            switch(key) {
+
+                case 'p':
+                    togglePopulationMode();
+                    break;
+                case 'd':
+                    toggleDevMode();
+                    break;
+
+            }
+        }
     };
     // interface (all other functions are hidden)
     return mode;
