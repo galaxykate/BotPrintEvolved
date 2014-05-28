@@ -204,6 +204,7 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
         onDrop : function(touch, overObj) {
         	console.log("Bye!");
             touch.follower.hide();
+            app.currentBot.clearTestPoints();
             },
 
         //===========================================================
