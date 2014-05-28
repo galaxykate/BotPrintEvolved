@@ -169,6 +169,7 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
 				heldPart = undefined;
                 //Remove overObj form the Chassis
                 overObj.remove();
+                app.currentBot.clearTestPoints();
             }
         };
         }
