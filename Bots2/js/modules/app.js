@@ -32,7 +32,7 @@ define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./b
             app.toggleMode();
             app.ui.toggleDevMode();
 
-          },
+        },
 
         createControls : function() {
             var appDiv = $("#app");
@@ -52,7 +52,18 @@ define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./b
 
                         case 'space' :
                             app.paused = !app.paused;
+                            break;
+
+                        default:
+
                     }
+                    
+                    // pass to the mode to handle
+                    if (app.arenaMode.isOpen())
+                        app.arenaMode.keyPress(key);
+                    else
+                        app.editMode.keyPress(key);
+
                 }
             });
 
