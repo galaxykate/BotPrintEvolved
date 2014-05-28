@@ -210,7 +210,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                 angle = transform.rotation;
             // magic?
             if(isNaN(transform.x) || isNaN(transform.y) || isNaN(transform.rotation)){
-            	throw "Passed in transform has NaN values, crashing hard...";
+            	throw "Passed in transform has NaN values";
             }
             body.SetTransform(this.toB2Vec(transform), angle);
         },
@@ -317,6 +317,10 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                 	}
                 }
             });
+            
+            console.log("Information at boxworld.js");
+            console.log(this.bodies);
+            console.log(this.joints);
         },
 
 		/**

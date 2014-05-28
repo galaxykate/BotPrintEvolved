@@ -32,9 +32,9 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
          * Function to redraw the path after updates
          * Stubbed at the moment 
          */
-        refresh : function() {
-        	return undefined;
-        },
+        // refresh : function() {
+        	// return undefined;
+        // },
         
         /**
          * Overloaded for box2D integration
@@ -56,31 +56,31 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
          */
         setAttachPoint : function(p) {
             console.log("Set attach point " + this.attachPoint + " to " + p);
-            if(this.attachPoint !== undefined) {
-                throw new Error("Attachpoint already set");
-            }
+            //if(this.attachPoint !== undefined) {
+               // throw new Error("Attachpoint already set");
+            //}
             
             this.attachPoint = p;
             this.updateFromPosition();
-            
             this.transform.setTo(this.attachPoint);
             
             //console.log("Transform location at setAttachPoint():");
             //console.log(this.transform.x + ", " + this.transform.y);
             
             if (p.rotation){
-            	this.attachPoint.rotation = p.rotation;
-            	this.transform.rotation = p.rotation;
+            	//this.attachPoint.rotation = p.rotation;
+            	//this.transform.rotation = p.rotation;
             }
             
             //do box2D things
+            //clear out old nodes
+            this.nodes = [];
+            
             //push the verticies in counter clockwise order, because Box2D is very picky
         	this.nodes.push(new common.Vector(this.transform.x - (this.width / 2), this.transform.y - (this.height / 2)));
             this.nodes.push(new common.Vector(this.transform.x + (this.width / 2), this.transform.y - (this.height / 2)));
             this.nodes.push(new common.Vector(this.transform.x + (this.width / 2), this.transform.y + (this.height / 2)));
             this.nodes.push(new common.Vector(this.transform.x - (this.width / 2), this.transform.y + (this.height / 2)));
-            console.log("Hull points: ");
-            //console.log(this.nodes);
             
             var path = this.path;
             path.clear();
