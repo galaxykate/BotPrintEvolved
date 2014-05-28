@@ -82,13 +82,8 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 		 * Removes all bodies from the world 
 		 */
         removeBodies : function() {
+            console.log("Remove bodies has been called!");
             var world = this.world;
-            $.each(this.bodies, function(index, body) {
-                if (!body.isTerrain) {
-                    world.DestroyBody(body);
-                }
-            });
-            this.bodies = [];
             
             //also, remove all joints.
             if(this.joints.length > 0){
@@ -97,6 +92,14 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             	});
             	this.joints = [];
             }
+            
+            $.each(this.bodies, function(index, body) {
+                if (!body.isTerrain) {
+                    world.DestroyBody(body);
+                }
+            });
+            this.bodies = [];
+            
         },
         
         /**
@@ -367,8 +370,6 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
  		 * @param {Object} vertices a set of external verticies to create a triangle fan shape
 		 */
         createTriFanShapes : function(vertices) {
-            console.log("Logging triVert things:");
-            console.log(vertices);
             var boxWorld = this;
             if (vertices === undefined)
                 throw "No vertices: can't make B2D trifan";
@@ -464,9 +465,9 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             });
             
             // joints!
-            //$.each(this.joints , function(index, joint) {
-            	//initAttachPoints.push(joint);
-            //});
+            $.each(this.joints , function(index, joint) {
+            	initAttachPoints.push(joint);
+            });
             
             //additional wheel math goes here
             $.each(this.bodies, function(index, body) {

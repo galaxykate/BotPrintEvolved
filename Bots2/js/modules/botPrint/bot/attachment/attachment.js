@@ -194,15 +194,11 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
         },
 
 		onPickup : function(touch) {
-        	console.log("HI!");
-            console.log(this.name);
             touch.follower.html(this.id);
             touch.follower.show();
         },
         
         onDrag : function(touch, overObj) {
-        	console.log("WHEEEE~");
-            console.log(overObj);
             //console.log(touch);
             //console.log(overObj);
             var found = app.currentBot.getClosestEdgePosition(touch.screenPos);
@@ -212,9 +208,8 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
         },
         
         onDrop : function(touch, overObj) {
-        	console.log("Bye!");
             touch.follower.hide();
-            },
+      	},
 
         //===========================================================
         // Configure Pins

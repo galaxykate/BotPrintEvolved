@@ -98,6 +98,13 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
         },
 
         compileForces : function(forces) {
+        	//FIXME: debuging
+        	this.attachmentForces.forEach(function(attachmentForce){
+        		if(attachmentForce.attachment === undefined){
+        			console.log(attachmentForce);
+        			throw "There is no attachment for the force listed here!"
+        		}
+        	});
             return this.attachmentForces;
         },
 
@@ -165,22 +172,20 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
 
         addPart : function(part) {
             this.parts.push(part);
-            if(part.type != "wheel"){
+            if(part.type !== "wheel"){
             	this.attachmentForces.push(part.force);
             }
         },
         
-        findPartIndex : function(part) {
-        	var rVal = -1;
-            for (var i = 0; i < this.parts.length; i++)
-            {
-            	if (part === this.parts[i])
-                {
-                	rVal = i;
-                }
-            }
-            return rVal
-        },
+		findPartIndex : function(part) {
+			var rVal = -1;
+			for (var i = 0; i < this.parts.length; i++) {
+				if (part === this.parts[i]) {
+					rVal = i;
+				}
+			}
+			return rVal;
+		},
         
         removePart : function(part) {
         	var index = this.findPartIndex(part);
@@ -234,6 +239,7 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
             }
 
             g.beginShape();
+            
             this.handles.forEach(function(h) {
                 h.vertex(g);
             });
