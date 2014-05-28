@@ -183,6 +183,10 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
                 this.testPoints.push(found);
             return found;
         },
+        
+        clearTestPoints : function() {
+        	this.testPoints = [];
+        },
 
 		//Finds the closest 'touchable' to the query
         getTouchableAt : function(query) {

@@ -80,8 +80,9 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
     function startSimulation() {
         console.log("Start a new simulation");
         if (!current.simulation) {
-            if (!current.population)
-            	current.population = new Population(1);    
+            if (!current.population){    
+                current.population = new Population(1);
+			}
 
             current.population.updateUI();
 

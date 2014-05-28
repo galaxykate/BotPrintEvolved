@@ -4,222 +4,222 @@
 
 define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use strict';
 
-    var AttachmentForce = Vector.extend({
-        init : function(attachment) {
-            this._super();
-            this.attachment = attachment;
-            this.idColor = new common.KColor((.145 * attachment.idNumber + .2) % 1, 1, 1);
-            this.center = new common.Transform();
-            this.className = "AttachmentForce";
-        },
+	var AttachmentForce = Vector.extend({
+		init : function(attachment) {
+			this._super();
+			this.attachment = attachment;
+			this.idColor = new common.KColor((.145 * attachment.idNumber + .2) % 1, 1, 1);
+			this.center = new common.Transform();
+			this.className = "AttachmentForce";
+		},
 
-        draw : function(g) {
-            g.strokeWeight(1);
-            this.idColor.stroke(g, -.3, 1);
-            this.idColor.fill(g, .3, 1);
-            this.center.drawCircle(g, 5);
-            g.pushMatrix();
-            this.center.applyTransform(g);
+		draw : function(g) {
+			g.strokeWeight(1);
+			this.idColor.stroke(g, -.3, 1);
+			this.idColor.fill(g, .3, 1);
+			this.center.drawCircle(g, 5);
+			g.pushMatrix();
+			this.center.applyTransform(g);
 
-            g.line(0, 0, 30, 0);
+			g.line(0, 0, 30, 0);
 
-            g.popMatrix();
+			g.popMatrix();
 
-            this.idColor.stroke(g);
-            this.idColor.fill(g);
+			this.idColor.stroke(g);
+			this.idColor.fill(g);
 
-            this.center.drawArrow(g, this, .1, 2, 10, 3);
-        },
-    });
+			this.center.drawArrow(g, this, .1, 2, 10, 3);
+		},
+	});
 
-    var attachmentCount = 0;
-    var Attachment = Class.extend({
-        init : function() {
-            this.idNumber = attachmentCount;
-            attachmentCount++;
+	var attachmentCount = 0;
+	var Attachment = Class.extend({
+		init : function() {
+			this.idNumber = attachmentCount;
+			attachmentCount++;
 
 			this.className = "Attachment";
-            this.pins = [];
-            this.force = new AttachmentForce(this);
-        },
+			this.pins = [];
+			this.force = new AttachmentForce(this);
+		},
 
-        //========================================================
-        // Attachment
+		//========================================================
+		// Attachment
 
-        detach : function() {
-            if (this.chassis) {
-                console.log("Detach " + this + " from " + this.chassis);
-                this.chassis.removePart(this);
-                this.chassis = undefined;
-            }
-        },
+		detach : function() {
+			if (this.chassis) {
+				console.log("Detach " + this + " from " + this.chassis);
+				this.chassis.removePart(this);
+				this.chassis = undefined;
+			}
+		},
 
-        attachTo : function(chassis) {
-            if (this.chassis !== chassis)
-                this.detach();
+		attachTo : function(chassis) {
+			if (this.chassis !== chassis)
+				this.detach();
 
-            this.chassis = chassis;
-            this.chassis.addPart(this);
+			this.chassis = chassis;
+			this.chassis.addPart(this);
 
-        },
-        
-        remove : function() {
-        	this.chassis.removePart(this);
-        },
+		},
 
-        setAttachPoint : function(p) {
-            console.log("Set attach point " + this.attachPoint + " to " + p);
-            /*if(this.attachPoint !== undefined) {
-                throw new Error("Attachpoint already set");
-            }*/
-            this.attachPoint = p;
-            this.updateFromPosition();
+		remove : function() {
+			this.chassis.removePart(this);
+		},
 
-        },
+		setAttachPoint : function(p) {
+			console.log("Set attach point " + this.attachPoint + " to " + p);
+			/*if(this.attachPoint !== undefined) {
+			 throw new Error("Attachpoint already set");
+			 }*/
+			this.attachPoint = p;
+			this.updateFromPosition();
 
-        updateFromPosition : function() {
-            this.attachPoint.refresh();
-            //this.attachPoint.setToLerp(this.position.edge.start, this.position.edge.end, this.position.pct);
-        },
+		},
 
-        //========================================================
-        // Transformations
+		updateFromPosition : function() {
+			this.attachPoint.refresh();
+			//this.attachPoint.setToLerp(this.position.edge.start, this.position.edge.end, this.position.pct);
+		},
 
-        getBotTransform : function() {
-            var global = new common.Transform();
-            this.attachPoint.toWorld(global, global);
-            return global;
-        },
+		//========================================================
+		// Transformations
 
-        getWorldTransform : function() {
-            var global = new common.Transform();
-            //   global.rotation += this.attachPoint.rotation;
-            this.attachPoint.toWorld(global, global);
-            if(isNaN(global.x) || isNaN(global.y)){
-            	throw "Error transforming attach point to global";
-            }
-            this.chassis.transformToGlobal(global, global);
-			if(isNaN(global.x) || isNaN(global.y)){
-            	throw "Error transforming chassis to global";
-            }
+		getBotTransform : function() {
+			var global = new common.Transform();
+			this.attachPoint.toWorld(global, global);
+			return global;
+		},
 
-            return global;
-        },
+		getWorldTransform : function() {
+			var global = new common.Transform();
+			//   global.rotation += this.attachPoint.rotation;
+			this.attachPoint.toWorld(global, global);
+			if (isNaN(global.x) || isNaN(global.y)) {
+				throw "Error transforming attach point to global";
+			}
+			this.chassis.transformToGlobal(global, global);
+			if (isNaN(global.x) || isNaN(global.y)) {
+				throw "Error transforming chassis to global";
+			}
 
-        transformToGlobal : function(local, global) {
-            if (this.chassis !== undefined)
-                this.chassis.transformToGlobal(local, global);
+			return global;
+		},
 
-            // Transform it relative to the attachment
-            this.attachPoint.toWorld(global, global);
+		transformToGlobal : function(local, global) {
+			if (this.chassis !== undefined)
+				this.chassis.transformToGlobal(local, global);
 
-        },
+			// Transform it relative to the attachment
+			this.attachPoint.toWorld(global, global);
 
-        getDistanceTo : function(p) {
-            return this.getWorldTransform().getDistanceTo(p);
-        },
+		},
 
-        //========================================================
-        //
+		getDistanceTo : function(p) {
+			return this.getWorldTransform().getDistanceTo(p);
+		},
 
-        update : function(time) {
-            // Set the force's position
-            if(isNaN(this.getWorldTransform().x) || isNaN(this.getWorldTransform().y)){
-            	throw "Getting an invalid world transform";
-            }
-            
-            this.force.center.setToTransform(this.getWorldTransform());
-        },
+		//========================================================
+		//
 
-        refresh : function() {
-            this.attachPoint.refresh();
-            //this.position.edge.setToTracer(this.attachPoint, this.position.pct, this.position.offset);
-        },
+		update : function(time) {
+			// Set the force's position
+			if (isNaN(this.getWorldTransform().x) || isNaN(this.getWorldTransform().y)) {
+				throw "Getting an invalid world transform";
+			}
 
-        //========================================================
-        // add pins
-        addPins : function() {
+			this.force.center.setToTransform(this.getWorldTransform());
+		},
 
-            //add pins
-            // each component (right now) gets a positive and a negative pin
+		refresh : function() {
+			this.attachPoint.refresh();
+			//this.position.edge.setToTracer(this.attachPoint, this.position.pct, this.position.offset);
+		},
 
-            var positive = new Wiring.Pin({
-                positive : true,
-                parent : this,
-            });
-            this.pins.push(positive);
+		//========================================================
+		// add pins
+		addPins : function() {
 
-            var negative = new Wiring.Pin({
-                positive : false,
-                parent : this,
-            });
-            this.pins.push(negative);
-        },
+			//add pins
+			// each component (right now) gets a positive and a negative pin
 
-        //========================================================
-        // Rendering
-        // overloading this to also account for pin shifts
-        // TODO: not entirely happy with this impementation
+			var positive = new Wiring.Pin({
+				positive : true,
+				parent : this,
+			});
+			this.pins.push(positive);
 
-        renderDetails : function(context) {
-            var r = 10;
-            var g = context.g;
+			var negative = new Wiring.Pin({
+				positive : false,
+				parent : this,
+			});
+			this.pins.push(negative);
+		},
 
+		//========================================================
+		// Rendering
+		// overloading this to also account for pin shifts
+		// TODO: not entirely happy with this impementation
 
-            g.fill(.7, 1, 1);
-            g.stroke(0);
-            g.ellipse(0, 0, r * 1.4, r * 1.4);
-            g.rect(0, -r / 2, -r * 3, r);
-        },
+		renderDetails : function(context) {
+			var r = 10;
+			var g = context.g;
 
-        render : function(context) {
-            var g = context.g;
-            g.pushMatrix();
-            
-            //this.attachPoint.drawCircle(g);
-            this.attachPoint.applyTransform(g);
+			g.fill(.7, 1, 1);
+			g.stroke(0);
+			g.ellipse(0, 0, r * 1.4, r * 1.4);
+			g.rect(0, -r / 2, -r * 3, r);
+		},
 
-            //ATTACHPOINT
-            //g.fill(.7, 2, 1);
-            //g.stroke(0);
-            //g.ellipse(this.attachPoint.x, this.attachPoint.y, 5, 5);
-            this.renderDetails(context);
+		render : function(context) {
+			var g = context.g;
+			g.pushMatrix();
 
-            g.popMatrix();
+			//this.attachPoint.drawCircle(g);
+			this.attachPoint.applyTransform(g);
 
-            //render pins
-            $.each(this.pins, function(index, pin) {
-                pin.render(context);
-            });
-        },
+			//ATTACHPOINT
+			//g.fill(.7, 2, 1);
+			//g.stroke(0);
+			//g.ellipse(this.attachPoint.x, this.attachPoint.y, 5, 5);
+			this.renderDetails(context);
+
+			g.popMatrix();
+
+			//render pins
+			$.each(this.pins, function(index, pin) {
+				pin.render(context);
+			});
+		},
 
 		onPickup : function(touch) {
-            touch.follower.html(this.id);
-            touch.follower.show();
-        },
-        
-        onDrag : function(touch, overObj) {
-            //console.log(touch);
-            //console.log(overObj);
-            var found = app.currentBot.getClosestEdgePosition(touch.screenPos);
-            console.log("Drag " + this.id + " over " + overObj + " at " + found);
-            if (found)
-                app.currentBot.addPart(this, found);
-        },
-        
-        onDrop : function(touch, overObj) {
-            touch.follower.hide();
-      	},
+			touch.follower.html(this.id);
+			touch.follower.show();
+		},
 
-        //===========================================================
-        // Configure Pins
-        compilePins : function(pinList, filter) {
-            $.each(this.pins, function(index, pin) {
-                if (filter(pin))
-                    pinList.push(pin);
-            });
-        }
-    });
+		onDrag : function(touch, overObj) {
+			//console.log(touch);
+			//console.log(overObj);
+			var found = app.currentBot.getClosestEdgePosition(touch.screenPos);
+			console.log("Drag " + this.id + " over " + overObj + " at " + found);
+			if (found)
+				app.currentBot.addPart(this, found);
+		},
 
-    return Attachment;
+		onDrop : function(touch, overObj) {
+			touch.follower.hide();
+			app.currentBot.clearTestPoints();
+		},
+
+		//===========================================================
+		// Configure Pins
+		compilePins : function(pinList, filter) {
+			$.each(this.pins, function(index, pin) {
+				if (filter(pin))
+					pinList.push(pin);
+			});
+		}
+	});
+
+	return Attachment;
 });
