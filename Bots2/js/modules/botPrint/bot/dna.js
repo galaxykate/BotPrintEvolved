@@ -193,6 +193,7 @@ define(["common"], function(common) {'use strict';
             this.mutant = new DNA();
             this.mutant.clone(this);
             // Clone
+            return this.mutant;
         },
 
         mutate : function(amt) {
