@@ -33,11 +33,24 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
         }
     }
 
+    // setup the populationmode ui
+    $("#mutate").click(function() {
+         togglePopulationMode();
+        console.log("previous population:  " + current.population);
+        current.population = current.population.createNextGenerationFromMutants();
+        // console.log("current population:  " + utilities.arrayToString(current.population));
+        current.simulation = undefined;
+        startSimulation();
+    });
+
     function togglePopulationMode() {
         populationMode = !populationMode;
         if (populationMode) {
             populationPanel.show();
+
+            current.population.createPopulationDivs();
             app.paused = true;
+
         } else {
             populationPanel.hide();
 
@@ -60,11 +73,6 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
 
         isStarted = true;
 
-        // App-accessible functions
-        // Add a child to the next generation
-        app.addChildToNextGeneration = function(bot) {
-            current.population.addChild(bot, 1);
-        };
     };
 
     function createArenaUI() {
@@ -114,7 +122,7 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
             if (!current.population)
                 current.population = new Population(5);
 
-            current.population.updateUI();
+            console.log(" population:  " + current.population);
 
             current.arena = new Arena("rectangle");
             current.simulation = new Simulation(current.population.bots, current.arena, heuristics);
