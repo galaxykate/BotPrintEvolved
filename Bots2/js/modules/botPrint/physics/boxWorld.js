@@ -155,7 +155,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             
             //FIXME:sometimes we come out of the magic of box2D with NaN values.  in this case, just don't set the transforms.
             //I realize this is bad.
-            if(isNaN(bangle)){
+           	if(isNaN(bangle)){
             	console.log("Correcting for a NaN frame");
             	return;
             }
@@ -484,7 +484,16 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             this.applyForce();
 			
             this.world.Step(dt, 2, 2);
-
+			// logging linear and angular velocities on bodies
+			this.bodies.forEach(function(body){
+				var label;
+				if(body.parentObject.id !== undefined){
+					label = body.parentObject.id;
+				}else{
+					label = body.parentObject.name;
+				}
+				app.log("Velocity " + label + ": " + B2DtoString(body.GetLinearVelocity()));
+			});
 			//check to see if any bodies have NaN values before the simulation step
         	//$.each(this.bodies, function(index, body){
         		//var bpos = body.GetPosition();
