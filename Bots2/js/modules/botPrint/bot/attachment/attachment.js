@@ -64,9 +64,12 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             this.chassis.addPart(this);
 
         },
+        
+        remove : function() {
+        	this.chassis.removePart(this);
+        },
 
         setAttachPoint : function(p) {
-            console.log("Set attach point " + this.attachPoint + " to " + p);
             /*if(this.attachPoint !== undefined) {
                 throw new Error("Attachpoint already set");
             }*/
@@ -205,6 +208,7 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
         onDrop : function(touch, overObj) {
         	console.log("Bye!");
             touch.follower.hide();
+            app.currentBot.clearTestPoints();
         },
 
         //===========================================================

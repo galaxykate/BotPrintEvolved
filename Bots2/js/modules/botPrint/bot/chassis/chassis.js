@@ -4,9 +4,9 @@
 
 define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use strict';
 
-    // A chassis is some single piece of acrylic capable of holding parts
-    //  It has some modifiable handles
-    var Chassis = Class.extend({
+	// A chassis is some single piece of acrylic capable of holding parts
+	//  It has some modifiable handles
+	var Chassis = Class.extend({
 
         init : function(bot, parent) {
             this.bot = bot;
@@ -36,6 +36,7 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
             var chassis = this;
 
             for (var i = 0; i < this.handles.length; i++) {
+
                 this.handles[i].setFromDNA(dna);
             };
             this.isStale = true;
@@ -162,9 +163,31 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
             this.attachmentForces.push(part.force);
         },
 
-        removePart : function() {
+		findPartIndex : function(part) {
+			var rVal = -1;
+			for (var i = 0; i < this.parts.length; i++) {
+				if (part === this.parts[i]) {
+					rVal = i;
+				}
+			}
+			return rVal
+		},
 
-        },
+		removePart : function(part) {
+			console.log("Remove Part logging: ");
+			console.log(part);
+			//get rid of the force this attachment generates
+			for(var i = 0; i < this.attachmentForces.length; i++){
+				if(this.attachmentForces[i].attachment.id === part.id){
+					this.attachmentForces.splice(i, 1);
+				}
+			}
+			
+			//and remove the part
+			var index = this.findPartIndex(part);
+			this.parts.splice(index, 1);
+			//this.attachmentForces.splice(index,1);
+		},
         transformToGlobal : function(local, global) {
 
             this.bot.transform.toWorld(local, global);

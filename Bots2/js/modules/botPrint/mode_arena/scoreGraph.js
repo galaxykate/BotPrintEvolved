@@ -8,7 +8,6 @@ define(["common"], function(common) {'use strict';
 
         init : function(parent) {
             var graph = this;
-            this.slots = 5;
             this.timesteps = 10;
             this.height = 90;
             this.width = 430;
@@ -81,7 +80,8 @@ define(["common"], function(common) {'use strict';
             var t = this.test.currentIndex - 1;
             g.text(this.test + " " + t, 20, 40);
             if (this.test) {
-                for (var i = 0; i < this.slots; i++) {
+                var count = this.test.population.length;
+                for (var i = 0; i < count; i++) {
 
                     var bot = this.test.population[i];
 

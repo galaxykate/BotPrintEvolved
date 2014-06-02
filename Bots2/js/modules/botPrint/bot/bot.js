@@ -202,7 +202,11 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
             return found;
         },
 
-		//Finds the closest 'touchable' to the query
+        clearTestPoints : function() {
+            this.testPoints = [];
+        },
+
+        //Finds the closest 'touchable' to the query
         getTouchableAt : function(query) {
             if (query.not === this)
                 return undefined;
@@ -300,6 +304,13 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
             localStorage.setItem("bot", saveData);
             console.log("Saving bot: " + saveData);
 
+        },
+
+        toDebugString : function() {
+            var s = this.name;
+            if (this.parent)
+                s += "(" + this.generation + ", child of " + this.parent + ")";
+            return s;
         },
 
         toString : function() {
