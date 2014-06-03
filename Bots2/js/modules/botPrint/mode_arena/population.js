@@ -66,6 +66,14 @@ define(["common", "../bot/bot"], function(common, Bot) {'use strict';
 
         },
 
+        //Returns a bot or undefined
+        getByName : function(name) {
+            if(name === undefined) { return undefined; }
+            return this.bots.filter(function(bot) {
+                return bot.name === name;
+            })[0];
+        },
+
         //============================================================
         //============================================================
         // Create population list

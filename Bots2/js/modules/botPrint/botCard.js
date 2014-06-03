@@ -53,6 +53,7 @@ define(["common"], function(common) {'use strict';
             var mutateMoreButton = $("<button/>", {
                 html : "mutateMore"
             });
+            
 
             this.dnaDiv = $("<div/>", {
                 html : "DNA",

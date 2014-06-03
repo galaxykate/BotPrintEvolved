@@ -35,12 +35,36 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
 
     // setup the populationmode ui
     $("#mutate").click(function() {
-         togglePopulationMode();
+        togglePopulationMode();
         console.log("previous population:  " + current.population);
         current.population = current.population.createNextGenerationFromMutants();
         // console.log("current population:  " + utilities.arrayToString(current.population));
         current.simulation = undefined;
         startSimulation();
+    });
+
+    //jquery spaghetti
+    //refactor laters
+
+    $("#breed").click(function() {
+        var parent0 = current.population.getByName(
+            $('#parent0')[0].textContent);
+        var parent1 = current.population.getByName(
+            $('#parent1')[0].textContent);
+        parent0.dna.breedWith(parent1.dna);
+    });
+
+    $(".parent_slot").click(function() {
+        var $parent = $(this);
+        $parent.append("Select parent from left");
+
+        //TODO:
+        //Unbinding the click might break other stuff
+        $('.population_bot').unbind("click").click(function() {
+            var name = this.textContent;
+            $parent.empty();
+            $parent.append(name);
+        });
     });
 
     function togglePopulationMode() {

@@ -23,6 +23,17 @@ define(["common"], function(common) {'use strict';
         },
     });
 
+    //Holds different functions for breeding
+    var breed = {
+        singlePoint: function(me, other) {
+            console.log("Single point:");
+            var pt = utilities.getRandomIndex(me.genes);
+            for(var i = pt; i < me.genes.length; i++) {
+                me.genes[i].breedWith(other.genes[i]);
+            }
+        }
+    };
+
     var geneBorder = 1;
     var geneSpacing = 30;
     var geneWidth = 7;
@@ -63,6 +74,12 @@ define(["common"], function(common) {'use strict';
                 log += index0 + "," + index1 + " += " + delta.toFixed(2);
             }
             console.log("Mutate " + this.gene.name + ": " + log);
+        },
+
+        breedWith : function(gene) {
+            var tmp = gene.data;
+            gene.tmp = this.data;
+            this.data = tmp;
         },
 
         setData : function(index0, index1, data) {
@@ -213,6 +230,10 @@ define(["common"], function(common) {'use strict';
             for (var i = 0; i < this.genes.length; i++) {
                 this.genes[i].clone(parent.genes[i]);
             }
+        },
+
+        breedWith: function (dna) {
+            breed.singlePoint(this, dna);
         },
 
         getGene : function(name) {
