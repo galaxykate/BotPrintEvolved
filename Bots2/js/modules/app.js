@@ -2,6 +2,8 @@
  * @author Kate Compton
  */
 
+var app;
+
 define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./botPrint/mode_editor/editorMode", "./botPrint/botCard"], function(common, UI, arenaMode, editMode, BotCard) {
 
     var App = Class.extend({
@@ -57,7 +59,7 @@ define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./b
                         default:
 
                     }
-                    
+
                     // pass to the mode to handle
                     if (app.arenaMode.isOpen())
                         app.arenaMode.keyPress(key);
