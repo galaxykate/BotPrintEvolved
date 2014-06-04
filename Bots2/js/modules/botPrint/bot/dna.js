@@ -189,10 +189,11 @@ define(["common"], function(common) {'use strict';
 
         },
 
-        createMutant : function() {
+        createMutant : function(amt) {
             this.mutant = new DNA();
             this.mutant.clone(this);
             // Clone
+            this.mutant.mutate(amt);
             return this.mutant;
         },
 

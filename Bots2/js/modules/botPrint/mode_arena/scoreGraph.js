@@ -77,9 +77,11 @@ define(["common"], function(common) {'use strict';
             var spacing = 5;
 
             g.fill(0);
-            var t = this.test.currentIndex - 1;
-            g.text(this.test + " " + t, 20, 40);
+
             if (this.test) {
+                var t = this.test.currentIndex - 1;
+                g.text(this.test + " " + t, 20, 40);
+
                 var count = this.test.population.length;
                 for (var i = 0; i < count; i++) {
 

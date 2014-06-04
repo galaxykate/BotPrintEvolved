@@ -2,20 +2,10 @@
  * @author Kate Compton
  */
 
-define(["common", "./simulation", "../physics/arena", "./population", "./heuristic", "./scoreGraph"], function(common, Simulation, Arena, Population, heuristic, ScoreGraph) {'use strict';
-    var arenaInfoDiv = $("#arena_data");
-    var arenaSidebar = $("#arena_sidebar");
-    var populationPanel = $("#population_panel");
+define(["common", "./simulation", "../physics/arena", "./population", "./heuristic", "./arenaUI"], function(common, Simulation, Arena, Population, heuristic, ui) {'use strict';
 
-    arenaInfoDiv.hide();
-    //  arenaSidebar.hide();
-    populationPanel.hide();
     var populationMode = false;
-    var devMode = false;
-
-    var heuristics = heuristic.heuristics;
-    var currentHeuristic = heuristics.mostBlue;
-    var simulationSpeed = 1;
+    var arenaType = "circle";
 
     var current = {
         population : undefined,
@@ -23,47 +13,20 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
         simulation : undefined,
     };
 
-    function toggleDevMode() {
-        console.log("TOGGLE DEV MODE");
-        devMode = !devMode;
-        if (devMode) {
-            arenaInfoDiv.show();
-        } else {
-            arenaInfoDiv.hide();
-        }
-    }
-
-    // setup the populationmode ui
-    $("#mutate").click(function() {
-         togglePopulationMode();
-        console.log("previous population:  " + current.population);
-        current.population = current.population.createNextGenerationFromMutants();
-        // console.log("current population:  " + utilities.arrayToString(current.population));
-        current.simulation = undefined;
-        startSimulation();
-    });
-
-    function togglePopulationMode() {
-        populationMode = !populationMode;
-        if (populationMode) {
-            populationPanel.show();
-
-            current.population.createPopulationDivs();
-            app.paused = true;
-
-        } else {
-            populationPanel.hide();
-
-            app.paused = false;
-        }
-    }
-
-    var graph = new ScoreGraph.BarGraph($("#scoreboard"));
-
     function initialize() {
+
+        app.heuristics = heuristic.heuristics;
+        app.currentHeuristic = heuristics.mostBlue;
+        app.simulationSpeed = 1;
+
+        console.log(app.heuristics);
+        console.log(app);
+
         console.log("Init Arena Mode");
         createProcessing();
-        createArenaUI();
+        console.log(ui);
+        ui.initUI();
+        ui.initPopulationPanel();
 
         // Create the botCard
         app.arenaCard = new app.createBotCard($("#arena_card"));
@@ -75,77 +38,19 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
 
     };
 
-    function createArenaUI() {
-        // Add all the heuristics to the menu
-        var heuristicSelect = $("#heuristic");
-
-        heuristics.forEach(function(heuristic) {
-            heuristicSelect.append($('<option>', {
-                value : heuristic.name,
-                text : heuristic.name,
-            }));
-
-        });
-
-        heuristicSelect.change(function() {
-            setCurrentHeuristic(this.value);
-        });
-
-        //=======================================
-        // Arena selection
-        var typeSelect = $("#arena_type");
-
-        var types = ["rectangle", "hexagon", "circle"];
-        for (var i = 0; i < types.length; i++) {
-            typeSelect.append($('<option>', {
-                value : types[i],
-                text : types[i],
-            }));
-
-        }
-
-        typeSelect.change(function() {
-            setArena(this.value);
-        });
-
-        var settingsDiv = $("#arena_time_settings");
-
-        app.ui.createSlider(settingsDiv, "simspeed", 1, 0, 7, function(key, val) {
-            simulationSpeed = val * val;
-        });
-
-    };
-
     function startSimulation() {
         console.log("Start a new simulation");
         if (!current.simulation) {
-            if (!current.population)
-                current.population = new Population(5);
+            arenaMode.startNewSimulation(current.population);
 
-            console.log(" population:  " + current.population);
-
-            current.arena = new Arena("rectangle");
-            current.simulation = new Simulation(current.population.bots, current.arena, heuristics);
-            current.simulation.start();
-            current.simulation.run(1, .04);
-            setCurrentHeuristic("mostBlue");
         } else {
             current.simulation.refreshBots();
         }
     };
 
-    function setArena(type) {
-        console.log("Create arena: " + type);
-        current.arena = new Arena(type);
-
-        current.simulation = new Simulation(current.population.bots, current.arena, heuristics);
-        current.simulation.start();
-        current.simulation.run(1, .04);
-    };
-
     function setCurrentHeuristic(name) {
-        currentHeuristic = heuristics[name];
-        graph.setTest(current.simulation.getTest(name));
+        app.currentHeuristic = app.heuristics[name];
+        ui.graph.setTest(current.simulation.getTest(name));
     };
 
     //============================================================
@@ -153,10 +58,10 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
 
     var isStarted = false;
     var isOpen = false;
-    var div = $("#arena_panel");
+    var mainPanel = $("#arena_panel");
 
     function open() {
-        div.addClass("open");
+        mainPanel.addClass("open");
         isOpen = true;
         console.log("ARENA CARD:");
         console.log(app.arenaCard);
@@ -165,7 +70,7 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
     };
 
     function close() {
-        div.removeClass("open");
+        mainPanel.removeClass("open");
         isOpen = false;
 
     };
@@ -177,7 +82,7 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
     // Create processing and attach it to a canvas element
     function createProcessing() {
         var canvasDiv = $("#arena_canvas");
-        var arenaWindow = app.controls.createTouchableWindow(canvasDiv, "arena", mode);
+        var arenaWindow = app.controls.createTouchableWindow(canvasDiv, "arena", arenaMode);
 
         // attaching the sketchProc function to the canvas
         var processingInstance = new Processing(canvasDiv.get(0), function(g) {
@@ -197,7 +102,7 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
                         var ellapsed = last - g.millis();
                         ellapsed = utilities.constrain(ellapsed, .01, .1);
 
-                        ellapsed *= simulationSpeed;
+                        ellapsed *= app.simulationSpeed;
 
                         update(ellapsed);
                     }
@@ -234,12 +139,8 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
     // Updates and experiments
     function update(ellapsed) {
 
-        arenaInfoDiv.html("");
         app.worldTime.addEllapsed(ellapsed);
         current.simulation.simStep(app.worldTime);
-
-        var s = current.simulation.testsToString();
-        arenaInfoDiv.append(s);
 
         // Update the bar graph
 
@@ -256,13 +157,55 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
 
     };
 
-    // Add some set of bots
-    function addPopulation(population) {
+    // Accessible functions
 
-    };
-
-    var mode = {
+    var arenaMode = {
         initialize : initialize,
+
+        changeArenaType : function(type) {
+            arenaType = type;
+            // Create a new simulation
+            arenaMode.startNewSimulation(current.population, new Arena(arenaType));
+        },
+
+        // Simulate some large number of new generations
+        simulateGenerations : function(count, breedNextGen) {
+            if (!breedNextGen)
+                breedNextGen = function(winners) {
+                    // Mutate some winners
+                    current.population.mutants = winners;
+                    current.population = current.population.createNextGenerationFromMutants();
+                };
+
+            for (var i = 0; i < count; i++) {
+                console.log("Simulate generation " + count);
+                current.population.debugOutput();
+                arenaMode.startNewSimulation(current.population);
+                // Run this simulation
+
+                var winners = current.simulation.getWinners();
+                console.log("Winners: " + utilities.arrayToString(winners));
+                var nextGen = breedNextGen(winners);
+            }
+        },
+
+        startNewSimulation : function(population, arena) {
+
+            if (arena)
+                current.arena = arena;
+            if (population)
+                current.population = population;
+            else
+                current.population = current.population = new Population(5);
+
+            if (!current.arena)
+                current.arena = new Arena(arenaType);
+
+            current.simulation = new Simulation(current.population.bots, current.arena, app.heuristics);
+            current.simulation.start();
+            current.simulation.run(1, .04);
+        },
+
         getTouchableAt : getTouchableAt,
         open : open,
         close : close,
@@ -274,15 +217,15 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
             switch(key) {
 
                 case 'p':
-                    togglePopulationMode();
+                    ui.togglePopulationMode();
                     break;
                 case 'd':
-                    toggleDevMode();
+                    ui.toggleDevMode();
                     break;
 
             }
         }
     };
     // interface (all other functions are hidden)
-    return mode;
+    return arenaMode;
 });
