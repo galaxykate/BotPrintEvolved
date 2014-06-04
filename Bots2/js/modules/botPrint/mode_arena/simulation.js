@@ -21,6 +21,7 @@ define(["common", "../physics/arena", "./test"], function(common, Arena, Test) {
             sim.testRate = 5;
             // Calculate scores every N steps
             this.className = "Simulation";
+
             heuristics.forEach(function(heuristic) {
                 sim.tests.push(new Test(population, heuristic));
             });
@@ -110,6 +111,17 @@ define(["common", "../physics/arena", "./test"], function(common, Arena, Test) {
                 arena.scores[index].total = arena.getLightMapAt(bot.transform);
                 app.log(index + ": score " + arena.scores[index].total);
             });
+        },
+
+        getWinners : function() {
+            var winners = [];
+
+            // Hack
+            for (var i = 0; i < this.population.length; i++) {
+                if (i < 3)
+                    winners.push(this.population[i]);
+            }
+            return winners;
         },
 
         //====================================================================

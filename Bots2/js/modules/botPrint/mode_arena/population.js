@@ -142,7 +142,6 @@ define(["common", "../bot/bot"], function(common, Bot) {'use strict';
                 else
                     child = new Bot();
 
-           
                 this.nextGeneration.add(child);
 
             }
@@ -158,6 +157,13 @@ define(["common", "../bot/bot"], function(common, Bot) {'use strict';
                 s += this.bots[i].toDebugString() + ", ";
             }
             return s;
+        },
+
+        debugOutput : function() {
+            console.log("Population " + this.generation + ", " + this.bots.length + " bots: ");
+            for (var i = 0; i < this.bots.length; i++) {
+                console.log("   " + this.bots[i].toDebugString());
+            }
         },
     });
 
