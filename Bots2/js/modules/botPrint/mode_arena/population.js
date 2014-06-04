@@ -139,6 +139,23 @@ define(["common", "../bot/bot"], function(common, Bot) {'use strict';
             });
         },
 
+        createNextGenerationFromParents : function() {
+            this.nextGeneration = new Population(0, this);
+            for (var i = 0; i < this.parents.length; i++) {
+                var child;
+                if (this.parents[i]) {
+                    //Selecting a random parent seems wrong?
+                    child = this.parents[i].breedWith(
+                        common.util.getRandom(this.parents)
+                    );
+                } else {
+                    child = new Bot();
+                }
+                this.nextGeneration.add(child);
+            }
+            return this.nextGeneration;
+        },
+
         createNextGenerationFromMutants : function() {
             this.nextGeneration = new Population(0, this);
             for (var i = 0; i < this.mutants.length; i++) {

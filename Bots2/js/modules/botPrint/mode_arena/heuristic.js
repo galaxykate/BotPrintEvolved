@@ -25,6 +25,15 @@ define(["common"], function(common) {'use strict';
             },
         },
 
+        fastest : {
+            range : new common.Range({
+                min : -100,
+                max : 100
+            }),
+            evaluate: function(bot, time) {
+            }
+        },
+
         mostBlue : {
             range : new common.Range({
                 min : -.5,

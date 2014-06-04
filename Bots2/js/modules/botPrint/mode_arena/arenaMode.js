@@ -45,13 +45,13 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
 
     //jquery spaghetti
     //refactor laters
-
     $("#breed").click(function() {
         var parent0 = current.population.getByName(
             $('#parent0')[0].textContent);
         var parent1 = current.population.getByName(
             $('#parent1')[0].textContent);
-        parent0.dna.breedWith(parent1.dna);
+
+        current.population = current.population.createNextGenerationFromParents(parent0, parent1);
     });
 
     $(".parent_slot").click(function() {
