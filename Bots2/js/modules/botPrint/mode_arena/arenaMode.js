@@ -63,7 +63,9 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
     function open() {
         mainPanel.addClass("open");
         isOpen = true;
-
+        console.log("ARENA CARD:");
+        console.log(app.arenaCard);
+		app.arenaCard.update();
         startSimulation();
     };
 
