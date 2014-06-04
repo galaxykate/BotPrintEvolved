@@ -166,7 +166,10 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
                     div.removeClass("activated");
                     heldPart = undefined;
                     //Remove overObj form the Chassis
-                    overObj.remove();
+                    if (overObj != undefined)
+                    {
+                    	overObj.remove();
+                    }
                     app.currentBot.clearTestPoints();
                 }
             };
@@ -209,10 +212,30 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
                 switchChassisType(chassis);
             });
         });
+        catalog.allColor.forEach(function(color) {
+            var div = $("<div/>", {
+                html : color.name,
+                "class" : "panel"
+            });
+            chassisDiv.append(div);
+
+            div.click(function() {
+                //switchChassisType(chassis);
+                changeBotColor(color.h, color.s, color.b);
+            });
+        });
     };
 
     function switchChassisType(type) {
         console.log("Switch to chassis type " + type.name);
+    };
+    
+    function changeBotColor(h, s, b) {
+        console.log(app.currentBot);
+        app.currentBot.idColor.h = h;
+        app.currentBot.idColor.s = (.4 * s) + .6;
+        app.currentBot.idColor.b = b;
+        app.currentBot.setColorDNA();
     };
     //=========================================================================
     // Exposed
@@ -253,7 +276,6 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
 
                 case 'p':
                     break;
-
             }
         }
     };

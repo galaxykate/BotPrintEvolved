@@ -63,6 +63,12 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
             this.mainChassis.setFromDNA(this.dna);
 
         },
+        
+        setColorDNA : function() {
+            this.dna.getData("color")[0] = this.idColor.h;
+            this.dna.getData("color")[1] = (this.idColor.s - .6) * 2.5;
+            this.dna.getData("color")[2] = this.idColor.b;
+        },
 
         //======================================================================================
         //======================================================================================
