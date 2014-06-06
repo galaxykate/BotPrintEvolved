@@ -16,10 +16,11 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
     function initialize() {
 
         app.heuristics = heuristic.heuristics;
+        
         app.currentHeuristic = heuristics.mostBlue;
         app.simulationSpeed = 1;
 
-        console.log(app.heuristics);
+        //console.log(app.heuristics);
         console.log(app);
 
         console.log("Init Arena Mode");
@@ -49,6 +50,7 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
     };
 
     function setCurrentHeuristic(name) {
+        console.log("settting!");
         app.currentHeuristic = app.heuristics[name];
         ui.graph.setTest(current.simulation.getTest(name));
     };
@@ -159,6 +161,13 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
 
     var arenaMode = {
         initialize : initialize,
+        setCurrentHeuristic: setCurrentHeuristic,
+
+        //Maybe wrong to expose, but fixes some UI stuff.
+        getCurrent : function() {
+            console.log("current:", current);
+            return current;
+        },
 
         changeArenaType : function(type) {
             arenaType = type;

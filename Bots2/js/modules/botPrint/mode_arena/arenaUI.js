@@ -32,7 +32,7 @@ define(["common", "./scoreGraph"], function(common, ScoreGraph) {'use strict';
             });
 
             heuristicSelect.change(function() {
-                setCurrentHeuristic(this.value);
+                app.arenaMode.setCurrentHeuristic(this.value);
             });
 
             //=======================================
@@ -65,9 +65,13 @@ define(["common", "./scoreGraph"], function(common, ScoreGraph) {'use strict';
         },
 
         initPopulationPanel : function() {
+            var current = app.arenaMode.getCurrent();
+            //Scope issue
+            var toggle = this.togglePopulationMode;
+
             // setup the populationmode ui
             $("#mutate").click(function() {
-                this.togglePopulationMode();
+                toggle();
                 console.log("previous population:  " + current.population);
 
                 app.arenaMode.startNewSimulation(current.population.createNextGenerationFromMutants());
@@ -101,12 +105,13 @@ define(["common", "./scoreGraph"], function(common, ScoreGraph) {'use strict';
 
         initForPopulation : function(population) {
             population.createPopulationDivs();
-
         },
 
         togglePopulationMode : function() {
             app.populationMode = !app.populationMode;
             if (app.populationMode) {
+                var pop = app.arenaMode.getCurrent().population;
+                this.initForPopulation(pop);
                 populationPanel.show();
 
                 app.paused = true;
