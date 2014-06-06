@@ -51,7 +51,7 @@ define(["common", "../physics/arena"], function(common, Arena) {'use strict';
                 }
                 finalScores[i] = total;
             }
-            console.log("finalScores:", finalScores);
+            //console.log("finalScores:", finalScores);
             return finalScores;
         },
 
@@ -62,18 +62,17 @@ define(["common", "../physics/arena"], function(common, Arena) {'use strict';
                 return a.score < b.score;
             }
 
-            var values = this.resultsOverTime;
-            var t = this.currentTimestep;
+            var values = this.calculateFinalScores();
             var winners = this.population.map(function(bot, index) {
                 return {
                     bot : bot,
-                    score : values[index][t],
+                    score : values[index],
                 };
             });
 
             winners.sort(compare);
             for (var i = 0; i < winners.length; i++) {
-                //   console.log(i + ": " + winners[i].score + " " + winners[i].bot.name);
+                console.log(i + ": " + winners[i].score + " " + winners[i].bot.name);
 
             }
             return winners;

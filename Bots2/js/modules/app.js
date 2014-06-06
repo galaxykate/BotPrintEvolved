@@ -91,7 +91,7 @@ define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./b
         },
 
         setCurrentBot : function(bot) {
-            console.log("Set bot ", bot);
+            //console.log("Set bot ", bot);
             // load into the bot card
             app.currentBot = bot;
             app.arenaCard.update();

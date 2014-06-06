@@ -179,14 +179,15 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
         simulateGenerations : function(count, breedNextGen) {
             if (!breedNextGen)
                 breedNextGen = function(winners) {
+                    //Remove the bottom 2 from the population
+                    current.population.mutants = winners.splice(-2, 2);
                     // Mutate some winners
-                    current.population.mutants = winners;
                     current.population = current.population.createNextGenerationFromMutants();
                 };
 
             for (var i = 0; i < count; i++) {
-                console.log("Simulate generation " + count);
-                current.population.debugOutput();
+                //console.log("Simulate generation " + count);
+                //current.population.debugOutput();
                 arenaMode.startNewSimulation(current.population);
                 // Run this simulation
 

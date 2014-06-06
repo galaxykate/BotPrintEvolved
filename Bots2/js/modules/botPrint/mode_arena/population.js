@@ -40,9 +40,13 @@ define(["common", "../bot/bot"], function(common, Bot) {'use strict';
 
             this.generation = generation;
             generation++;
-            console.log("NEW POPULATION " + randomCount + ", generation " + this.generation);
+            //console.log("NEW POPULATION " + randomCount + ", generation " + this.generation);
             // Create some bots
-            this.bots = [];
+            if(previous && previous.bots) {
+                this.bots = previous.bots.slice(0);
+            } else {
+                this.bots = [];
+            }
             this.className = "Population";
             for (var i = 0; i < randomCount; i++) {
                 var b = new Bot();
@@ -158,21 +162,26 @@ define(["common", "../bot/bot"], function(common, Bot) {'use strict';
 
         createNextGenerationFromMutants : function() {
             this.nextGeneration = new Population(0, this);
-            for (var i = 0; i < this.mutants.length; i++) {
+            for (var i = 0; i < this.bots.length; i++) {
                 var child;
                 if (this.mutants[i]) {
                     child = this.mutants[i].createChild({
                         mutationLevel : 2
                     });
+                    if(child.attachments.length > 1) {
+                        console.log("chosen child:", child);
+                    }
                 } else {
                     child = new Bot();
                 }
 
-                this.nextGeneration.add(child);
-
+                //This is the better way to do it
+                //this.nextGeneration.add(child);
+                //Hack for now
+                this.nextGeneration.bots[i] = child;
             }
 
-            console.log("" + this.nextGeneration);
+            //console.log("" + this.nextGeneration);
 
             return this.nextGeneration;
         },

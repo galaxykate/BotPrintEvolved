@@ -55,10 +55,14 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
         },
 
         makeAttachments : function(dna) {
-            if(dna.attachments !== undefined) {
+            this.attachments = [];
+            var attachData = undefined; //dna.genes[4];
+            if(attachData !== undefined) {
                 //Set attachments from DNA
+                attachData.data.forEach(function(gene) {
+
+                });
             } else {
-                this.attachments = [];
                 //TODO: MAKE A SMARTER VERSION
                 for (var i = 0; i < 2; i++) {
                     //TODO:Is parent supposed to be this?
@@ -227,11 +231,11 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
         },
 
         onTouchEnter : function() {
-            console.log("Enter " + this);
+            //console.log("Enter " + this);
         },
 
         onTouchExit : function() {
-            console.log("Enter " + this);
+            //console.log("Enter " + this);
         },
 
         onDrag : function(touch, overObj) {

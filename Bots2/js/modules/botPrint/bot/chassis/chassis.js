@@ -144,7 +144,7 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
 
         //p is a Position
         attachPartAt : function(part, p) {
-            console.log("Attach " + part + " at " + p);
+            //console.log("Attach " + part + " at " + p);
             if (part.chassis !== this) {
                 part.detach();
                 part.attachTo(this);
