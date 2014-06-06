@@ -26,7 +26,7 @@ define(["./attachment/attachments"], function(attachments) {'use strict';
                 LED : {
                     name : "LED",
                     cost : 3,
-                    createPart : function() {
+                    createPart : function(parent) {
                         return new attachments.Actuator.LED();
                     }
                 },

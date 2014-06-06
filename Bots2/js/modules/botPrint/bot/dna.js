@@ -7,9 +7,9 @@ define(["common"], function(common) {'use strict';
     };
 
     var GeneType = Class.extend({
-        init : function(name, length) {
+        init : function(name, length, complexity) {
             this.name = name;
-            this.complexity = 3;
+            this.complexity = complexity === undefined ? 3 : complexity;
             this.length = length;
             this.className = "GeneType";
         },
@@ -87,12 +87,15 @@ define(["common"], function(common) {'use strict';
             this.data[index0][index1] = data;
         },
 
+        //returns the data[index0][index1]
+        //or the data array if called with undefined indices
         getData : function(index0, index1) {
             if (index0 === undefined) {
                 if (this.data.length === 1)
                     index0 = 0;
                 else
-                    throw ("ERROR: can't get undefined index " + index0 + " from " + this.gene.name + " data of length" + this.data.length);
+                    return this.data;
+                    //throw ("ERROR: can't get undefined index " + index0 + " from " + this.gene.name + " data of length" + this.data.length);
             }
 
             if (index0 >= this.data.length)
@@ -173,11 +176,11 @@ define(["common"], function(common) {'use strict';
     });
 
     var geneTypes = {
-        color : new GeneType("Color", 1),
-        name : new GeneType("Name", 1),
-        chassis : new GeneType("Chassis type", 1),
-        handles : new GeneType("Handles", 10),
-        parts : new GeneType("Parts", 1),
+        color : new GeneType("Color", 1, 3),
+        name : new GeneType("Name", 1, 3),
+        chassis : new GeneType("Chassis type", 1, 3),
+        handles : new GeneType("Handles", 10, 3),
+        attachments : new GeneType("Attachments", 2, 7),
     };
 
     var geneNames = [];

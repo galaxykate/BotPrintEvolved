@@ -8,9 +8,13 @@ define(["common", "../attachment"], function(common, Attachment) {'use strict';
         init : function(parent) {
             this._super(parent);
             this.id = "Sensor" + this.idNumber;
-            this.decay = .7;
-            this.senseValue = 1;
             this.className = "Sensor";
+            if(parent) {
+                this.setFromDNA(parent.dna);
+            } else {
+                this.decay = .7;
+                this.senseValue = 1;
+            }
         },
 
         sense : function() {
@@ -54,8 +58,8 @@ define(["common", "../attachment"], function(common, Attachment) {'use strict';
 
         setFromDNA : function(dna, index) {
             dna = dna || this.parent.getDNA();
-            this.senseValue = dna.getData("attachments", index, 0);
-            this.decay = dna.getData("attachments", index, 1);
+            this.senseValue = dna.getData("attachments", index, 1);
+            this.decay = dna.getData("attachments", index, 2);
         },
 
         setDNAFrom : function(index) {

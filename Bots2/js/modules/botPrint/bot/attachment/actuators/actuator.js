@@ -6,8 +6,12 @@ define(["common", "../attachment"], function(common, Attachment) {'use strict';
     var Actuator = Attachment.extend({
         init : function(parent) {
             this._super(parent);
-            this.actuation = 1;
-            this.decay = .5;
+            if(parent) {
+                this.setFromDNA(parent.dna);
+            } else {
+                this.actuation = 1;
+                this.decay = .5;
+            }
             this.className = "Actuator";
             this.id = "Actuator" + this.idNumber;
         },
@@ -50,8 +54,8 @@ define(["common", "../attachment"], function(common, Attachment) {'use strict';
 
         setFromDNA : function(dna, index) {
             dna = dna || this.parent.getDNA();
-            this.actuation = dna.getData("attachments", index, 0);
-            this.decay = dna.getData("attachments", index, 1);
+            this.actuation = dna.getData("attachments", index, 1);
+            this.decay = dna.getData("attachments", index, 2);
         },
 
         setDNAFrom: function(index) {

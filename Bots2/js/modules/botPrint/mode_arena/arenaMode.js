@@ -18,14 +18,11 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
         app.heuristics = heuristic.heuristics;
         
         app.currentHeuristic = app.heuristics.mostBlue;
-        console.log("curr:", app.currentHeuristic);
         app.simulationSpeed = 1;
 
-        console.log(app);
 
         console.log("Init Arena Mode");
         createProcessing();
-        console.log(ui);
         ui.initUI();
         ui.initPopulationPanel();
 
@@ -165,7 +162,6 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
 
         //Maybe wrong to expose, but fixes some UI stuff.
         getCurrent : function() {
-            console.log("current:", current);
             return current;
         },
 
@@ -204,7 +200,7 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
             if (population)
                 current.population = population;
             else
-                current.population = current.population = new Population(5);
+                current.population = new Population(5);
 
             if (!current.arena)
                 current.arena = new Arena(arenaType);

@@ -56,24 +56,45 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
 
         makeAttachments : function(dna) {
             this.attachments = [];
-            var attachData = undefined; //dna.genes[4];
+            var edge, pct, offset, thetaOffset, part;
+            var parent = this;
+            var smoothIndex = function(real, array) {
+                var id = utilities.roundNumber(real ,0);
+                if(id > array.length) {
+                    id = utilities.getRandomIndex(array);
+                }
+                return id
+            }
+
+            var attachData = dna.getData("attachments");
             if(attachData !== undefined) {
+                console.log(attachData);
                 //Set attachments from DNA
-                attachData.data.forEach(function(gene) {
+                attachData.forEach(function(gene) {
+                    //gene[0] is the type of attachment
+                    var id = smoothIndex(gene[0], catalog.allParts);
+                    part = catalog.createPart(id, parent);
+
+                    //gene[1] is the intensity
+                    //gene[2] is the decay
+                    //gene[3] is the edge
+                    var edgeI = smoothIndex(gene[3], parent.mainChassis.path.edges);
+                    edge = parent.mainChassis.path.edges[edgeI];
+                    //gene[4] is the pct
+                    pct = gene[4];
+                    //gene[5] is the offset
+                    offset = gene[5];
+                    //gene[6] is the thetaOffset
+                    thetaOffset = gene[6];
+                    var p = new graph.Position(edge, pct, offset, thetaOffset);
+                    parent.addPart(part, p);
 
                 });
             } else {
                 //TODO: MAKE A SMARTER VERSION
                 for (var i = 0; i < 2; i++) {
-                    //TODO:Is parent supposed to be this?
-                    //or this.parent?
-                    //or this.dna?
-                    var parent = this;
-                    var part = catalog.createPart(undefined, parent);
-
-
+                    part = catalog.createPart(undefined, parent);
                     //The position should be set intelligently later on
-                    var edge, pct, offset, thetaOffset;
                     edge = utilities.getRandom(this.mainChassis.path.edges);
                     pct = .5;
                     offset = 0;
