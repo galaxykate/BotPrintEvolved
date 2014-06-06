@@ -23,13 +23,12 @@ define(["common", "./scoreGraph"], function(common, ScoreGraph) {'use strict';
             var heuristicSelect = $("#heuristic");
 
             console.log(app);
-            app.heuristics.forEach(function(heuristic) {
+            for (var heuristic in app.heuristics) {
                 heuristicSelect.append($('<option>', {
-                    value : heuristic.name,
-                    text : heuristic.name,
+                    value : heuristic,
+                    text : heuristic,
                 }));
-
-            });
+            }
 
             heuristicSelect.change(function() {
                 app.arenaMode.setCurrentHeuristic(this.value);

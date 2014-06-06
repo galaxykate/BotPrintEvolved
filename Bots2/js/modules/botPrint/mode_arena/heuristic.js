@@ -4,6 +4,7 @@
 define(["common"], function(common) {'use strict';
 
     var heuristics = {
+        /*
         x : {
             range : new common.Range({
                 min : -300,
@@ -12,6 +13,19 @@ define(["common"], function(common) {'use strict';
 
             evaluate : function(bot, time) {
                 return bot.transform.x;
+            },
+        },
+        */
+
+        mostBlue : {
+            range : new common.Range({
+                min : -.5,
+                max : .5,
+            }),
+            evaluate : function(bot, time) {
+                var dblue = Math.abs(0.6 - bot.idColor.h);
+                dblue = dblue % 1;
+                return (.5 - dblue) * bot.idColor.b * bot.idColor.s;
             },
         },
 
@@ -36,17 +50,6 @@ define(["common"], function(common) {'use strict';
             }
         },
 
-        mostBlue : {
-            range : new common.Range({
-                min : -.5,
-                max : .5,
-            }),
-            evaluate : function(bot, time) {
-                var dblue = Math.abs(0.6 - bot.idColor.h);
-                dblue = dblue % 1;
-                return (.5 - dblue) * bot.idColor.b * bot.idColor.s;
-            },
-        },
         mostGreen : {
             range : new common.Range({
                 min : -.5,
@@ -61,10 +64,10 @@ define(["common"], function(common) {'use strict';
     };
 
     var heuristicNames = Object.getOwnPropertyNames(heuristics);
-    var heursticList = [];
+    var heuristicList = [];
     $.each(heuristicNames, function(index, name) {
-        heursticList[index] = heuristics[name];
-        heursticList[index].name = name;
+        heuristicList[index] = heuristics[name];
+        heuristicList[index].name = name;
     });
 
     var makeHeuristicMenu = function() {
@@ -93,9 +96,13 @@ define(["common"], function(common) {'use strict';
         });
     };
 
+    var getHeuristic = function(name) {
+        return heuristics[name];
+    }
+
     return {
         makeHeuristicMenu : makeHeuristicMenu,
-        heuristics : heursticList,
+        heuristics : heuristics
     };
 
 });

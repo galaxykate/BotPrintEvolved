@@ -22,9 +22,9 @@ define(["common", "../physics/arena", "./test"], function(common, Arena, Test) {
             // Calculate scores every N steps
             this.className = "Simulation";
 
-            heuristics.forEach(function(heuristic) {
-                sim.tests.push(new Test(population, heuristic));
-            });
+            for(var heuristic in heuristics) {
+                sim.tests.push(new Test(population, heuristics[heuristic]));
+            }
 
         },
 

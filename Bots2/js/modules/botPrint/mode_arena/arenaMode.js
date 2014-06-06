@@ -17,10 +17,10 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
 
         app.heuristics = heuristic.heuristics;
         
-        app.currentHeuristic = heuristics.mostBlue;
+        app.currentHeuristic = app.heuristics.mostBlue;
+        console.log("curr:", app.currentHeuristic);
         app.simulationSpeed = 1;
 
-        //console.log(app.heuristics);
         console.log(app);
 
         console.log("Init Arena Mode");
