@@ -168,7 +168,7 @@ define(["common", "../bot/bot"], function(common, Bot) {'use strict';
                     child = this.mutants[i].createChild({
                         mutationLevel : 2
                     });
-                    if(child.attachments.length > 1) {
+                    if(child.attachments.length > 2) {
                         console.log("chosen child:", child);
                     }
                 } else {

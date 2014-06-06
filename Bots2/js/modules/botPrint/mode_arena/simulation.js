@@ -115,7 +115,8 @@ define(["common", "../physics/arena", "./test"], function(common, Arena, Test) {
 
         getWinners : function() {
             //just use one heuristic for now
-            return this.tests[0].getWinners();
+
+            return this.getTest(app.currentHeuristic.name).getWinners();
         },
 
         //====================================================================
