@@ -160,12 +160,13 @@ define(["common", "../bot/bot"], function(common, Bot) {'use strict';
             this.nextGeneration = new Population(0, this);
             for (var i = 0; i < this.mutants.length; i++) {
                 var child;
-                if (this.mutants[i])
+                if (this.mutants[i]) {
                     child = this.mutants[i].createChild({
                         mutationLevel : 2
                     });
-                else
+                } else {
                     child = new Bot();
+                }
 
                 this.nextGeneration.add(child);
 

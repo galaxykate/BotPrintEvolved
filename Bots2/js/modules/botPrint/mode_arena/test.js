@@ -8,7 +8,7 @@ define(["common", "../physics/arena"], function(common, Arena) {'use strict';
     var Test = Class.extend({
 
         init : function(population, heuristic) {
-           // console.log("Make test from heuristic: " + heuristic.name + " for " + population.length + " bots");
+            // console.log("Make test from heuristic: " + heuristic.name + " for " + population.length + " bots");
             this.resultsOverTime = [];
 
             this.population = population;
@@ -40,15 +40,19 @@ define(["common", "../physics/arena"], function(common, Arena) {'use strict';
         },
 
         calculateFinalScores : function() {
+            var finalScores = [];
             for (var i = 0; i < this.population.length; i++) {
                 var total = 0;
                 for (var j = 0; j < this.currentIndex; j++) {
-                    var v = this.resultsOverTime[i][j];
-                    total += v;
                     //  this.resultsOverTime[i][this.currentIndex] = v;
+                    if(this.resultsOverTime[i][j]) {
+                        total += this.resultsOverTime[i][j];
+                    }
                 }
+                finalScores[i] = total;
             }
-
+            console.log("finalScores:", finalScores);
+            return finalScores;
         },
 
         // Return a sorted list of bots
@@ -58,7 +62,7 @@ define(["common", "../physics/arena"], function(common, Arena) {'use strict';
                 return a.score < b.score;
             }
 
-            var values = this.values;
+            var values = this.resultsOverTime;
             var t = this.currentTimestep;
             var winners = this.population.map(function(bot, index) {
                 return {

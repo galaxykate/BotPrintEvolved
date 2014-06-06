@@ -114,14 +114,8 @@ define(["common", "../physics/arena", "./test"], function(common, Arena, Test) {
         },
 
         getWinners : function() {
-            var winners = [];
-
-            // Hack
-            for (var i = 0; i < this.population.length; i++) {
-                if (i < 3)
-                    winners.push(this.population[i]);
-            }
-            return winners;
+            //just use one heuristic for now
+            return this.tests[0].getWinners();
         },
 
         //====================================================================

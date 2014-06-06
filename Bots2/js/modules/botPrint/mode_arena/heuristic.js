@@ -25,12 +25,14 @@ define(["common"], function(common) {'use strict';
             },
         },
 
-        fastest : {
+        mostAttachments : {
             range : new common.Range({
-                min : -100,
-                max : 100
+                min : 0,
+                max : 10
+
             }),
-            evaluate: function(bot, time) {
+            evaluate : function(bot, time) {
+                return bot.length
             }
         },
 

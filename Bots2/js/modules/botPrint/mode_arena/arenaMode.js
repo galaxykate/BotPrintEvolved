@@ -191,7 +191,7 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
                 // Run this simulation
 
                 var winners = current.simulation.getWinners();
-                console.log("Winners: " + utilities.arrayToString(winners));
+                winners = _.pluck(winners, 'bot');
                 var nextGen = breedNextGen(winners);
             }
         },
