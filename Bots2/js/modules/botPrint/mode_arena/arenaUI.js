@@ -84,8 +84,9 @@ define(["common", "./scoreGraph"], function(common, ScoreGraph) {'use strict';
                     $('#parent0')[0].textContent);
                 var parent1 = current.population.getByName(
                     $('#parent1')[0].textContent);
+                current.population.parents = [parent0, parent1];
 
-                current.population = current.population.createNextGenerationFromParents(parent0, parent1);
+                app.arenaMode.startNewSimulation(current.population.createNextGenerationFromParents());
             });
 
             $(".parent_slot").click(function() {

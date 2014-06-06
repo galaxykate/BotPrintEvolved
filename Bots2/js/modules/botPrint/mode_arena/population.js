@@ -144,10 +144,10 @@ define(["common", "../bot/bot"], function(common, Bot) {'use strict';
             for (var i = 0; i < this.parents.length; i++) {
                 var child;
                 if (this.parents[i]) {
+                    console.log(this.parents[i]);
                     //Selecting a random parent seems wrong?
-                    child = this.parents[i].breedWith(
-                        common.util.getRandom(this.parents)
-                    );
+                    this.parents[i].dna.breedWith(utilities.getRandom(this.parents).dna);
+                    child = new Bot(this.parents[i]);
                 } else {
                     child = new Bot();
                 }
