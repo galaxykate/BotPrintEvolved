@@ -16,7 +16,7 @@ define(["common"], function(COMMON) {'use strict';
             this.description = "Undefined Mode";
             this.active = false;
             this.panels = [];
-
+			this.className = "Mode";
             // Overlay with custom context
             $.extend(this, context);
 

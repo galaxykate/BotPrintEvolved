@@ -10,6 +10,7 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             this.attachment = attachment;
             this.idColor = new common.KColor((.145 * attachment.idNumber + .2) % 1, 1, 1);
             this.center = new common.Transform();
+            this.className = "AttachmentForce";
         },
 
         draw : function(g) {
@@ -38,8 +39,7 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             this.idNumber = attachmentCount;
             attachmentCount++;
 
-            this.attachPoint = new common.Transform();
-
+			this.className = "Attachment";
             this.pins = [];
             this.force = new AttachmentForce(this);
         },
@@ -63,9 +63,23 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             this.chassis.addPart(this);
 
         },
+        
+        remove : function() {
+        	this.chassis.removePart(this);
+        },
 
         setAttachPoint : function(p) {
-            this.attachPoint.setTo(p.point);
+            /*if(this.attachPoint !== undefined) {
+                throw new Error("Attachpoint already set");
+            }*/
+            this.attachPoint = p;
+            this.updateFromPosition();
+
+        },
+
+        updateFromPosition : function() {
+            this.attachPoint.refresh();
+            //this.attachPoint.setToLerp(this.position.edge.start, this.position.edge.end, this.position.pct);
         },
 
         //========================================================
@@ -107,9 +121,10 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             // Set the force's position
             this.force.center.setToTransform(this.getWorldTransform());
         },
-        
+
         refresh : function() {
-        	
+            this.attachPoint.refresh();
+            //this.position.edge.setToTracer(this.attachPoint, this.position.pct, this.position.offset);
         },
 
         //========================================================
@@ -141,16 +156,25 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             var r = 10;
             var g = context.g;
 
+
             g.fill(.7, 1, 1);
             g.stroke(0);
             g.ellipse(0, 0, r * 1.4, r * 1.4);
             g.rect(0, -r / 2, -r * 3, r);
         },
+
         render : function(context) {
             var g = context.g;
 
             g.pushMatrix();
+            //this.attachPoint.drawCircle(g);
             this.attachPoint.applyTransform(g);
+
+            //ATTACHPOINT
+            //g.fill(.7, 2, 1);
+            //g.stroke(0);
+            //g.ellipse(this.attachPoint.x, this.attachPoint.y, 5, 5);
+
 
             this.renderDetails(context);
 
@@ -161,6 +185,30 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
                 pin.render(context);
             });
         },
+
+		onPickup : function(touch) {
+        	console.log("HI!");
+            console.log(this.name);
+            touch.follower.html(this.id);
+            touch.follower.show();
+        },
+        
+        onDrag : function(touch, overObj) {
+        	console.log("WHEEEE~");
+            console.log(overObj);
+            //console.log(touch);
+            //console.log(overObj);
+            var found = app.currentBot.getClosestEdgePosition(touch.screenPos);
+            console.log("Drag " + this.id + " over " + overObj + " at " + found);
+            if (found)
+                app.currentBot.addPart(this, found);
+        },
+        
+        onDrop : function(touch, overObj) {
+        	console.log("Bye!");
+            touch.follower.hide();
+            app.currentBot.clearTestPoints();
+            },
 
         //===========================================================
         // Configure Pins

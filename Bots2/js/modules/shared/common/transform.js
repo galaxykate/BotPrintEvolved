@@ -9,6 +9,7 @@ define(["./vector"], function(Vector) {
             this._super();
             this.rotation = 0;
             this.scale = 1;
+            this.className = "Transform";
 
         },
 
@@ -24,12 +25,14 @@ define(["./vector"], function(Vector) {
             this.setTo(0, 0, 0);
         },
 
+		//Transforms g to the 'this' space
         applyTransform : function(g) {
             this.translateTo(g);
             g.rotate(this.rotation);
             g.scale(this.scale);
         },
-
+        
+		//Sets the second param to the first, then transforms to 'this' space
         toWorld : function(localPos, worldPos) {
             worldPos.setTo(localPos);
             worldPos.rotate(this.rotation);
@@ -40,6 +43,7 @@ define(["./vector"], function(Vector) {
                 worldPos.rotation += this.rotation;
         },
 
+		//Sets the second param to the first, then transforms to 'this' space
         toLocal : function(worldPos, localPos) {
             localPos.setTo(worldPos);
             localPos.div(this.scale);

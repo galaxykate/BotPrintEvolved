@@ -86,6 +86,7 @@ define(["common", "./dtreeViz"], function(common, DTreeViz) {
         init : function(actuator, value) {
             this.actuator = actuator;
             this.value = value;
+            this.className = "Action";
             if (value === undefined) {
                 console.log("action.init() called with undefined value");
             }

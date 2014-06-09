@@ -8,10 +8,10 @@ define(["common"], function(common) {'use strict';
 
         init : function(parent) {
             var graph = this;
-            this.slots = 5;
             this.timesteps = 10;
             this.height = 90;
             this.width = 430;
+            this.className = "BarGraph";
             this.createWindow(parent);
 
         },
@@ -77,10 +77,13 @@ define(["common"], function(common) {'use strict';
             var spacing = 5;
 
             g.fill(0);
-            var t = this.test.currentIndex - 1;
-            g.text(this.test + " " + t, 20, 40);
+
             if (this.test) {
-                for (var i = 0; i < this.slots; i++) {
+                var t = this.test.currentIndex - 1;
+                g.text(this.test + " " + t, 20, 40);
+
+                var count = this.test.population.length;
+                for (var i = 0; i < count; i++) {
 
                     var bot = this.test.population[i];
 

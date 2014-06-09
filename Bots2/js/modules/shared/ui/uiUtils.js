@@ -18,6 +18,7 @@ define(["common", "processing", prefix + "panel", prefix + "controls", prefix + 
             ui.panelGroups[name] = this;
             this.name = name;
             this.panels = [];
+            this.className = "PanelGroup";
         },
 
         open : function() {
@@ -96,8 +97,9 @@ define(["common", "processing", prefix + "panel", prefix + "controls", prefix + 
             var ui = this;
             this.options = {};
             this.tuningValues = {};
-
+            this.className = "UI";
             this.panelGroups = {};
+            this.popupManagers = {};
 
             $.extend(this, context);
             this.addDevUI(context.uiOverlayDiv);
@@ -171,6 +173,8 @@ define(["common", "processing", prefix + "panel", prefix + "controls", prefix + 
                     holder.append(div);
                     devPanels.panels.push(div);
 
+                    ui[name + "Div"] = div;
+
                 });
 
                 var outputDiv = $("#dev_output");
@@ -192,6 +196,7 @@ define(["common", "processing", prefix + "panel", prefix + "controls", prefix + 
             this.output = new Output($("#debugOutput"));
 
         },
+
         addOption : function(key, defaultValue, onChange) {
             var ui = this;
 
@@ -199,7 +204,7 @@ define(["common", "processing", prefix + "panel", prefix + "controls", prefix + 
 
             });
 
-            var parent = this.panels.devOptions.div;
+            var parent = ui.optionsDiv;
             parent.append(optionDiv);
 
             var checkbox = $('<input />', {
@@ -219,6 +224,7 @@ define(["common", "processing", prefix + "panel", prefix + "controls", prefix + 
                 value : defaultValue,
                 checkbox : checkbox,
             };
+
             checkbox.prop('checked', defaultValue);
 
             checkbox.click(function() {
@@ -230,13 +236,15 @@ define(["common", "processing", prefix + "panel", prefix + "controls", prefix + 
             });
 
         },
+
         addTuningValue : function(key, defaultValue, minValue, maxValue, onChange) {
             var ui = this;
-            var parent = this.panels.devSliders.div;
+            var parent = ui.optionsDiv;
+
             var uiOnChange = function(key, value) {
                 ui.tuningValues[key].value = value;
                 onChange(key, value);
-            }
+            };
             var slider = addSlider(parent, key, defaultValue, minValue, maxValue, uiOnChange);
 
             ui.tuningValues[key] = {
@@ -245,13 +253,24 @@ define(["common", "processing", prefix + "panel", prefix + "controls", prefix + 
             };
 
         },
+
         addPopupManager : function(id, manager) {
             this.popupManagers[id] = manager;
             return manager;
         },
-        createSlider : function() {
 
-        }
+        createSlider : function(parent, key, defaultValue, minValue, maxValue, onChange) {
+
+            return addSlider(parent, key, defaultValue, minValue, maxValue, onChange);
+
+        },
+
+        /// Span styles
+        makeSpanColor : function(color, text) {
+            if (color.toCSS)
+                color = color.toCSS();
+            return '<span style="color:' + color + '">' + text + '</span>';
+        },
     });
 
     UI.Controls = Controls;

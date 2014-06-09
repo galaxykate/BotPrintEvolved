@@ -3,6 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<link rel="stylesheet" href="css/app.css">
+		<link rel="stylesheet" href="css/jqueryUI/absolution.css">
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Aequam memento rebus in arduis servare mentem</title>
 	</head>
@@ -12,26 +13,68 @@
 			<div id="panel_holder" class="appsize ">
 
 				<div id="arena_panel" class="panel appsize unselectable">
-					<div class="canvas_holder">
-						<canvas id="arena_canvas" class="main_canvas appsize"></canvas>
+					<div id="arena_canvas_holder" class="canvas_holder">
+						<canvas id="arena_canvas" class="main_canvas"></canvas>
 
 					</div>
+
+					<div id="population_panel">
+						<div id="current_bots" class="population_column">
+							Current generation
+							<div id="bot_list"></div>
+							<div id="population_options"></div>
+						</div>
+
+						<div id="mutating" class="population_column">
+							Mutate next generation
+
+							<div id="mutation_list"></div>
+
+							<button id="mutate" class ="go_button">
+								go!
+							</button>
+						</div>
+						<div id="breeding" class="population_column">
+							Breed next generation
+							<div id="parent0" class="parent_slot"></div>
+							<div id="parent1" class="parent_slot"></div>
+							<button id="breed" class ="go_button">
+								go!
+							</button>
+						</div>
+
+					</div>
+
 					<div id="arena_data" class="panel ui">
 						<div id="arena_column">
 
-							<div id="heuristics">
-								<select id="heuristic">
+							<div id="arena_simulation_column">
+								Settings
+								<div id="heuristics">
 
-								</select>
-								<button>
-									Evolve 10 generations
-								</button>
+									<select id="arena_type">
+
+									</select>
+									<select id="heuristic">
+
+									</select>
+									<button id="evolveMany">
+										Evolve 10 generations
+									</button>
+								</div>
+
 							</div>
 
-							<div id="arena_info" class="panel ui">
+							<div id="arena_settings_column">
+								<div id="arena_time_settings">
 
-								Info
+								</div>
+								<div id="arena_info" class="panel ui">
+
+									Info
+								</div>
 							</div>
+
 						</div>
 
 						<div id="scoreboard" class="panel ui">
@@ -39,18 +82,27 @@
 						</div>
 
 					</div>
-					<div id="population_palette" class="panel ui">
-						Population
 
-						<div id="population_current" class="panel ui"></div>
-						<div id="population_next" class="panel ui"></div>
+					<div id="arena_sidebar" class="panel ui">
+						<div id="population_palette" class="panel ui">
+							Population
+
+							<div id="population_current" class="panel ui"></div>
+							<div id="population_next" class="panel ui"></div>
+						</div>
+
+						<div id="arena_card" class="ui"></div>
+
 					</div>
+
 				</div>
 
 				<div id="edit_panel" class="panel appsize unselectable">
 					<div class="canvas_holder">
 						<canvas id="edit_canvas" class="main_canvas appsize "></canvas>
 					</div>
+
+					<div id="editor_card" class="ui"></div>
 					<div id="catalog" class="panel ui">
 
 						<div id="swatches">

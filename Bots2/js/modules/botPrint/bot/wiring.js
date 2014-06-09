@@ -25,7 +25,7 @@ define(["common", "graph"], function(common, Graph) {'use strict';
             this.idNumber = wireCount;
             this.idColor = common.KColor.makeIDColor(this.idNumber);
             wireCount++;
-
+			this.className = "Wire";
             this.start = start;
             this.end = end;
         },
@@ -65,6 +65,7 @@ define(["common", "graph"], function(common, Graph) {'use strict';
             //defaults
             _.extend(this, settings);
             this.pos = new common.Transform();
+            this.className = "Pin";
             //TODO: right now, pins sit on a random edge from their parent
             //or the attach point.
 

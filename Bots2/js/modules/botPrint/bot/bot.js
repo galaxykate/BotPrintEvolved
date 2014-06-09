@@ -4,7 +4,7 @@
  * @author Kate Compton
  */
 
-define(["common", "./chassis/chassis", "three", "./dna", "./catalog"], function(common, Chassis, THREE, DNA, catalog) {'use strict';
+define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], function(common, graph, Chassis, THREE, DNA, catalog) {'use strict';
 
     var animals = "okapi pheasant cobra amoeba capybara kangaroo chicken rooster boa-constrictor nematode sheep otter quail goat agoutis zebra giraffe yak corgi pomeranian rhinocerous skunk dolphin whale duck bullfrog okapi sloth monkey orangutan grizzly-bear moose elk dikdik ibis stork robin eagle hawk iguana tortoise panther lion tiger gnu reindeer raccoon opossum camel dromedary pigeon squirrel hamster leopard panda boar squid parakeet crocodile flamingo terrier cat wallaby wombat koala orangutan bonobo lion salamander".split(" ");
 
@@ -14,11 +14,12 @@ define(["common", "./chassis/chassis", "three", "./dna", "./catalog"], function(
     };
 
     var botCount = 0;
+
     var Bot = Class.extend({
         init : function(parent, mutationLevel) {
             this.idNumber = botCount;
             botCount++;
-
+            this.className = "Bot";
             this.childCount = 0;
 
             this.name = makeBotName();
@@ -28,28 +29,47 @@ define(["common", "./chassis/chassis", "three", "./dna", "./catalog"], function(
             //keeps track of the amount of times this bot has collided.
             this.amountOfCollisions = 0;
 
-            // Create DNA for the bot
-            if (parent) {
-                this.parent = parent;
-                this.dna = parent.dna.createMutant(mutationLevel);
-                this.parent.childCount++;
-                this.generation = parent.generation + 1;
-            } else {
-                this.dna = new DNA(10, 3);
-                this.generation = 0;
-            }
-
-            var colorGene = this.dna.genes[0];
-            this.idColor = new common.KColor(colorGene[0], colorGene[1] * .4 + .6, colorGene[2]);
             this.setMainChassis(new Chassis(this, undefined));
-
-            this.mainChassis.setFromDNA(this.dna.genes);
 
             for (var i = 0; i < 2; i++) {
                 var part = catalog.createPart();
-                var p = Vector.polar(90 * Math.random(), 100 * Math.random());
+                //The position should be set intelligently later on
+                var edge, pct, offset, thetaOffset;
+                edge = utilities.getRandom(this.mainChassis.path.edges);
+                pct = .5;
+                offset = 0;
+                thetaOffset = 0;
+                var p = new graph.Position(edge, pct, offset, thetaOffset);
                 this.addPart(part, p);
             }
+
+            // Create DNA for the bot
+            if (parent) {
+                this.parent = parent;
+                this.parent.childCount++;
+                this.generation = parent.generation + 1;
+                this.setFromDNA(parent.dna.createMutant(mutationLevel));
+            } else {
+                this.generation = 0;
+                this.setFromDNA(new DNA());
+            }
+
+            this.testPoints = [];
+        },
+
+        setFromDNA : function(dna) {
+            this.dna = dna;
+            var colorGene = this.dna.getData("color");
+            this.idColor = new common.KColor(colorGene[0], colorGene[1] * .4 + .6, colorGene[2]);
+
+            this.mainChassis.setFromDNA(this.dna);
+
+        },
+        
+        setColorDNA : function() {
+            this.dna.getData("color")[0] = this.idColor.h;
+            this.dna.getData("color")[1] = (this.idColor.s - .6) * 2.5;
+            this.dna.getData("color")[2] = this.idColor.b;
         },
 
         //======================================================================================
@@ -127,14 +147,24 @@ define(["common", "./chassis/chassis", "three", "./dna", "./catalog"], function(
             context.useChassisCurves = true;
             this.mainChassis.render(context);
 
+            for (var i = 0; i < this.testPoints.length; i++) {
+                g.fill(.9, 1, 1);
+                g.stroke(.9, .2, 1);
+                g.strokeWeight(2);
+                this.testPoints[i].drawCircle(g, 10);
+            }
+
+            // Non rotated
             if (context.drawNames) {
                 g.rotate(-this.transform.rotation);
                 g.text(this.name, 10, 10);
             }
+
             g.popMatrix();
 
             // draw globally positioned stuff
-            this.mainChassis.drawForces(context);
+            if (context.drawForces)
+                this.mainChassis.drawForces(context);
 
         },
 
@@ -150,18 +180,41 @@ define(["common", "./chassis/chassis", "three", "./dna", "./catalog"], function(
             return p.getDistanceTo(this.transform);
         },
 
+        getClosestEdgePosition : function(target) {
+            this.testPoints = [];
+            this.testPoints.push(target);
+
+            var path = this.mainChassis.path;
+            //    var found = path.getClosestEdgePosition(query.screenPos, 99);
+            //  path.compileAllEdgePositions(query.screenPos, this.testPoints);
+            var found = path.getClosestEdgePosition(target, 100, true);
+            if (found)
+                this.testPoints.push(found);
+            return found;
+        },
+
+        clearTestPoints : function() {
+            this.testPoints = [];
+        },
+
+        //Finds the closest 'touchable' to the query
         getTouchableAt : function(query) {
             if (query.not === this)
                 return undefined;
 
-            // localize the position
-            var localQuery = new Vector();
-            this.transform.toLocal(query.screenPos, localQuery);
+            if (query.searchChassis)
+                return this.mainChassis.getTouchableAt(query);
 
-            return {
-                obj : this,
-                dist : localQuery.magnitude(),
-            };
+            if (query.searchBots) {
+                // localize the position
+                var localQuery = new Vector();
+                this.transform.toLocal(query.screenPos, localQuery);
+
+                return {
+                    obj : this,
+                    dist : localQuery.magnitude(),
+                };
+            }
         },
 
         onTouchEnter : function() {
@@ -184,6 +237,15 @@ define(["common", "./chassis/chassis", "three", "./dna", "./catalog"], function(
                 overObj.addBot(this);
             }
             //  this.transform.setTo(touch.screenPos);
+        },
+
+        onClick : function(touch) {
+            console.log("CLICK " + this);
+        },
+
+        onDblClick : function(touch) {
+            console.log("DBLCLICK " + this);
+            app.editBot(this);
         },
 
         //=======================================================
@@ -232,6 +294,13 @@ define(["common", "./chassis/chassis", "three", "./dna", "./catalog"], function(
             localStorage.setItem("bot", saveData);
             console.log("Saving bot: " + saveData);
 
+        },
+
+        toDebugString : function() {
+            var s = this.name;
+            if (this.parent)
+                s += "(" + this.generation + ", child of " + this.parent + ")";
+            return s;
         },
 
         toString : function() {

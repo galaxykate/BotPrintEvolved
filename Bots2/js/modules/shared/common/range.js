@@ -9,6 +9,7 @@ define(["inheritance"], function(Inheritance) {
             this.min = 0;
             this.max = 1;
             this.defaultValue = .5;
+            this.className = "Range";
 
             // Translate all the context into this
             $.extend(this, context);

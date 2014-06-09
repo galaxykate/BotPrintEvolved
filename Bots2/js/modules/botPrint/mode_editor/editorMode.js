@@ -6,11 +6,15 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
     var realTime = new common.Time("realArenaTime");
 
     function initialize() {
+        console.log("Init Editor Mode");
         createProcessing();
-
         createPalettes();
+        // Create the botCard
+        app.editorCard = new app.createBotCard($("#editor_card"));
+
         toggleMode();
         isStarted = true;
+
     };
 
     //============================================================
@@ -109,33 +113,73 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
         });
 
         // Create a default object to be dropped on stuff
-        var obj = {
-            name : name,
-            onDrag : function(touch, overObj) {
-                console.log("Drag " + this.name + " over " + overObj);
 
-            },
+        var heldPart;
+        if (entry != null) {
+            var obj = {
+                name : name,
+                onDrag : function(touch, overObj) {
+                    if (!heldPart) {
+                        heldPart = entry.createPart();
+                    }
+                    var found = app.currentBot.getClosestEdgePosition(touch.screenPos);
+                    console.log("Drag " + this.name + " over " + overObj + " at " + found);
+                    if (found)
+                        app.currentBot.addPart(heldPart, found);
 
-            onPickup : function(touch) {
-                console.log("Picked up  " + this.name);
-                touch.follower.html(name);
-                touch.follower.show();
-                div.addClass("activated");
-            },
+                },
 
-            onDrop : function(touch, overObj) {
-                console.log("Drop " + this.name + " on " + overObj);
-                touch.follower.hide();
-                div.removeClass("activated");
+                onPickup : function(touch) {
+                    console.log("Picked up  " + this.name);
+                    touch.follower.html(name);
+                    touch.follower.show();
+                    div.addClass("activated");
+                },
 
-            }
-        };
+                onDrop : function(touch, overObj) {
+                    console.log("Drop " + this.name + " on " + overObj);
+                    touch.follower.hide();
+                    div.removeClass("activated");
+                    heldPart = undefined;
+                    app.currentBot.clearTestPoints();
+                }
+            };
+        } else {
+            var obj = {
+                name : name,
+                onDrag : function(touch, overObj) {
+                    var found = app.currentBot.getClosestEdgePosition(touch.screenPos);
+                    console.log("Drag " + this.name + " over " + overObj + " at " + found);
 
+                },
+
+                onPickup : function(touch) {
+                    console.log("Picked up  " + this.name);
+                    touch.follower.html(name);
+                    touch.follower.show();
+                    div.addClass("activated");
+                },
+
+                onDrop : function(touch, overObj) {
+                    console.log("Drop " + this.name + " on " + overObj);
+                    touch.follower.hide();
+                    div.removeClass("activated");
+                    heldPart = undefined;
+                    //Remove overObj form the Chassis
+                    if (overObj != undefined)
+                    {
+                    	overObj.remove();
+                    }
+                    app.currentBot.clearTestPoints();
+                }
+            };
+        }
         var world = {
             getTouchableAt : function() {
                 return obj;
             }
         };
+
         paletteDiv.append(div);
         controls.createTouchableWindow(div, name, world);
     };
@@ -152,7 +196,7 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
 
         var partsDiv = $("#parts_catalog");
         var chassisDiv = $("#chassis_catalog");
-
+        createSwatch("Remove Part", null, partsDiv);
         for (var i = 0; i < catalog.allParts.length; i++) {
             var part = catalog.allParts[i];
             createSwatch(part.name, part, partsDiv);
@@ -168,28 +212,52 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
                 switchChassisType(chassis);
             });
         });
+        catalog.allColor.forEach(function(color) {
+            var div = $("<div/>", {
+                html : color.name,
+                "class" : "panel"
+            });
+            chassisDiv.append(div);
+
+            div.click(function() {
+                //switchChassisType(chassis);
+                changeBotColor(color.h, color.s, color.b);
+            });
+        });
     };
 
     function switchChassisType(type) {
         console.log("Switch to chassis type " + type.name);
     };
+    
+    function changeBotColor(h, s, b) {
+        console.log(app.currentBot);
+        app.currentBot.idColor.h = h;
+        app.currentBot.idColor.s = (.4 * s) + .6;
+        app.currentBot.idColor.b = b;
+        app.currentBot.setColorDNA();
+    };
     //=========================================================================
     // Exposed
 
     function getTouchableAt(query) {
-        query.allowBots = true;
+        query.searchChassis = true;
         // return the closest bot
 
-        if (editChassisMode) {
+        if (!editChassisMode) {
             // Find the closest handle on the path
             query.allowHandles = true;
+            query.allowParts = false;
+            query.allowEdges = false;
         } else {
             // Editing parts
             query.allowParts = true;
+            query.allowEdges = true;
+            query.allowHandles = false;
 
         }
-        var chassis = app.currentBot.mainChassis;
-        var found = chassis.getTouchableAt(query).obj;
+        var found = app.currentBot.getTouchableAt(query).obj;
+
         return found;
 
     };
@@ -202,7 +270,15 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
         isOpen : function() {
             return isOpen;
         },
+
+        keyPress : function(key) {
+            switch(key) {
+
+                case 'p':
+                    break;
+            }
+        }
     };
     // interface (all other functions are hidden)
     return mode;
-});
+}); 

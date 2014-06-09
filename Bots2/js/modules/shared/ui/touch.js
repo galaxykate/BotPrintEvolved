@@ -25,8 +25,9 @@ define(["common", "mousewheel"], function(common, MOUSEWHEEL) {'use strict';
             this.screenPos = new Vector();
             this.worldPos = new Vector();
             this.tw = tw;
-            if (!tw)
-                console.log("Create window pos with undefined tw");
+            this.className = "WindowPos";
+            //if (!tw)
+            //  console.log("Create window pos with undefined tw");
 
         },
 
@@ -83,7 +84,7 @@ define(["common", "mousewheel"], function(common, MOUSEWHEEL) {'use strict';
             this.lastDown = undefined;
             this.lastDownRel = undefined;
             this.lastUp = undefined;
-
+            this.className = "Touch";
             this.follower = $("<div/>", {
                 id : "touch_attached",
                 html : "touch",
@@ -147,6 +148,25 @@ define(["common", "mousewheel"], function(common, MOUSEWHEEL) {'use strict';
         update : function() {
             if (this.tw)
                 this.setObjects();
+        },
+
+        click : function() {
+            this.down = false;
+            this.lastUp = this.clone("LastUp");
+            this.lastUp.t = app.getTime();
+
+            if (this.overObject && this.overObject.onClick) {
+                this.overObject.onClick(this);
+            }
+        },
+
+        dblClick : function() {
+            this.down = false;
+            this.lastUp = this.clone("LastUp");
+            this.lastUp.t = app.getTime();
+            if (this.overObject && this.overObject.onDblClick) {
+                this.overObject.onDblClick(this);
+            }
         },
 
         press : function() {

@@ -2,25 +2,10 @@
  * @author Kate Compton
  */
 
-define(["common", "./simulation", "../physics/arena", "./population", "./heuristic", "./scoreGraph"], function(common, Simulation, Arena, Population, heuristic, ScoreGraph) {'use strict';
-    var arenaInfoDiv = $("#arena_info");
-    var heuristics = heuristic.heuristics;
-    var currentHeuristic = heuristics.mostBlue;
+define(["common", "./simulation", "../physics/arena", "./population", "./heuristic", "./arenaUI"], function(common, Simulation, Arena, Population, heuristic, ui) {'use strict';
 
-    // Add all the heuristics to the menu
-    var heuristicSelect = $("#heuristic");
-
-    heuristics.forEach(function(heuristic) {
-        heuristicSelect.append($('<option>', {
-            value : heuristic.name,
-            text : heuristic.name,
-        }));
-
-    });
-
-    heuristicSelect.change(function() {
-        setCurrentHeuristic(this.value);
-    });
+    var populationMode = false;
+    var arenaType = "circle";
 
     var current = {
         population : undefined,
@@ -28,42 +13,44 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
         simulation : undefined,
     };
 
-    var graph = new ScoreGraph.BarGraph($("#scoreboard"));
-
     function initialize() {
+
+        app.heuristics = heuristic.heuristics;
+        app.currentHeuristic = heuristics.mostBlue;
+        app.simulationSpeed = 1;
+
+        console.log(app.heuristics);
+        console.log(app);
+
+        console.log("Init Arena Mode");
         createProcessing();
+        console.log(ui);
+        ui.initUI();
+        ui.initPopulationPanel();
+
+        // Create the botCard
+        app.arenaCard = new app.createBotCard($("#arena_card"));
 
         Population.initUI();
         // Create the graph
 
         isStarted = true;
 
-        // App-accessible functions
-        // Add a child to the next generation
-        app.addChildToNextGeneration = function(bot) {
-            current.population.addChild(bot, 1);
-        };
     };
 
     function startSimulation() {
         console.log("Start a new simulation");
         if (!current.simulation) {
-            if (!current.population)
-                current.population = new Population(5);
+            arenaMode.startNewSimulation(current.population);
 
-            current.population.updateUI();
-
-            current.arena = new Arena("rectangle");
-            current.simulation = new Simulation(current.population.bots, current.arena, heuristics);
-            current.simulation.start();
-            current.simulation.run(1, .04);
-            setCurrentHeuristic("mostBlue");
+        } else {
+            current.simulation.refreshBots();
         }
     };
 
     function setCurrentHeuristic(name) {
-        currentHeuristic = heuristics[name];
-        graph.setTest(current.simulation.getTest(name));
+        app.currentHeuristic = app.heuristics[name];
+        ui.graph.setTest(current.simulation.getTest(name));
     };
 
     //============================================================
@@ -71,17 +58,19 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
 
     var isStarted = false;
     var isOpen = false;
-    var div = $("#arena_panel");
+    var mainPanel = $("#arena_panel");
 
     function open() {
-        div.addClass("open");
+        mainPanel.addClass("open");
         isOpen = true;
-
+        console.log("ARENA CARD:");
+        console.log(app.arenaCard);
+		app.arenaCard.update();
         startSimulation();
     };
 
     function close() {
-        div.removeClass("open");
+        mainPanel.removeClass("open");
         isOpen = false;
 
     };
@@ -93,7 +82,7 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
     // Create processing and attach it to a canvas element
     function createProcessing() {
         var canvasDiv = $("#arena_canvas");
-        var arenaWindow = app.controls.createTouchableWindow(canvasDiv, "arena", mode);
+        var arenaWindow = app.controls.createTouchableWindow(canvasDiv, "arena", arenaMode);
 
         // attaching the sketchProc function to the canvas
         var processingInstance = new Processing(canvasDiv.get(0), function(g) {
@@ -103,10 +92,20 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
             arenaWindow.center = new Vector(w / 2, h / 2);
             g.colorMode(g.HSB, 1);
             g.ellipseMode(g.CENTER_RADIUS);
+
+            var last = 0;
             g.draw = function() {
                 if (isOpen) {
                     app.update();
-                    update(g.millis() * .001);
+
+                    if (!app.paused) {
+                        var ellapsed = last - g.millis();
+                        ellapsed = utilities.constrain(ellapsed, .01, .1);
+
+                        ellapsed *= app.simulationSpeed;
+
+                        update(ellapsed);
+                    }
 
                     g.background(.69, .72, 1);
                     g.pushMatrix();
@@ -121,6 +120,11 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
                     drawArena(context);
 
                     g.popMatrix();
+                    // Draw a shaded rectangle
+                    if (app.paused) {
+                        g.fill(0, 0, 0, .4);
+                        g.rect(0, 0, g.width, g.height);
+                    }
                 }
             };
         });
@@ -133,14 +137,10 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
 
     //=========================================================================
     // Updates and experiments
-    function update(t) {
+    function update(ellapsed) {
 
-        arenaInfoDiv.html("");
-        app.worldTime.setTo(t);
-        current.simulation.simStep( app.worldTime);
-
-        var s = current.simulation.testsToString();
-        arenaInfoDiv.append(s);
+        app.worldTime.addEllapsed(ellapsed);
+        current.simulation.simStep(app.worldTime);
 
         // Update the bar graph
 
@@ -157,20 +157,75 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
 
     };
 
-    // Add some set of bots
-    function addPopulation(population) {
+    // Accessible functions
 
-    };
-
-    var mode = {
+    var arenaMode = {
         initialize : initialize,
+
+        changeArenaType : function(type) {
+            arenaType = type;
+            // Create a new simulation
+            arenaMode.startNewSimulation(current.population, new Arena(arenaType));
+        },
+
+        // Simulate some large number of new generations
+        simulateGenerations : function(count, breedNextGen) {
+            if (!breedNextGen)
+                breedNextGen = function(winners) {
+                    // Mutate some winners
+                    current.population.mutants = winners;
+                    current.population = current.population.createNextGenerationFromMutants();
+                };
+
+            for (var i = 0; i < count; i++) {
+                console.log("Simulate generation " + count);
+                current.population.debugOutput();
+                arenaMode.startNewSimulation(current.population);
+                // Run this simulation
+
+                var winners = current.simulation.getWinners();
+                console.log("Winners: " + utilities.arrayToString(winners));
+                var nextGen = breedNextGen(winners);
+            }
+        },
+
+        startNewSimulation : function(population, arena) {
+
+            if (arena)
+                current.arena = arena;
+            if (population)
+                current.population = population;
+            else
+                current.population = current.population = new Population(5);
+
+            if (!current.arena)
+                current.arena = new Arena(arenaType);
+
+            current.simulation = new Simulation(current.population.bots, current.arena, app.heuristics);
+            current.simulation.start();
+            current.simulation.run(1, .04);
+        },
+
         getTouchableAt : getTouchableAt,
         open : open,
         close : close,
         isOpen : function() {
             return isOpen;
         },
+
+        keyPress : function(key) {
+            switch(key) {
+
+                case 'p':
+                    ui.togglePopulationMode();
+                    break;
+                case 'd':
+                    ui.toggleDevMode();
+                    break;
+
+            }
+        }
     };
     // interface (all other functions are hidden)
-    return mode;
+    return arenaMode;
 });

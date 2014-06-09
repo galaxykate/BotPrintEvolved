@@ -4,7 +4,6 @@
 define(["common", "../bot/bot"], function(common, Bot) {'use strict';
     var MAX_BOTS = 6;
     var MIN_BOTS = 5;
-    var usePopulationButtons = false;
 
     var generation = 0;
 
@@ -37,20 +36,21 @@ define(["common", "../bot/bot"], function(common, Bot) {'use strict';
 
     var Population = Class.extend({
 
-        init : function(randomCount) {
+        init : function(randomCount, previous) {
 
-            console.log("NEW POPULATION");
             this.generation = generation;
             generation++;
+            console.log("NEW POPULATION " + randomCount + ", generation " + this.generation);
             // Create some bots
             this.bots = [];
-
+            this.className = "Population";
             for (var i = 0; i < randomCount; i++) {
                 var b = new Bot();
                 this.bots.push(b);
             }
 
-            this.nextGeneration = [];
+            this.parents = [];
+            this.mutants = [];
         },
 
         add : function(bot) {
@@ -68,192 +68,103 @@ define(["common", "../bot/bot"], function(common, Bot) {'use strict';
 
         //============================================================
         //============================================================
+        // Create population list
 
-        // Add all these bots to the current population ui
-        updateUI : function() {
+        // Create divs for choosing the next generation
+        createPopulationDivs : function() {
+            var botList = $("#bot_list");
+            botList.html("");
+            var mutationList = $("#mutation_list");
+            mutationList.html("");
             var population = this;
-            var popHolder = $("#population_current");
+            population.mutants = [];
 
-            // Clear it
-            popHolder.html("");
+            var createBotDiv = function(bot) {
+                var name = "Random bot";
+                if (bot)
+                    name = bot.name;
+
+                var div = $("<div/>", {
+                    "class" : "population_bot",
+                    text : name,
+                });
+                div.bot = bot;
+                return div;
+            };
+
+            var addMutant = function(bot) {
+                var div = createBotDiv(bot);
+                mutationList.append(div);
+                div.click(function() {
+                    div.remove();
+
+                    // Remove it from the mutants list;
+                    var index = population.mutants.indexOf(bot);
+                    if (index > -1) {
+                        population.mutants.splice(index, 1);
+                    }
+                });
+
+                population.mutants.push(bot);
+
+                console.log(population.mutants);
+            };
 
             $.each(this.bots, function(index, bot) {
-
                 // Make various holders
-                var div = $("<div/>", {
-                    "class" : "population_info"
-                });
-
-                var titleDiv = $("<div/>", {
-                    html : bot.name,
-                    "class" : "population_title"
-                });
-
-                var detaildiv = $("<div/>", {
-                    html : "this bot is awesome",
-                    "class" : "population_details"
-                });
-
-                popHolder.append(div);
-                div.append(titleDiv);
-                div.append(detaildiv);
-
-                detaildiv.hide();
-
-                // Mouse interactions for this population entry:
-                //  select and deselect on entry/exit, click to edit
-
-                div.mouseenter(function() {
-                    detaildiv.show();
-                    bot.select();
-                });
-
-                div.mouseleave(function() {
-                    detaildiv.hide();
-                    bot.deselect();
-                });
-
+                var div = createBotDiv(bot);
+                botList.append(div);
                 div.click(function() {
-                    app.editBot(bot);
+                    addMutant(bot);
                 });
 
             });
-        },
 
-        addPopulationButtons : function() {
-            if (usePopulationButtons) {
-                var popControlDiv = $("<div/>", {
-                    html : "",
-                    "class" : "population_spawnbuttons"
-                });
-                div.append(popControlDiv);
-
-                var addButton = $("<button/>", {
-                    html : "+",
-                    "class" : "population_button"
-                });
-
-                addButton.click(function() {
-                    console.log("click to populate " + bot);
-                    population.addChild(bot);
-                    return false;
-                });
-
-                popControlDiv.append(addButton);
-            }
-
-        },
-        createNextGenerationFromWinners : function(winners) {
-            this.clearNextGeneration();
-            for (var i = 0; i < MAX_BOTS; i++) {
-                // Pick the bot (weighted to winners, with some randomness)
-                var which = Math.floor((.06 + .1 * Math.random()) * Math.pow(i + 1, 2));
-                console.log("Create child of winner " + which + " " + winners[which].bot.name + " " + winners[which].score);
-                this.addChild(winners[which].bot, i % 3);
-            }
-            app.spawnNextGeneration();
-        },
-        clearNextGeneration : function() {
-            var popHolder = $("#population_next");
-            popHolder.html("");
-            this.nextGeneration = [];
-        },
-
-        addChild : function(bot, mutationLevel) {
-            if (isNaN(mutationLevel))
-                mutationLevel = 0;
-            if (this.nextGeneration.length < MAX_BOTS) {
-                var child = {
-                    parent : bot,
-                    mutationLevel : mutationLevel,
-                };
-
-                this.nextGeneration.push(child);
-                this.addChildHTML(child);
-            } else
-
-                console.log("Can't add " + bot + " to next generation, already have " + MAX_BOTS + " bots");
-
-        },
-
-        // Add all these bots to the current population ui
-        addChildHTML : function(child) {
-            var population = this;
-            var bot = child.parent;
-
-            var popHolder = $("#population_next");
+            // Make the random bot
             var div = $("<div/>", {
-
-                "class" : "population_info"
+                "class" : "population_bot",
+                text : "Random",
             });
-
-            var popControlDiv = $("<div/>", {
-                html : "",
-                "class" : "population_spawnbuttons"
+            botList.append(div);
+            div.click(function() {
+                addMutant();
             });
-
-            var titleDiv = $("<div/>", {
-                html : bot.name,
-                "class" : "population_title"
-            });
-
-            popHolder.append(div);
-            div.append(titleDiv);
-            div.append(popControlDiv);
-
-            var addButton = $("<button/>", {
-                html : child.mutationLevel,
-                "class" : "population_button"
-            });
-
-            var removeButton = $("<button/>", {
-                html : "-",
-                "class" : "population_button"
-            });
-
-            addButton.click(function() {
-                child.mutationLevel = (child.mutationLevel + 1) % 4;
-                addButton.html(child.mutationLevel);
-
-            });
-
-            removeButton.click(function() {
-                div.remove();
-
-                var index = population.nextGeneration.indexOf(child);
-
-                if (index > -1) {
-                    population.nextGeneration.splice(index, 1);
-                }
-            });
-
-            popControlDiv.append(addButton);
-            popControlDiv.append(removeButton);
-
         },
 
-        //============================================================
-        //============================================================
+        createNextGenerationFromMutants : function() {
+            this.nextGeneration = new Population(0, this);
+            for (var i = 0; i < this.mutants.length; i++) {
+                var child;
+                if (this.mutants[i])
+                    child = this.mutants[i].createChild({
+                        mutationLevel : 2
+                    });
+                else
+                    child = new Bot();
 
-        createNextGeneration : function() {
+                this.nextGeneration.add(child);
 
-            console.log("Create generation " + this.generation);
-            var population = new Population(0);
-            $.each(this.nextGeneration, function(index, instructions) {
-                // For each child in the list, create an offspring of that parent
-                var child = instructions.parent.createChild(instructions);
-                population.add(child);
-            });
+            }
 
-            population.fillToMin();
+            console.log("" + this.nextGeneration);
 
-            population.nextGeneration = this.nextGeneration;
-            return population;
-
+            return this.nextGeneration;
         },
-        appendHTML : function() {
 
-        }
+        toString : function() {
+            var s = "Population " + this.generation + ", " + this.bots.length + " bots: ";
+            for (var i = 0; i < this.bots.length; i++) {
+                s += this.bots[i].toDebugString() + ", ";
+            }
+            return s;
+        },
+
+        debugOutput : function() {
+            console.log("Population " + this.generation + ", " + this.bots.length + " bots: ");
+            for (var i = 0; i < this.bots.length; i++) {
+                console.log("   " + this.bots[i].toDebugString());
+            }
+        },
     });
 
     Population.initUI = initUI;

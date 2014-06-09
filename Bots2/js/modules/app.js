@@ -2,7 +2,9 @@
  * @author Kate Compton
  */
 
-define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./botPrint/mode_editor/editorMode"], function(common, UI, arenaMode, editMode) {
+var app;
+
+define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./botPrint/mode_editor/editorMode", "./botPrint/botCard"], function(common, UI, arenaMode, editMode, BotCard) {
 
     var App = Class.extend({
 
@@ -20,12 +22,15 @@ define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./b
 
             // Create the modes
             this.arenaMode = arenaMode;
-            this.arenaMode.initialize();
-            this.arenaMode.open();
             this.editMode = editMode;
+            this.arenaMode.initialize();
             this.editMode.initialize();
+            this.className = "App";
+
+            this.arenaMode.open();
             this.editMode.close();
 
+            app.toggleMode();
             app.toggleMode();
             app.ui.toggleDevMode();
 
@@ -46,7 +51,21 @@ define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./b
                         case 'm':
                             app.toggleMode();
                             break;
+
+                        case 'space' :
+                            app.paused = !app.paused;
+                            break;
+
+                        default:
+
                     }
+
+                    // pass to the mode to handle
+                    if (app.arenaMode.isOpen())
+                        app.arenaMode.keyPress(key);
+                    else
+                        app.editMode.keyPress(key);
+
                 }
             });
 
@@ -64,10 +83,20 @@ define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./b
 
         },
 
+        //========================================================
+        // Bot selection
+
+        createBotCard : function(parentDiv) {
+            return new BotCard(parentDiv);
+        },
+
         setCurrentBot : function(bot) {
             console.log("Set bot ", bot);
             // load into the bot card
             app.currentBot = bot;
+            app.arenaCard.update();
+            app.editorCard.update();
+
         },
 
         editBot : function(bot) {

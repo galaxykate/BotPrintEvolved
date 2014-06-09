@@ -24,7 +24,7 @@ define(["./vector"], function(Vector) {
                 this.w = 0;
                 this.h = 0;
             }
-
+			this.className = "Rect";
         },
 
         clone : function() {

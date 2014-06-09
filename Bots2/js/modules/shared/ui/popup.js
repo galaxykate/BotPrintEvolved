@@ -41,7 +41,7 @@ define(["common"], function(COMMON) {'use strict';
             popupCount++;
 
             // Default values:
-
+			this.className = "Popup";
             this.id = "popup" + this.idNumber;
             this.title = "";
             this.html = "";
@@ -177,7 +177,7 @@ define(["common"], function(COMMON) {'use strict';
 
     var PopupManager = Class.extend({
         init : function(context) {
-
+			this.className = "PopupManager";
             // Default values:
             this.maxPopups = 0;
             this.divCount = 0;
@@ -252,7 +252,7 @@ define(["common"], function(COMMON) {'use strict';
     var NoticeBar = PopupManager.extend({
         init : function(context) {
             this._super(context);
-
+			this.className = "NoticeBar";
             // test
             // this.testPopupChain();
             this.testCount = 0;
@@ -287,7 +287,7 @@ define(["common"], function(COMMON) {'use strict';
             var popup = this;
             this.div = $("#" + divName);
             this.div.addClass(closedStyle);
-
+			this.className = "CenterPopup";
             this.openStyle = openStyle;
             this.closedStyle = closedStyle;
             this.div.click(function() {

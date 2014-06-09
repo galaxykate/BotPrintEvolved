@@ -13,7 +13,7 @@ define(["common"], function(common) {'use strict';
             this.active = false;
             this.transform = new common.Transform();
             this.localPos = new Vector();
-
+			this.className = "DrawingWindow";
         },
 
         setProcessing : function(processing) {

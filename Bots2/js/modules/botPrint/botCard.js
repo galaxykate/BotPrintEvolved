@@ -7,6 +7,7 @@ define(["common"], function(common) {'use strict';
     var BotCard = Class.extend({
 
         init : function(parentHolder) {
+            console.log("CREATE BOT CARD");
             var card = this;
 
             // Make all the divs
@@ -16,9 +17,24 @@ define(["common"], function(common) {'use strict';
 
             this.title = $("<div/>", {
                 html : "unknown bot",
+                contentEditable : true,
+                id : "someID",
                 "class" : "bot_title"
             });
-
+            
+            
+            this.title.keypress(function(e)
+            {
+            	e.stopPropagation();
+            });
+            
+            this.title.keyup(function(e)
+            {
+            	e.stopPropagation();
+                console.log(this.innerText);
+                card.bot.name = this.innerText;
+            });
+            
             this.botName = $("<span/>", {
                 html : "unknown author",
                 "class" : "bot_name"
@@ -36,12 +52,45 @@ define(["common"], function(common) {'use strict';
                 "class" : "bot_thumbnail",
 
             });
-
+			this.className = "BotCard";
             parentHolder.append(this.mainDiv);
 
             this.mainDiv.append(this.title);
             this.mainDiv.append(this.thumbnail);
             this.mainDiv.append(this.details);
+
+            var spawnButton = $("<button/>", {
+                html : "spawn"
+            });
+            var mutateButton = $("<button/>", {
+                html : "mutate"
+            });
+            var mutateMoreButton = $("<button/>", {
+                html : "mutateMore"
+            });
+
+            this.dnaDiv = $("<div/>", {
+                html : "DNA",
+                "class" : "panel"
+            });
+            this.mainDiv.append(this.dnaDiv);
+
+            this.dnaDiv.append(spawnButton);
+            this.dnaDiv.append(mutateButton);
+            this.dnaDiv.append(mutateMoreButton);
+
+            spawnButton.click(function() {
+                card.bot.dna.createMutant();
+            });
+
+            mutateButton.click(function() {
+                card.bot.dna.mutate(.3);
+                card.bot.setFromDNA(card.bot.dna);
+            });
+            mutateMoreButton.click(function() {
+                card.bot.dna.mutate(2);
+                card.bot.setFromDNA(card.bot.dna);
+            });
 
             // Add processing
             var div = this.thumbnail;
@@ -60,22 +109,26 @@ define(["common"], function(common) {'use strict';
                         g : g,
                         centerBot : true,
                         useChassisCurves : true,
-
                     };
+
                     g.pushMatrix();
                     g.translate(g.width / 2, g.height / 2);
-                    g.scale(.8);
-                    if (card.bot) {
-                        card.bot.render(context);
-                    }
                     g.popMatrix();
-                }
+
+                    if (card.bot) {
+                        g.pushMatrix();
+                        g.translate(4, 10);
+                        card.bot.dna.draw(g);
+                        g.popMatrix();
+                    }
+
+                };
             });
 
             // Interactions
             this.mainDiv.dblclick(function() {
                 if (card.bot) {
-                    console.log("Click bot card for " + card.bot.name)
+                    console.log("Click bot card for " + card.bot.name);
 
                     //   app.setCurrentBot(this.bot);
                     app.toggleMainMode();
@@ -85,16 +138,28 @@ define(["common"], function(common) {'use strict';
 
         },
 
-        setBot : function(bot) {
-            this.bot = bot;
-            this.title.html(this.bot.name);
+        open : function() {
+            this.mainDiv.show();
 
-            if (this.bot.parent) {
-                this.details.html("Child " + this.bot.parent.childCount + " of " + this.bot.parent.name);
+        },
 
-                this.details.append("<br>Generation " + this.bot.generation);
-            } else
-                this.details.html("First gen bot");
+        close : function() {
+            this.mainDiv.hide();
+        },
+
+        update : function() {
+            this.bot = app.currentBot;
+            if (this.bot != undefined)
+            {
+              this.title.html(this.bot.name);
+
+              if (this.bot.parent) {
+                  this.details.html("Child " + this.bot.parent.childCount + " of " + this.bot.parent.name);
+
+                  this.details.append("<br>Generation " + this.bot.generation);
+              } else
+                  this.details.html("First gen bot");
+            }
 
         },
     });

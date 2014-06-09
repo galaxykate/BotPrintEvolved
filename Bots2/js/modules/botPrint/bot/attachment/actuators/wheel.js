@@ -11,6 +11,7 @@ define(["common", "./actuator"], function(common, Actuator) {'use strict';
             this.decay = .5;
             this.id = "Wheel" + this.idNumber;
             this.spinAngle = 0;
+            this.className = "Wheel";
         },
 
         actuate : function(value) {

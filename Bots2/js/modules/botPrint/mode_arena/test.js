@@ -8,12 +8,13 @@ define(["common", "../physics/arena"], function(common, Arena) {'use strict';
     var Test = Class.extend({
 
         init : function(population, heuristic) {
-            console.log("Make test from heuristic: " + heuristic.name + " for " + population.length + " bots");
+           // console.log("Make test from heuristic: " + heuristic.name + " for " + population.length + " bots");
             this.resultsOverTime = [];
 
             this.population = population;
             this.heuristic = heuristic;
             this.currentIndex = 0;
+            this.className = "Test";
             for (var i = 0; i < this.population.length; i++) {
                 this.resultsOverTime[i] = [];
             }

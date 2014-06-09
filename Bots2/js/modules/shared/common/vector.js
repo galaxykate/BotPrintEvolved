@@ -9,6 +9,7 @@ define(["three", "inheritance", "box2D"], function(THREE, Inheritance, Box2D) {
     Vector = Class.extend({
 
         init : function(x, y, z) {
+        	this.className = "Vector";
             // actually another vector, clone it
             if (x === undefined) {
                 this.x = 0;
@@ -89,6 +90,7 @@ define(["three", "inheritance", "box2D"], function(THREE, Inheritance, Box2D) {
             this.y = v.y * m;
             this.z = v.z * m;
         },
+        
         setToLerp : function(v0, v1, m) {
             var m1 = 1 - m;
             this.x = v0.x * m1 + v1.x * m;
