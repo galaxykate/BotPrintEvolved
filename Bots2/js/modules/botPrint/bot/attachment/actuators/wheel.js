@@ -123,6 +123,7 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
             	this.attachPoint.rotation = this.transform.rotation;
             }
             
+             app.log("Rotation at render: " + this.attachPoint.rotation);
             g.pushMatrix();
             this.attachPoint.applyTransform(g);
 			

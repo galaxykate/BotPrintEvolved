@@ -192,6 +192,11 @@ define(["jQuery", "box2D", "common", "./boxDebugDraw"], function(JQUERY, Box2D, 
                 console.log(this.scale);
                 console.log(bpos.get_x() + ", " + bpos.get_y());
             }
+            
+            if(body.parentObject.type === "wheel"){
+            	app.log("Rotation after reading into transform: " + transform.rotation);	
+            }
+            
         },
 
 		/**
