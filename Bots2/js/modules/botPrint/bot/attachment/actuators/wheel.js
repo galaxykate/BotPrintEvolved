@@ -111,10 +111,6 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
             this.force.setToPolar(2200 * this.actuation, p.rotation);
             this.spinAngle += time.ellapsed * this.actuation;
             
-            //and set the attach point direction
-            if(this.transform.rotation !== undefined){
-            	this.attachPoint.rotation = this.transform.rotation;
-            }
         },
         
         /**

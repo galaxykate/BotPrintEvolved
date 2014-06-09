@@ -296,6 +296,7 @@ define(["jQuery", "box2D", "common", "./boxDebugDraw"], function(JQUERY, Box2D, 
             var bodyDef = new Box2D.b2BodyDef();
             bodyDef.set_type(Box2D.b2_dynamicBody);
             bodyDef.set_angularDamping(3);
+            
             //iterates though all the objects i.e bots
             $.each(objects, function(index, obj) {
 
