@@ -223,6 +223,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                     fixtureDef.set_shape(shape);
                     // magic?
                     body.CreateFixture(fixtureDef);
+                    Box2D.destroy(fixtureDef);
                 }),
 
                 // set the parent object
@@ -233,6 +234,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                 boxWorld.bodies.push(body);
 
             });
+            Box2D.destroy(bodyDef);
         },
 
 		/**
@@ -332,7 +334,6 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
             // Read box2d data into JS objects
             $.each(this.bodies, function(index, body) {
-
                 boxWorld.readIntoTransform(body, body.parentObject.transform);
             });
 
@@ -380,7 +381,6 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             Box2D.destroy(forceDir);
         }
     });
-
     return BoxWorld;
 
 });
