@@ -178,7 +178,9 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             if (!isNaN(transform.rotation))
                 angle = transform.rotation;
             // magic?
-            body.SetTransform(this.toB2Vec(transform), angle);
+            var b2dRep = this.toB2Vec(transform);
+            body.SetTransform(b2dRep, angle);
+            Box2D.destroy(b2dRep);
         },
 
 		/**
@@ -372,8 +374,10 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
                 //  b.ApplyLinearImpulse(force, offset);
                 // b.ApplyAngularImpulse(10000.0, true);
-
             }
+            
+            Box2D.destroy(forceOffset);
+            Box2D.destroy(forceDir);
         }
     });
 
