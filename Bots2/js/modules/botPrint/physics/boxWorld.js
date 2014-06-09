@@ -178,7 +178,9 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             if (!isNaN(transform.rotation))
                 angle = transform.rotation;
             // magic?
-            body.SetTransform(this.toB2Vec(transform), angle);
+            var b2dRep = this.toB2Vec(transform);
+            body.SetTransform(b2dRep, angle);
+            Box2D.destroy(b2dRep);
         },
 
 		/**
@@ -221,6 +223,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                     fixtureDef.set_shape(shape);
                     // magic?
                     body.CreateFixture(fixtureDef);
+                    Box2D.destroy(fixtureDef);
                 }),
 
                 // set the parent object
@@ -231,6 +234,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                 boxWorld.bodies.push(body);
 
             });
+            Box2D.destroy(bodyDef);
         },
 
 		/**
@@ -330,7 +334,6 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
             // Read box2d data into JS objects
             $.each(this.bodies, function(index, body) {
-
                 boxWorld.readIntoTransform(body, body.parentObject.transform);
             });
 
@@ -372,11 +375,12 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
                 //  b.ApplyLinearImpulse(force, offset);
                 // b.ApplyAngularImpulse(10000.0, true);
-
             }
+            
+            Box2D.destroy(forceOffset);
+            Box2D.destroy(forceDir);
         }
     });
-
     return BoxWorld;
 
 });
