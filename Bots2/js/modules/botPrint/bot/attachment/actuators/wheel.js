@@ -110,6 +110,11 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
             //try to lock the wheel down
             this.force.setToPolar(2200 * this.actuation, p.rotation);
             this.spinAngle += time.ellapsed * this.actuation;
+            
+            //and set the attach point direction
+            if(this.transform.rotation !== undefined){
+            	this.attachPoint.rotation = this.transform.rotation;
+            }
         },
         
         /**
@@ -117,6 +122,10 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
          */
         render : function(context) {
             var g = context.g;
+            
+            if(this.transform.rotation !== undefined){
+            	this.attachPoint.rotation = this.transform.rotation;
+            }
             
             g.pushMatrix();
             this.attachPoint.applyTransform(g);
