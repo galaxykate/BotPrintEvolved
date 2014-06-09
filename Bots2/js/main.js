@@ -15,7 +15,7 @@ require.config({
         'mousewheel' : 'vendor/jquery.mousewheel',
         'voronoi' : 'vendor/rhill-voronoi-core',
         'underscore' : 'vendor/underscore',
-        'box2D' : 'vendor/box2d',
+        'box2D' : 'vendor/Box2d',
         'box2DHelpers' : 'vendor/embox2d-helpers',
 
         'processing' : 'vendor/processing-1.4.1',

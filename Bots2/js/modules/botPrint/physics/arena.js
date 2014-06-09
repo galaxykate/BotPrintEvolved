@@ -193,6 +193,9 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
                     total : 0,
                     individual : bot,
                 };
+                
+                console.log("Checking to see if a post-hoc transform swap is what is driving me up a wall...");
+                bot.updateSubTransforms();
             });
             
             arena.boxWorld.addObjects(population, 2.0, 0.0, 0.0);

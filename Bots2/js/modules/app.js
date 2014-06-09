@@ -2,7 +2,7 @@
  * @author Kate Compton
  */
 
-define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./botPrint/mode_editor/editorMode", "./botPrint/botCard"], function(common, UI, arenaMode, editMode, BotCard) {
+define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./botPrint/mode_editor/editorMode", "./botPrint/mode_debug/debugMode", "./botPrint/botCard"], function(common, UI, arenaMode, editMode, debugMode, BotCard) {
 
     var App = Class.extend({
 
@@ -21,12 +21,15 @@ define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./b
             // Create the modes
             this.arenaMode = arenaMode;
             this.editMode = editMode;
+            this.debugMode = debugMode;
             this.arenaMode.initialize();
             this.editMode.initialize();
+            this.debugMode.initialize(this.arenaMode.currentState);
             this.className = "App";
 
             this.arenaMode.open();
             this.editMode.close();
+            this.debugMode.close();
 
             app.toggleMode();
             app.toggleMode();
@@ -49,7 +52,11 @@ define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./b
                         case 'm':
                             app.toggleMode();
                             break;
-
+                            
+                        case 'b':
+                        	app.toggleDebugMode();
+							break;
+							
                         case 'space' :
                             app.paused = !app.paused;
                             break;
@@ -61,8 +68,10 @@ define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./b
                     // pass to the mode to handle
                     if (app.arenaMode.isOpen())
                         app.arenaMode.keyPress(key);
-                    else
+                    else if (app.editMode.isOpen())
                         app.editMode.keyPress(key);
+                    else
+                    	app.debugMode.keyPress(key);
 
                 }
             });
@@ -74,11 +83,21 @@ define(["common", "./shared/ui/uiUtils", "./botPrint/mode_arena/arenaMode", "./b
                 app.arenaMode.close();
                 app.editMode.open();
 
-            } else {
+            }else if(app.editMode.isOpen()){
                 app.arenaMode.open();
                 app.editMode.close();
+            }else{
+            	app.debugMode.close();
+            	app.arenaMode.open();
             }
 
+        },
+        
+        toggleDebugMode : function() {
+        	if(app.arenaMode.isOpen()){
+        		app.arenaMode.close();
+        		app.debugMode.open();
+        	}
         },
 
         //========================================================

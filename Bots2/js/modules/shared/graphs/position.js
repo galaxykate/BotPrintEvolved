@@ -11,7 +11,6 @@ define(["common"], function(common) {
             this.offset = isNaN(offset) ? 0 : offset;
             this.thetaOffset = isNaN(thetaOffset) ? 0 : thetaOffset;
             this.refresh();
-            this.className = "Position";
         },
 
         refresh : function() {

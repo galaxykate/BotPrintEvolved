@@ -62,10 +62,13 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
             
             this.attachPoint = p;
             this.updateFromPosition();
-            this.transform.setTo(this.attachPoint);
+            //this.transform = this.chassis.bot.transform;
+             
+            console.log("Transform location at setAttachPoint():");
+            console.log(this.transform.x + ", " + this.transform.y);
             
-            //console.log("Transform location at setAttachPoint():");
-            //console.log(this.transform.x + ", " + this.transform.y);
+            console.log("Attach point: ");
+            console.log(this.attachPoint.x + ", " + this.attachPoint.y);
             
             if (p.rotation){
             	//this.attachPoint.rotation = p.rotation;
@@ -96,9 +99,15 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
         update : function(time) {
             this._super(time);
 
+			//Going to log both the transform and attachpoint position here.  I'll also log the transformation to the attach point
+			//app.log(this.id + " transform: " + this.transform.x + ", " + this.transform.y);
+			//app.log(this.id + " attach point: " + this.attachPoint.x + ", " + this.attachPoint.y);
+			//app.log(this.id + " world transform: " + this.getWorldTransform().x + ", " + this.getWorldTransform().y);
+			//app.log(this.id + " bot transform: " + this.getBotTransform().x + ", " + this.getBotTransform().y);
             // Set the force's position
             var p = this.getWorldTransform();
             
+            //try to lock the wheel down
             this.force.setToPolar(2200 * this.actuation, p.rotation);
             this.spinAngle += time.ellapsed * this.actuation;
         },
@@ -108,13 +117,14 @@ define(["common", "./actuator", "graph"], function(common, Actuator, Graph) {'us
          */
         render : function(context) {
             var g = context.g;
-
+            
             g.pushMatrix();
             this.attachPoint.applyTransform(g);
-
+			
             this.renderDetails(context);
             g.popMatrix();
-
+			//this.attachPoint.drawCircle(g);
+			//this.transform.drawCircle(g);
             //render pins
             $.each(this.pins, function(index, pin) {
                 pin.render(context);

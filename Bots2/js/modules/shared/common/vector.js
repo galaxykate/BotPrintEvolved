@@ -311,6 +311,7 @@ define(["three", "inheritance", "box2D"], function(THREE, Inheritance, Box2D) {
         },
 
         drawCircle : function(g, radius) {
+        	//app.log("Pos: " + "("+ this.x + ", " + this.y +")");
             g.ellipse(this.x, this.y, radius, radius);
         },
 

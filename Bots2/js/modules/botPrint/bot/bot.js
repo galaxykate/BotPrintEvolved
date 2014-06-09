@@ -111,6 +111,10 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
             this.mainChassis = chassis;
         },
 
+		updateSubTransforms : function(){
+			this.mainChassis.updateAttachmentTransforms();
+		},
+		
         //-------------------------------------------
         // View stuff - will probably end up in it's own file
         // render this bot in a 2D frame
@@ -120,13 +124,10 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
         },
 
         update : function(time) {
-
+			//app.log(this.name + " world transform: " + this.getWorldTransform().x + ", " + this.getWorldTransform().y);
             this.mainChassis.update(time);
-
             this.angularVelocity = (this.transform.rotation - this.lastTransform.rotation) / time.ellapsed;
-
             this.lastTransform.setToTransform(this.transform);
-
         },
 
         render : function(context) {

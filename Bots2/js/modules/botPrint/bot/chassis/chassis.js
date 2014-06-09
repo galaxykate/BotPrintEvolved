@@ -56,7 +56,6 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
 		// Update
 
 		update : function(time) {
-
 			// Refresh if stale (ie, something has changed)
 			if (this.isStale) {
 				this.refresh();
@@ -170,7 +169,7 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
 					rVal = i;
 				}
 			}
-			return rVal
+			return rVal;
 		},
 
 		removePart : function(part) {
@@ -189,18 +188,27 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
 		},
 
 		transformToGlobal : function(local, global) {
-
 			this.bot.transform.toWorld(local, global);
-
+		},
+		
+		updateAttachmentTransforms : function(){
+			this.parts.forEach(function(part){
+				if(part.transform !== undefined){
+					part.transform = part.getWorldTransform();
+					if(part.attachPoint !== undefined && part.attachPoint.rotation !== undefined){
+						part.transform.rotation = part.attachPoint.rotation;
+					}
+				}
+			});
 		},
 		//========================================================================
 		//========================================================================
 		// Drawing
 
 		render : function(context) {
+			
 			var g = context.g;
 			// Just draw a line around the points
-
 			this.drawBorder(context);
 
 			// Draw handles
@@ -218,8 +226,8 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
 			// draw the centroid for debugging purposes
 			this.bot.idColor.fill(g, .5, 1);
 			this.centroid.drawCircle(g, 10);
-
 		},
+		
 		drawBorder : function(context) {
 			var g = context.g;
 			var idColor = this.bot.idColor;
@@ -243,7 +251,6 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
 
 		drawForces : function(context) {
 			var g = context.g;
-
 			for (var i = 0; i < this.attachmentForces.length; i++) {
 				this.attachmentForces[i].draw(g);
 			}

@@ -3,10 +3,10 @@
  * Comments by Johnathan Pagnutti
  */
 
-define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
+define(["jQuery", "box2D", "common", "./boxDebugDraw"], function(JQUERY, Box2D, common, boxDebugDraw) {
 
 	/**
-	 * Get the x,y pair of a box2D object 
+	 * Get the x,y pair of a box2D objet 
 	 */
     function B2DtoString(v) {
         return "(" + v.get_x().toFixed(2) + ", " + v.get_y().toFixed(2) + ")";
@@ -29,8 +29,8 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
             this.scale = 30;
             this.frame = 0;
-            this.gravity = new Box2D.b2Vec2(0.0, gravity);
-            this.world = new Box2D.b2World(this.gravity);
+            this.gravity = new Box2D.b2Vec2(0.0, 0.0);
+            this.world = new Box2D.b2World(this.gravity, true);
             this.className = "BoxWorld";
             //this.listener = new Box2D.b2ContactListener();
 
@@ -53,6 +53,28 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             }]);
 
             this.world.SetContactListener(listener);
+            
+            //configure debug drawing.
+            this.ctx = document.getElementById("debug_canvas").getContext('2d');
+            this.debugCanvas = document.getElementById("debug_canvas"); 
+            
+            this.canvasWidth = parseInt(this.debugCanvas.width);
+            this.canvasHeight = parseInt(this.debugCanvas.height);
+            
+            this.canvasTop = parseInt(this.debugCanvas.style.top);
+            this.canvasLeft = parseInt(this.debugCanvas.style.left);
+            
+            this.canvasOffsetx = this.canvasWidth / 2;
+            this.canvasOffsety = this.canvasHeight / 2;
+            
+            //console.log("(" + this.canvasOffsetx + ", " + this.canvasOffsety + ")");
+            var debugDrawRef = new boxDebugDraw();
+            this.debugDraw = debugDrawRef.getCanvasDebugDraw();
+            this.debugDraw.SetFlags(0x0001 | 0x0002 | 0x0010);
+            
+            this.world.SetDebugDraw(this.debugDraw);
+            
+            
         },
 
 		/**
@@ -84,11 +106,13 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
         removeBodies : function() {
             console.log("Remove bodies has been called!");
             var world = this.world;
+            var b2D = Box2D;
             
             //also, remove all joints.
             if(this.joints.length > 0){
             	$.each(this.joints, function(index, joint){
             		world.DestroyJoint(joint);
+            		//b2D.destroy(joint);
             	});
             	this.joints = [];
             }
@@ -161,7 +185,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             }
             
             transform.rotation = bangle;
-            try {
+            try {	
            		transform.setTo(bpos.get_x() * this.scale, bpos.get_y() * this.scale);	            	
             } catch(err) {
             	console.log("readIntoTransform() error");
@@ -225,7 +249,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
          */
 		createRevJoint : function(wheel, chassis) {
 			for (var i = 0; i < this.joints.length; i++) {
-				if ((this.joints[i].GetBody1 === wheel || this.joints[i].GetBody1 === chassis) && (this.joints[i].GetBody2 === wheel || this.joints[i].GetBody2 === chassis)) {
+				if ((this.joints[i].GetBodyA() === wheel || this.joints[i].GetBodyA() === chassis) && (this.joints[i].GetBodyB() === wheel || this.joints[i].GetBodyB() === chassis)) {
 					// we already have this joint, return with nothing done
 					// or, we've asked for something to be jointed to itself, in which, we still don't want to do anything
 					return;
@@ -233,12 +257,18 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 			}
 
 			var revoluteJointDef = new Box2D.b2RevoluteJointDef();
-			revoluteJointDef.Initialize(chassis, wheel, wheel.GetPosition());
+			//console.log(revoluteJointDef);
 			revoluteJointDef.motorSpeed = 0;
 			revoluteJointDef.maxMotorTorque = 1000;
-			revoluteJointDef.enableMotor = true;
+			revoluteJointDef.enableMotor = false;
+			revoluteJointDef.set_collideConnected(false);
+			revoluteJointDef.Initialize(chassis, wheel, wheel.GetPosition());
+			
+			//console.log(revoluteJointDef.get_anchorA());
+			//console.log(revoluteJointDef.get_achorB());
+			
 			revoluteJoint = this.world.CreateJoint(revoluteJointDef);
-		
+			
 			this.joints.push(revoluteJoint);
 			
 			return revoluteJoint;
@@ -318,9 +348,9 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                 }
             });
             
-            console.log("Information at boxworld.js");
-            console.log(this.bodies);
-            console.log(this.joints);
+            //console.log("Information at boxworld.js");
+            //console.log(this.bodies);
+            //console.log(this.joints);
         },
 
 		/**
@@ -484,26 +514,11 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             this.applyForce();
 			
             this.world.Step(dt, 2, 2);
-			// logging linear and angular velocities on bodies
-			this.bodies.forEach(function(body){
-				var label;
-				if(body.parentObject.id !== undefined){
-					label = body.parentObject.id;
-				}else{
-					label = body.parentObject.name;
-				}
-				app.log("Velocity " + label + ": " + B2DtoString(body.GetLinearVelocity()));
-			});
-			//check to see if any bodies have NaN values before the simulation step
-        	//$.each(this.bodies, function(index, body){
-        		//var bpos = body.GetPosition();
-        		//var bangle = body.GetAngle();
-        		//if (isNaN(bpos.get_x()) || isNaN(bpos.get_y()) || isNaN(bangle)){
-        			//console.log(body);
-        			//throw "Simulate has generated NaN values for above body after steping through time.";
-        		//}
-        	//});
-
+            
+			//update the debug canvas
+			//this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+			this.drawWorld(this.ctx);
+			
             // Read box2d data back into BotPrint objects objects
             $.each(this.bodies, function(index, body) {
                 boxWorld.readIntoTransform(body, body.parentObject.transform);          	
@@ -548,6 +563,34 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                 //  b.ApplyLinearImpulse(force, offset);
                 // b.ApplyAngularImpulse(10000.0, true);
             }
+        },
+        
+        /**
+         *	For the debug drawing of box2D, because APARENTLY SOMEONE DECIDED THE DEBUG
+         * DRAW LIBRARIES WEREN'T NEEDED ANYMORE
+         *
+         *  At any rate, the function tries to only deal with objects and things explicitly 
+ 		 *	in the box2D world, and not any of our handling functions.  It's a goddamn riot.
+ 		 * 
+ 		 * @param {Object} context drawing context
+         */
+        drawWorld : function (context){
+        	
+        	//black background
+    		context.fillStyle = 'rgb(0,0,0)';
+    		context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+    
+    		//TODO: get this looking nicer
+    		context.save();            
+        		context.translate(50, 50);
+        		context.scale(1,-1);                
+        		context.scale(5, 5);
+        		context.lineWidth /= 5;
+        
+        		//drawAxes(context);
+        
+        		this.world.DrawDebugData();
+        	context.restore();
         }
     });
 

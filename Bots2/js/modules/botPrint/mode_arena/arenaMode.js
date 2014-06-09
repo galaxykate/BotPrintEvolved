@@ -272,7 +272,11 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
 					break;
 
 			}
-		}
+		},
+		
+		//exposing the current object.  This may be a bad choice.
+		//but, I want to make sure that the debug mode has all the data that the arena mode has.
+		currentState : current
 	};
 	// interface (all other functions are hidden)
 	return mode;

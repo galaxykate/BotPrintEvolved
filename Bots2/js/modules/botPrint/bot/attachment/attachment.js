@@ -98,11 +98,11 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
 			if (isNaN(global.x) || isNaN(global.y)) {
 				throw "Error transforming attach point to global";
 			}
+			
 			this.chassis.transformToGlobal(global, global);
 			if (isNaN(global.x) || isNaN(global.y)) {
 				throw "Error transforming chassis to global";
 			}
-
 			return global;
 		},
 
@@ -175,7 +175,7 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
 			var g = context.g;
 			g.pushMatrix();
 
-			//this.attachPoint.drawCircle(g);
+			
 			this.attachPoint.applyTransform(g);
 
 			//ATTACHPOINT
@@ -185,7 +185,7 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
 			this.renderDetails(context);
 
 			g.popMatrix();
-
+			
 			//render pins
 			$.each(this.pins, function(index, pin) {
 				pin.render(context);
