@@ -46,7 +46,7 @@ define(["common"], function(common) {'use strict';
 
             }),
             evaluate : function(bot, time) {
-                return bot.attachments.length
+                return bot.mainChassis.parts.length
             }
         },
 

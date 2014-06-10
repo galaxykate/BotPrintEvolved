@@ -2,7 +2,7 @@
  * @author Kate Compton
  */
 
-define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use strict';
+define(["common", "graph", "./handles", "../catalog"], function(common, Graph, Handle, catalog) {'use strict';
 
 	// A chassis is some single piece of acrylic capable of holding parts
 	//  It has some modifiable handles
@@ -31,15 +31,69 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
             this.attachmentForces = [];
         },
 
+        //Turns DNA into attachments
+        makeAttachments : function(dna) {
+            for(var i=0; i<this.parts.length; i++) {
+                this.removePart(this.parts[i]);
+            }
+            var edge, pct, offset, thetaOffset, part;
+            var parent = this;
+            var smoothIndex = function(real, array) {
+                real = real * (array.length - 1);
+                var id = utilities.roundNumber(real, 0);
+                if(id >= array.length || id < 0) {
+                    //This is not a very smart way to handle this
+                    id = utilities.getRandomIndex(array);
+                }
+                return id
+            }
+
+            var attachData = dna.getData("attachments");
+            if(attachData !== undefined) {
+                console.log("adding from dna");
+                //Set attachments from DNA
+                attachData.forEach(function(gene) {
+                    //gene[0] is the type of attachment
+                    var id = smoothIndex(gene[0], catalog.allParts);
+                    part = catalog.createPart(id, parent);
+
+                    //gene[1] is the intensity
+                    //gene[2] is the decay
+                    //gene[3] is the edge
+                    var edgeI = smoothIndex(gene[3], parent.path.edges);
+                    edge = parent.path.edges[edgeI];
+                    //gene[4] is the pct
+                    pct = gene[4];
+                    //gene[5] is the offset
+                    offset = gene[5];
+                    //gene[6] is the thetaOffset
+                    thetaOffset = gene[6];
+                    var p = new Graph.Position(edge, pct, offset, thetaOffset);
+                    parent.attachPartAt(part, p);
+
+                });
+            } else {
+                console.log("ADDING");
+                for (var i = 0; i < 2; i++) {
+                    part = catalog.createPart(undefined, parent);
+                    edge = utilities.getRandom(this.path.edges);
+                    pct = .5;
+                    offset = 0;
+                    thetaOffset = 0;
+                    var p = new Graph.Position(edge, pct, offset, thetaOffset);
+                    this.attachPartAt(part, p);
+                }
+            }
+        },
         // Given some 2D array, set from this
         setFromDNA : function(dna) {
             var chassis = this;
-
             for (var i = 0; i < this.handles.length; i++) {
 
                 this.handles[i].setFromDNA(dna);
             };
             this.isStale = true;
+            this.makeAttachments(dna);
         },
 
         setDNAFrom : function() {
@@ -174,8 +228,8 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
 		},
 
 		removePart : function(part) {
-			console.log("Remove Part logging: ");
-			console.log(part);
+		//	console.log("Remove Part logging: ");
+			//console.log(part);
 			//get rid of the force this attachment generates
 			for(var i = 0; i < this.attachmentForces.length; i++){
 				if(this.attachmentForces[i].attachment.id === part.id){

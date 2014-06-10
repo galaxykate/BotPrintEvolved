@@ -70,12 +70,12 @@ define(["common"], function(common) {'use strict';
             });
 
             mutateButton.click(function() {
-                card.bot.dna.mutate(.3);
-                card.bot.setFromDNA(card.bot.dna);
+                var mutant = card.bot.dna.createMutant(.3);
+                card.bot.setFromDNA(mutant);
             });
             mutateMoreButton.click(function() {
-                card.bot.dna.mutate(2);
-                card.bot.setFromDNA(card.bot.dna);
+                var mutant = card.bot.dna.createMutant(2);
+                card.bot.setFromDNA(mutant);
             });
 
             // Add processing

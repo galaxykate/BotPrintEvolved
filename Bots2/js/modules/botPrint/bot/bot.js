@@ -49,62 +49,10 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
             var colorGene = this.dna.getData("color");
             this.idColor = new common.KColor(colorGene[0], colorGene[1] * .4 + .6, colorGene[2]);
 
-            this.makeAttachments(dna);
             this.mainChassis.setFromDNA(this.dna);
 
         },
 
-        makeAttachments : function(dna) {
-            this.attachments = [];
-            var edge, pct, offset, thetaOffset, part;
-            var parent = this;
-            var smoothIndex = function(real, array) {
-                real = real * (array.length - 1);
-                var id = utilities.roundNumber(real, 0);
-                if(id >= array.length || id < 0) {
-                    //This is not a very smart way to handle this
-                    id = utilities.getRandomIndex(array);
-                }
-                return id
-            }
-
-            var attachData = dna.getData("attachments");
-            if(attachData !== undefined) {
-                console.log("adding from dna");
-                //Set attachments from DNA
-                attachData.forEach(function(gene) {
-                    //gene[0] is the type of attachment
-                    var id = smoothIndex(gene[0], catalog.allParts);
-                    part = catalog.createPart(id, parent);
-
-                    //gene[1] is the intensity
-                    //gene[2] is the decay
-                    //gene[3] is the edge
-                    var edgeI = smoothIndex(gene[3], parent.mainChassis.path.edges);
-                    edge = parent.mainChassis.path.edges[edgeI];
-                    //gene[4] is the pct
-                    pct = gene[4];
-                    //gene[5] is the offset
-                    offset = gene[5];
-                    //gene[6] is the thetaOffset
-                    thetaOffset = gene[6];
-                    var p = new graph.Position(edge, pct, offset, thetaOffset);
-                    parent.addPart(part, p);
-
-                });
-            } else {
-                console.log("ADDING");
-                for (var i = 0; i < 2; i++) {
-                    part = catalog.createPart(undefined, parent);
-                    edge = utilities.getRandom(this.mainChassis.path.edges);
-                    pct = .5;
-                    offset = 0;
-                    thetaOffset = 0;
-                    var p = new graph.Position(edge, pct, offset, thetaOffset);
-                    this.addPart(part, p);
-                }
-            }
-        },
 
         //======================================================================================
         //======================================================================================
@@ -123,7 +71,6 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
 
         addPart : function(part, position) {
             this.mainChassis.attachPartAt(part, position);
-            this.attachments.push(part);
         },
 
         //======================================================================================
