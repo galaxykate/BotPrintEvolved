@@ -268,8 +268,8 @@ html, body {
  * Debug canvas
  */
 #debug_canvas {
-	width: 100%;
-	height: 100%;
+	width: 900px;
+	height: 500px;
 }
 #debug_panel {
 	position: absolute;

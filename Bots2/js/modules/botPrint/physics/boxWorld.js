@@ -55,8 +55,8 @@ define(["jQuery", "box2D", "common", "./boxDebugDraw"], function(JQUERY, Box2D, 
             this.world.SetContactListener(listener);
             
             //configure debug drawing.
-            this.ctx = document.getElementById("debug_canvas").getContext('2d');
             this.debugCanvas = document.getElementById("debug_canvas"); 
+            this.ctx = this.debugCanvas.getContext('2d');
             
             this.canvasWidth = parseInt(this.debugCanvas.width);
             this.canvasHeight = parseInt(this.debugCanvas.height);
@@ -66,6 +66,10 @@ define(["jQuery", "box2D", "common", "./boxDebugDraw"], function(JQUERY, Box2D, 
             
             this.canvasOffsetx = this.canvasWidth / 2;
             this.canvasOffsety = this.canvasHeight / 2;
+            
+            console.log("Debug canvas information: ");
+            console.log("Offsets: " + this.canvasOffsetx + ", " + this.canvasOffsety);
+            console.log("Size: " + this.canvasWidth + ", " + this.canvasHeight);
             
             //console.log("(" + this.canvasOffsetx + ", " + this.canvasOffsety + ")");
             var debugDrawRef = new boxDebugDraw();
@@ -586,9 +590,12 @@ define(["jQuery", "box2D", "common", "./boxDebugDraw"], function(JQUERY, Box2D, 
     		context.fillStyle = 'rgb(0,0,0)';
     		context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
     
+    
     		//TODO: get this looking nicer
-    		context.save();            
-        		context.translate(50, 50);
+    		context.save();
+    			//context.fillStyle = 'rgb(255,255,255)';
+    			//context.fillRect(95, 5, 5, 5);
+    			context.translate(50, 50);
         		context.scale(1,-1);                
         		context.scale(5, 5);
         		context.lineWidth /= 5;
