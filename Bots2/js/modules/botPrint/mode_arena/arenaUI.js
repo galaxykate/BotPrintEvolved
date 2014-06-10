@@ -36,9 +36,21 @@ define(["common", "./scoreGraph"], function(common, ScoreGraph) {'use strict';
 
             //=======================================
             // Arena selection
-            var typeSelect = $("#arena_type");
-
-            var types = ["rectangle", "hexagon", "circle"];
+            var arenaComplexity =$("arena_complexity");
+            
+            var arenaDensity =$("arena_density"); 
+			
+     		var typeSelect = $("#arena_type");
+			
+			app.ui.createSlider(arenaComplexity, "complexity", 1, 0, 20, function(key, val) {
+               app.arenaMode.arenaComplexity = val; 
+            });
+            
+            app.ui.createSlider(arenaComplexity, "density", 1, 0, 20, function(key, val) {
+               app.arenaMode.arenaDensity = val; 
+            });
+            
+            var types = ["rectangle", "hexagon", "circle","random","obstacle","custom"];
             for (var i = 0; i < types.length; i++) {
                 typeSelect.append($('<option>', {
                     value : types[i],
@@ -49,6 +61,10 @@ define(["common", "./scoreGraph"], function(common, ScoreGraph) {'use strict';
             typeSelect.change(function() {
                 app.arenaMode.changeArenaType(this.value);
             });
+            
+            
+            
+            //=========== Simspeed
 
             var settingsDiv = $("#arena_time_settings");
 

@@ -12,6 +12,7 @@ define(["common"], function(common) {'use strict';
 
             // Make all the divs
             this.mainDiv = $("<div/>", {
+            	html: "Bot Info",
                 "class" : "bot_card"
             });
 
@@ -70,7 +71,8 @@ define(["common"], function(common) {'use strict';
             });
 
             this.dnaDiv = $("<div/>", {
-                html : "DNA",
+                html : "DNA Options <br/>",
+                id: "dna_panel",
                 "class" : "panel"
             });
             this.mainDiv.append(this.dnaDiv);

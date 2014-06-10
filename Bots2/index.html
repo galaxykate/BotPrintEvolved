@@ -3,15 +3,21 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<link rel="stylesheet" href="css/app.css">
-		<link rel="stylesheet" href="css/jqueryUI/absolution.css">
+		<link rel="stylesheet" href="css/jqueryUI/botprint/botprint.css">
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Aequam memento rebus in arduis servare mentem</title>
 	</head>
 	<body>
 
 		<div id="app" class="appsize unselectable">
+			
 			<div id="panel_holder" class="appsize ">
-
+			<div id = "botprint_header">
+				<div id="botprint_logo">
+					<br/>
+					<!-- this is a hack, I need to think this one through later-->
+				</div>
+			</div>
 				<div id="arena_panel" class="panel appsize unselectable">
 					<div id="arena_canvas_holder" class="canvas_holder">
 						<canvas id="arena_canvas" class="main_canvas"></canvas>
@@ -46,6 +52,7 @@
 					</div>
 
 					<div id="arena_data" class="panel ui">
+						Arena Settings
 						<div id="arena_column">
 
 							<div id="arena_simulation_column">
@@ -53,10 +60,14 @@
 								<div id="heuristics">
 
 									<select id="arena_type">
-
+							
 									</select>
+									<div id="arena_complexity"> 
+										</div>
+									<div id="arena_density"> 
+										</div>
 									<select id="heuristic">
-
+									
 									</select>
 									<button id="evolveMany">
 										Evolve 10 generations
@@ -98,8 +109,8 @@
 				</div>
 
 				<div id="edit_panel" class="panel appsize unselectable">
-					<div class="canvas_holder">
-						<canvas id="edit_canvas" class="main_canvas appsize "></canvas>
+					<div class="canvas_holder" id="edit_canvas_holder">
+						<canvas id="edit_canvas" class="main_canvas"></canvas>
 					</div>
 
 					<div id="editor_card" class="ui"></div>
@@ -121,9 +132,13 @@
 
 					</div>
 				</div>
-			</div>
+			<div id="botprint_footer">
+				<br/>
+				<!-- the br hack strikes again!-->
+			</div>	
+			</div>	
 		</div>
-
+		
 		<div
 		id="drawing_overlay" class="overlay appsize">
 			drawing overlay
@@ -133,7 +148,7 @@
 
 			ui overlay
 		</div>
-
+		
 		</div>
 
 	</body>
