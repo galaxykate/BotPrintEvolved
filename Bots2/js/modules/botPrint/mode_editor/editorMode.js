@@ -82,7 +82,7 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
                     app.update();
                     //   update(g.millis() * .001);
 
-                    g.background(.69, .72, 1);
+                    g.background(0, 0, .28);
                     g.pushMatrix();
                     g.translate(w / 2, h / 2);
 
@@ -204,7 +204,7 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
         catalog.allChassis.forEach(function(chassis) {
             var div = $("<div/>", {
                 html : chassis.name,
-                "class" : "panel"
+                "class" : "palette_swatch"
             });
             chassisDiv.append(div);
 
@@ -215,7 +215,7 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
         catalog.allColor.forEach(function(color) {
             var div = $("<div/>", {
                 html : color.name,
-                "class" : "panel"
+                "class" : "palette_swatch"
             });
             chassisDiv.append(div);
 
