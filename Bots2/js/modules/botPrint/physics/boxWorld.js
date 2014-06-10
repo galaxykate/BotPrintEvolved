@@ -96,7 +96,8 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 		 * @param points the points that make up the edge 
 		 */
         makeEdgeRing : function(points) {
-            var ground = this.world.CreateBody(new Box2D.b2BodyDef());
+        	var bodyDef = new Box2D.b2BodyDef();
+            var ground = this.world.CreateBody(bodyDef);
 
             for (var i = 0; i < points.length; i++) {
                 var p0 = points[i];
@@ -106,7 +107,11 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 
                 edge.Set(this.toB2Vec(p0), this.toB2Vec(p1));
                 ground.CreateFixture(edge, 0.0);
+                
+                Box2D.destroy(edge);
             }
+            
+            Box2D.destroy(bodyDef);
             return ground;
         },
 		
@@ -224,6 +229,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
                     // magic?
                     body.CreateFixture(fixtureDef);
                     Box2D.destroy(fixtureDef);
+                    Box2D.destroy(shape);
                 }),
 
                 // set the parent object
@@ -247,6 +253,8 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
             for (var i = 0; i < count; i++) {
                 shape0.Set(points[i], points[(count + i + 1) % count]);
             }
+            
+            Box2D.destroy(shape0);
         },
 
 		/**

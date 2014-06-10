@@ -13,6 +13,7 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
 			this.bots = [];
 			this.boxWorld = new BoxWorld(0);
 			this.obstacles = [];
+			
 			switch (shape) {
 				case "rectangle":
 					var width = 990;
@@ -205,6 +206,7 @@ define(["common", "./boxWorld", "graph"], function(common, BoxWorld, Graph) {'us
 			this.time = 0;
 			this.resetDrawing();
 			this.boxWorld.removeBodies();
+			//but, we aren't really removing the bodies because the destroy method won't work.
 		},
 
         //========================================================
