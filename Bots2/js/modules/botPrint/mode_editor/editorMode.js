@@ -82,7 +82,7 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
                     app.update();
                     //   update(g.millis() * .001);
 
-                    g.background(.69, .72, 1);
+                    g.background(0, 0, .28);
                     g.pushMatrix();
                     g.translate(w / 2, h / 2);
 
@@ -166,7 +166,10 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
                     div.removeClass("activated");
                     heldPart = undefined;
                     //Remove overObj form the Chassis
-                    overObj.remove();
+                    if (overObj != undefined)
+                    {
+                    	overObj.remove();
+                    }
                     app.currentBot.clearTestPoints();
                 }
             };
@@ -201,7 +204,7 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
         catalog.allChassis.forEach(function(chassis) {
             var div = $("<div/>", {
                 html : chassis.name,
-                "class" : "panel"
+                "class" : "palette_swatch"
             });
             chassisDiv.append(div);
 
@@ -209,10 +212,30 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
                 switchChassisType(chassis);
             });
         });
+        catalog.allColor.forEach(function(color) {
+            var div = $("<div/>", {
+                html : color.name,
+                "class" : "palette_swatch"
+            });
+            chassisDiv.append(div);
+
+            div.click(function() {
+                //switchChassisType(chassis);
+                changeBotColor(color.h, color.s, color.b);
+            });
+        });
     };
 
     function switchChassisType(type) {
         console.log("Switch to chassis type " + type.name);
+    };
+    
+    function changeBotColor(h, s, b) {
+        console.log(app.currentBot);
+        app.currentBot.idColor.h = h;
+        app.currentBot.idColor.s = (.4 * s) + .6;
+        app.currentBot.idColor.b = b;
+        app.currentBot.setColorDNA();
     };
     //=========================================================================
     // Exposed
@@ -253,7 +276,6 @@ define(["common", "../bot/catalog"], function(common, catalog) {'use strict';
 
                 case 'p':
                     break;
-
             }
         }
     };

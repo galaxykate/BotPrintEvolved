@@ -12,14 +12,30 @@ define(["common"], function(common) {'use strict';
 
             // Make all the divs
             this.mainDiv = $("<div/>", {
+            	html: "Bot Info",
                 "class" : "bot_card"
             });
 
             this.title = $("<div/>", {
                 html : "unknown bot",
+                contentEditable : true,
+                id : "someID",
                 "class" : "bot_title"
             });
-
+            
+            
+            this.title.keypress(function(e)
+            {
+            	e.stopPropagation();
+            });
+            
+            this.title.keyup(function(e)
+            {
+            	e.stopPropagation();
+                console.log(this.innerText);
+                card.bot.name = this.innerText;
+            });
+            
             this.botName = $("<span/>", {
                 html : "unknown author",
                 "class" : "bot_name"
@@ -56,7 +72,8 @@ define(["common"], function(common) {'use strict';
             
 
             this.dnaDiv = $("<div/>", {
-                html : "DNA",
+                html : "DNA Options <br/>",
+                id: "dna_panel",
                 "class" : "panel"
             });
             this.mainDiv.append(this.dnaDiv);
@@ -135,14 +152,17 @@ define(["common"], function(common) {'use strict';
 
         update : function() {
             this.bot = app.currentBot;
-            this.title.html(this.bot.name);
+            if (this.bot != undefined)
+            {
+              this.title.html(this.bot.name);
 
-            if (this.bot.parent) {
-                this.details.html("Child " + this.bot.parent.childCount + " of " + this.bot.parent.name);
+              if (this.bot.parent) {
+                  this.details.html("Child " + this.bot.parent.childCount + " of " + this.bot.parent.name);
 
-                this.details.append("<br>Generation " + this.bot.generation);
-            } else
-                this.details.html("First gen bot");
+                  this.details.append("<br>Generation " + this.bot.generation);
+              } else
+                  this.details.html("First gen bot");
+            }
 
         },
     });

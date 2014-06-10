@@ -14,6 +14,38 @@ define(["./attachment/attachments"], function(attachments) {'use strict';
                 name : "serpent"
             }
         },
+        color : {
+            red : {
+                name : "red",
+                h : 0.5615166423,
+                s : 0.1530200300,
+                b : 0.2689264271
+            },
+            blue : {
+                name : "blue",
+                h : 0.8676330596,
+                s : 0.6865857395,
+                b : 0.5286830436
+            },
+            green : {
+                name : "green",
+                h : 0.0534922390,
+                s : 0.1723305313,
+                b : 0.4895575812
+            },
+            black : {
+                name : "black",
+                h : 0.3584363914,
+                s : 0.4026284323,
+                b : 0.1410467357
+            },
+            white : {
+                name : "white",
+                h : 0.7412582153,
+                s : 0.5091647079,
+                b : 0.3237214961
+            }
+        },
         parts : {
             actuators : {
                 wheel : {
@@ -65,6 +97,7 @@ define(["./attachment/attachments"], function(attachments) {'use strict';
     var allChassis = [];
     var allActuators = [];
     var allParts = [];
+    var allColor = [];
     var catalogByName = {};
 
     for (var key in catalog.parts.actuators) {
@@ -92,11 +125,21 @@ define(["./attachment/attachments"], function(attachments) {'use strict';
             allChassis.push(p);
         }
     }
+    
+    for (var key in catalog.color) {
+        if (catalog.color.hasOwnProperty(key)) {
+            var p = catalog.color[key];
+            catalogByName[key] = p;
+            allColor.push(p);
+        }
+    }
 
     return {
         allParts : allParts,
 
         allChassis : allChassis,
+        
+        allColor : allColor,
 
         createRandomActuator : function(parent) {
             return utilities.getRandom(allActuators).createPart(parent);
