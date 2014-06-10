@@ -22,6 +22,8 @@ define(["common", "graph"], function(common, Graph) {'use strict';
          * @param end
          */
         init : function(start, end) {
+        	console.log(start);
+        	console.log(end);
             this.idNumber = wireCount;
             this.idColor = common.KColor.makeIDColor(this.idNumber);
             wireCount++;
@@ -50,7 +52,12 @@ define(["common", "graph"], function(common, Graph) {'use strict';
 			//p1.toWorld(p1, this.end.parent.attachPoint);
 
             g.line(p0.x, p0.y, p1.x, p1.y);
-        }
+        },
+        
+        //update : function(start, end){
+        	//this.start = start;
+            //this.end = end;
+        //}
     });
 
     /**
@@ -71,11 +78,13 @@ define(["common", "graph"], function(common, Graph) {'use strict';
 
            	//Pins can either be calculated from the center of an object, or from an edge.
             if(this.edge === undefined){
-            	this.pos.add(this.parent.attachPoint);
-
+            	if(this.parent.attachPoint !== undefined){
+            		this.pos.setTo(this.parent.attachPoint);	
+            	}
+            	
             	//allow us to define offsets from the center for pin positioning
             	if(this.offset !== undefined){
-            		wirelog("Adding offset: (" + this.offset.x + ", " + this.offset.y + ")"); 
+            		console.log("Adding offset: (" + this.offset.x + ", " + this.offset.y + ")"); 
             		this.pos.add(this.offset);	
             	}
             }else{
@@ -83,7 +92,21 @@ define(["common", "graph"], function(common, Graph) {'use strict';
 				this.pos.add(this.edge.getTracer(pct, -3));
             }
 
-            this.wire = undefined;
+			console.log(this.pos);
+            //this.wire = undefined;
+        },
+        
+        update : function(){
+        	if(this.edge === undefined){
+        		this.pos.setTo(this.parent.attachPoint);
+        		
+        		if(this.offset !== undefined){
+        			wirelog("Adding offset: (" + this.offset.x + ", " + this.offset.y + ")"); 
+            		this.pos.add(this.offset);
+        		}
+        	}else{
+        		//gonna just hope edge styled definitions just work out.
+        	}
         },
 
         /**

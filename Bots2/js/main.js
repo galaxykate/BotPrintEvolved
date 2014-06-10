@@ -17,7 +17,9 @@ require.config({
         'underscore' : 'vendor/underscore',
         'box2D' : 'vendor/box2d',
         'box2DHelpers' : 'vendor/embox2d-helpers',
-
+        
+		'jsPlumb' : 'vendor/jquery.jsPlumb-1.6.2',
+        
         'processing' : 'vendor/processing-1.4.1',
         'inheritance' : 'vendor/inheritance',
         'noise' : 'vendor/simplex_noise',
@@ -54,6 +56,11 @@ require.config({
             deps : ['jQuery']
         },
 
+		'jsPlumb' : {
+        	exports : 'jsPlumb',
+        	deps : ['jQuery']
+        },
+        
         'box2DHelpers' : {
             exports : 'box2DHelpers',
             deps : ['box2D']
@@ -84,7 +91,6 @@ require.config({
         'box2D' : {
             exports : 'Box2D'
         },
-
     }
 });
 
