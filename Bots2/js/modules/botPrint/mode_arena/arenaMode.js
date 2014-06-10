@@ -6,6 +6,8 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
 
     var populationMode = false;
     var arenaType = "circle";
+    var arenaComplexity = 5; 
+    var arenaDensity = 6; 
 
     var current = {
         population : undefined,
@@ -165,7 +167,7 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
         changeArenaType : function(type) {
             arenaType = type;
             // Create a new simulation
-            arenaMode.startNewSimulation(current.population, new Arena(arenaType));
+            arenaMode.startNewSimulation(current.population, new Arena(arenaType,arenaComplexity,arenaDensity));
         },
 
         // Simulate some large number of new generations
@@ -199,7 +201,7 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
                 current.population = current.population = new Population(5);
 
             if (!current.arena)
-                current.arena = new Arena(arenaType);
+                current.arena = new Arena(arenaType,arenaComplexity,arenaDensity);
 
             current.simulation = new Simulation(current.population.bots, current.arena, app.heuristics);
             current.simulation.start();
