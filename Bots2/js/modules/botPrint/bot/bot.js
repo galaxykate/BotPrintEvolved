@@ -59,8 +59,10 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
             var edge, pct, offset, thetaOffset, part;
             var parent = this;
             var smoothIndex = function(real, array) {
-                var id = utilities.roundNumber(real ,0);
-                if(id > array.length) {
+                real = real * (array.length - 1);
+                var id = utilities.roundNumber(real, 0);
+                if(id >= array.length || id < 0) {
+                    //This is not a very smart way to handle this
                     id = utilities.getRandomIndex(array);
                 }
                 return id
@@ -68,7 +70,7 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
 
             var attachData = dna.getData("attachments");
             if(attachData !== undefined) {
-                console.log(attachData);
+                console.log("adding from dna");
                 //Set attachments from DNA
                 attachData.forEach(function(gene) {
                     //gene[0] is the type of attachment
@@ -91,10 +93,9 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
 
                 });
             } else {
-                //TODO: MAKE A SMARTER VERSION
+                console.log("ADDING");
                 for (var i = 0; i < 2; i++) {
                     part = catalog.createPart(undefined, parent);
-                    //The position should be set intelligently later on
                     edge = utilities.getRandom(this.mainChassis.path.edges);
                     pct = .5;
                     offset = 0;
@@ -252,11 +253,11 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
         },
 
         onTouchEnter : function() {
-            //console.log("Enter " + this);
+            console.log("Enter " + this);
         },
 
         onTouchExit : function() {
-            //console.log("Enter " + this);
+            console.log("Enter " + this);
         },
 
         onDrag : function(touch, overObj) {
