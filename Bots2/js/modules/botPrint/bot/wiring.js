@@ -22,8 +22,6 @@ define(["common", "graph"], function(common, Graph) {'use strict';
          * @param end
          */
         init : function(start, end) {
-        	console.log(start);
-        	console.log(end);
             this.idNumber = wireCount;
             this.idColor = common.KColor.makeIDColor(this.idNumber);
             wireCount++;
@@ -41,8 +39,9 @@ define(["common", "graph"], function(common, Graph) {'use strict';
 
             g.strokeWeight(1);
             //TODO: I guess that's an ok wire color?
-
-            g.stroke(204, 102, 255);
+			
+			
+            g.stroke(0.75, 0.7, 1);
             //this.idColor.stroke(g);
 
             var p0 = this.start.pos;
@@ -51,7 +50,7 @@ define(["common", "graph"], function(common, Graph) {'use strict';
 			//p0.toWorld(p0, this.start.parent.attachPoint);
 			//p1.toWorld(p1, this.end.parent.attachPoint);
 
-            g.line(p0.x, p0.y, p1.x, p1.y);
+            g.bezier(p0.x, p0.y, p0.x + 10, p0.y + 10, p1.x - 10, p1.y - 10, p1.x, p1.y);
         },
         
         //update : function(start, end){
