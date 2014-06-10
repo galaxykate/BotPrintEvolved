@@ -78,12 +78,10 @@ define(["common"], function(common) {'use strict';
 
         //just swaps gene data...
         breedWith : function(gene) {
-            /*
-            var tmp = gene.data;
-            gene.tmp = this.data;
-            this.data = tmp;
-            */
-
+            var tmp = new Gene(this.gene);
+            tmp.clone(this);
+            this.clone(gene);
+            gene.clone(tmp);
         },
 
         setData : function(index0, index1, data) {
