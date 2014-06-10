@@ -99,8 +99,24 @@ define(["./attachment/attachments"], function(attachments) {'use strict';
             		createPart : function () {
             			return new attachments.Component();
             		}
+            	},
+            	
+            	batteryPack : {
+            		name : "Battery Pack",
+            		cost : 0,
+            		createPart : function () {
+            			return new attachments.Component.BatteryPack();
+            		}
+            	},
+            	
+            	microprocessor : {
+            		name : "Microprocessor",
+            		cost : 0,
+            		createPart : function () {
+            			return new attachments.Component.Microprocessor();
+            		}
             	}
-            }
+            }            
         },
 
     };
@@ -131,14 +147,16 @@ define(["./attachment/attachments"], function(attachments) {'use strict';
         }
     }
     
+    
     for (var key in catalog.parts.components) {
     	if (catalog.parts.components.hasOwnProperty(key)) {
     		var p = catalog.parts.components[key];
     		catalogByName[key] = p;
     		allComponents.push(p);
-    		allParts.push(p);
+    		//allParts.push(p);
     	}
     }
+    
 
     for (var key in catalog.chassis) {
         if (catalog.chassis.hasOwnProperty(key)) {

@@ -209,14 +209,14 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
 				});
 			}
 
+			// draw the centroid for debugging purposes
+			this.bot.idColor.fill(g, .5, 1);
+			this.centroid.drawCircle(g, 10);
+			
 			// Draw handles
 			this.parts.forEach(function(part) {
 				part.render(context);
 			});
-
-			// draw the centroid for debugging purposes
-			this.bot.idColor.fill(g, .5, 1);
-			this.centroid.drawCircle(g, 10);
 
 		},
 		drawBorder : function(context) {

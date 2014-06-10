@@ -42,6 +42,18 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
                 var p = new graph.Position(edge, pct, offset, thetaOffset);
                 this.addPart(part, p);
             }
+            
+            //create core components.  Based on an ofset from the centroid of the chassis.
+            var batteryPack = catalog.createPart("batteryPack");
+            var microprocessor = catalog.createPart("microprocessor");
+           	var batteryPackOffset = new common.Transform();
+           	batteryPackOffset.x = 10;
+           	batteryPackOffset.y = 10;
+           	var microprocessorOffset = new common.Transform();
+           	microprocessorOffset.x = -10;
+           	microprocessorOffset.y = -10;
+            this.addPart(batteryPack, batteryPackOffset);
+            this.addPart(microprocessor, microprocessorOffset);
 
             // Create DNA for the bot
             if (parent) {

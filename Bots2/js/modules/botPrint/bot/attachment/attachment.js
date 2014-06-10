@@ -78,8 +78,11 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
         },
 
         updateFromPosition : function() {
-            this.attachPoint.refresh();
-            //this.attachPoint.setToLerp(this.position.edge.start, this.position.edge.end, this.position.pct);
+        	//gogogo duck typing
+        	if(this.attachPoint.refresh !== undefined){
+            	this.attachPoint.refresh();
+            	//this.attachPoint.setToLerp(this.position.edge.start, this.position.edge.end, this.position.pct);
+           }
         },
 
         //========================================================
@@ -107,15 +110,13 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
 
             // Transform it relative to the attachment
             this.attachPoint.toWorld(global, global);
-
         },
 
         getDistanceTo : function(p) {
             return this.getWorldTransform().getDistanceTo(p);
         },
 
-        //========================================================
-        //
+        //=======================================================
 
         update : function(time) {
             // Set the force's position
@@ -174,7 +175,6 @@ define(["common", "graph", "../wiring"], function(common, Graph, Wiring) {'use s
             //g.fill(.7, 2, 1);
             //g.stroke(0);
             //g.ellipse(this.attachPoint.x, this.attachPoint.y, 5, 5);
-
 
             this.renderDetails(context);
 

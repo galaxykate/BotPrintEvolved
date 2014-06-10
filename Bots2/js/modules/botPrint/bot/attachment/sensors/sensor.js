@@ -31,7 +31,7 @@ define(["common", "../attachment"], function(common, Attachment) {'use strict';
         },
 
         getForce : function() {
-            return undefined
+            return undefined;
         },
 
         renderDetails : function(context) {
