@@ -109,7 +109,7 @@ define(["common", "./simulation", "../physics/arena", "./population", "./heurist
                         update(ellapsed);
                     }
 
-                    g.background(.69, .72, 1);
+                    g.background(0, 0, .28);
                     g.pushMatrix();
                     g.translate(w / 2, h / 2);
 

@@ -10,7 +10,7 @@ define(["common"], function(common) {'use strict';
             var graph = this;
             this.timesteps = 10;
             this.height = 90;
-            this.width = 430;
+            this.width = 275;
             this.className = "BarGraph";
             this.createWindow(parent);
 
@@ -30,7 +30,7 @@ define(["common"], function(common) {'use strict';
             var graph = this;
 
             var drawFunc = function(g) {
-                g.background(.8, .1, 1);
+                g.background(.9, 0, .9);
 
                 graph.draw(g);
             };
