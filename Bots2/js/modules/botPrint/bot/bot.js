@@ -1,8 +1,10 @@
 /**
+ * This is the core class of what a bot is.  Handles bot DNA, the bot chassis, which parts are attached to the bot, etc.
+ *  
  * @author Kate Compton
  */
 
-define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], function(common, graph, Chassis, THREE, DNA, catalog) {'use strict';
+define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog", "./wiring"], function(common, graph, Chassis, THREE, DNA, catalog, Wiring) {'use strict';
 
     var animals = "okapi pheasant cobra amoeba capybara kangaroo chicken rooster boa-constrictor nematode sheep otter quail goat agoutis zebra giraffe yak corgi pomeranian rhinocerous skunk dolphin whale duck bullfrog okapi sloth monkey orangutan grizzly-bear moose elk dikdik ibis stork robin eagle hawk iguana tortoise panther lion tiger gnu reindeer raccoon opossum camel dromedary pigeon squirrel hamster leopard panda boar squid parakeet crocodile flamingo terrier cat wallaby wombat koala orangutan bonobo lion salamander".split(" ");
 
@@ -15,6 +17,8 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
 
     var Bot = Class.extend({
         init : function(parent, mutationLevel) {
+        	var bot = this;
+        	
             this.idNumber = botCount;
             botCount++;
             this.className = "Bot";
@@ -28,7 +32,22 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
             this.amountOfCollisions = 0;
 
             this.setMainChassis(new Chassis(this, undefined));
+            
+            this.wiring = [];
 
+			//create core components.  Based on an ofset from the centroid of the chassis.
+            var batteryPack = catalog.createPart("batteryPack");
+            var microprocessor = catalog.createPart("microprocessor");
+            this.microWiringTarget = microprocessor;
+           	var batteryPackOffset = new common.Transform();
+           	batteryPackOffset.x = 10;
+           	batteryPackOffset.y = 10;
+           	var microprocessorOffset = new common.Transform();
+           	microprocessorOffset.x = -10;
+           	microprocessorOffset.y = -10;
+            this.addPart(microprocessor, microprocessorOffset);
+            this.addPart(batteryPack, batteryPackOffset);
+            
             for (var i = 0; i < 2; i++) {
                 var part = catalog.createPart();
                 //The position should be set intelligently later on
@@ -40,7 +59,7 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
                 var p = new graph.Position(edge, pct, offset, thetaOffset);
                 this.addPart(part, p);
             }
-
+            
             // Create DNA for the bot
             if (parent) {
                 this.parent = parent;
@@ -86,7 +105,38 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
         // Interaciton
 
         addPart : function(part, position) {
+        	
             this.mainChassis.attachPartAt(part, position);
+            
+            if(part.type !== "Microprocessor"){
+            	//and wire it.
+            	//now that we have the components, we can generate wires.
+            	//get the microprocessor's pins..
+            	var mPositivePin;
+            	var mNegativePin;
+            	var pPositivePin;
+            	var pNegativePin;
+            
+            	this.microWiringTarget.pins.forEach(function(pin){
+            		if(pin.positive){
+            			mPositivePin = pin;
+            		}else{
+            			mNegativePin = pin;
+            		}
+            	});
+            
+            	part.pins.forEach(function(pin){
+            		if(pin.positive){
+            			pPositivePin = pin;
+            		}else{
+            			pNegativePin = pin;
+            		}
+            	});
+            	
+            	//Wire these suckers to the microprocessor
+            	this.wiring.push(new Wiring.Wire(pPositivePin, mPositivePin));
+            	this.wiring.push(new Wiring.Wire(pNegativePin, mNegativePin));	
+            }
         },
 
         //======================================================================================
@@ -127,18 +177,23 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
         },
 
         update : function(time) {
-
             this.mainChassis.update(time);
-
+			
             this.angularVelocity = (this.transform.rotation - this.lastTransform.rotation) / time.ellapsed;
 
             this.lastTransform.setToTransform(this.transform);
+            
+            //update wiring
+            //this.wiring.forEach(function(wire){
+            	//wire.update();
+            //});
 
         },
 
         render : function(context) {
             var g = context.g;
             g.pushMatrix();
+            
             if (!context.centerBot)
                 this.transform.applyTransform(g);
 
@@ -157,6 +212,10 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
                 g.rotate(-this.transform.rotation);
                 g.text(this.name, 10, 10);
             }
+            
+            this.wiring.forEach(function(wire){
+            	wire.render(context);
+            });
 
             g.popMatrix();
 
@@ -265,7 +324,6 @@ define(["common", "graph", "./chassis/chassis", "three", "./dna", "./catalog"], 
             this.mesh.add(this.mainChassis.path.mesh);
 
             return this.mesh;
-
         },
 
         incrementCollisionAmount : function() {

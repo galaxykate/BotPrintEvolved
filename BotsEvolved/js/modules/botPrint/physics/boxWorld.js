@@ -350,6 +350,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 				var buffer = Box2D.allocate(triVerts.length * 8, 'float', Box2D.ALLOC_STACK);
 
 				for (var i = 0; i < 3; i++) {
+					console.log(triVerts[i]);
 					boxWorld.setBuffer(triVerts[i], buffer, offset);
 
 					offset += 8;
@@ -391,8 +392,7 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 			// console.log(vel.get_x() + ", " + vel.get_y());
 			// b = b.GetNext();
 			// }
-			// debugger;
-
+			
 			this.world.Step(dt, 2, 2);
 
 			$.each(this.wheels, function(index, wheel){
@@ -434,10 +434,6 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 				$.each(forces, function(index, force) {
 					var r = force.power;
 					var theta = force.direction;
-					//console.log("Calculated: ");
-					//console.log("Power: " + r);
-					//console.log("Rotation: " + theta);
-					//console.log("Position: " + force.position.x + ", " + force.position.y);
 					
 					//forceDir is the direction/strength of the force
 					//forceOffset is the world-relative point at which it is applied
@@ -451,14 +447,12 @@ define(["jQuery", "box2D", "common"], function(JQUERY, Box2D, common) {
 					
 					for(var j = 0; j < boxWorld.wheels.length - 1; j++){
 						if(body.parentObject.name === boxWorld.wheels[j].userData){
-							console.log("forceOffset: " + forceOffset.get_x() + ", " + forceOffset.get_y());
-							console.log(boxWorld.wheels[j].parentObject);
-							console.log("wheel location: " + boxWorld.wheels[j].GetWorldPoint(new b2Vec2(0,0)).get_x() + ", " + boxWorld.wheels[j].GetWorldPoint(new b2Vec2(0,0)).get_y());
+							//console.log("forceOffset: " + forceOffset.get_x() + ", " + forceOffset.get_y());
+							//console.log(boxWorld.wheels[j].parentObject);
+							//console.log("wheel location: " + boxWorld.wheels[j].GetWorldPoint(new b2Vec2(0,0)).get_x() + ", " + boxWorld.wheels[j].GetWorldPoint(new b2Vec2(0,0)).get_y());
 							boxWorld.wheels[j].ApplyForce(forceDir, forceOffset);
 						}
 					}
-					
-					debugger;
 				});
 				//  b.ApplyLinearImpulse(force, offset);
 				// b.ApplyAngularImpulse(10000.0, true);

@@ -174,6 +174,11 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
 		removePart : function(part) {
 			console.log("Remove Part logging: ");
 			console.log(part);
+			//not allowed to remove either the battery pack or component
+			if(part.type === "Microprocessor" || part.type === "BatteryPack"){
+				return;
+			}
+			
 			//get rid of the force this attachment generates
 			for(var i = 0; i < this.attachmentForces.length; i++){
 				if(this.attachmentForces[i].attachment.id === part.id){
@@ -184,7 +189,16 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
 			//and remove the part
 			var index = this.findPartIndex(part);
 			this.parts.splice(index, 1);
-			//this.attachmentForces.splice(index,1);
+			
+			//now for crazy lookups.  We need to go through the bot's wires, find one whos start or end matches with this part's pins
+			//and remove it
+			for(var i = 0; i < this.bot.wiring.length; i++){
+				for(var j = 0; j < part.pins.length; j++){
+					if(this.bot.wiring[i].start === part.pins[j] || this.bot.wiring[i].end === part.pins[j]){
+						this.bot.wiring.splice(i, 1);
+					}
+				}
+			}
 		},
 
 		transformToGlobal : function(local, global) {
@@ -209,14 +223,14 @@ define(["common", "graph", "./handles"], function(common, Graph, Handle) {'use s
 				});
 			}
 
+			// draw the centroid for debugging purposes
+			this.bot.idColor.fill(g, .5, 1);
+			this.centroid.drawCircle(g, 10);
+			
 			// Draw handles
 			this.parts.forEach(function(part) {
 				part.render(context);
 			});
-
-			// draw the centroid for debugging purposes
-			this.bot.idColor.fill(g, .5, 1);
-			this.centroid.drawCircle(g, 10);
 
 		},
 		drawBorder : function(context) {

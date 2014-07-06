@@ -14,6 +14,7 @@ define(["./attachment/attachments"], function(attachments) {'use strict';
                 name : "serpent"
             }
         },
+        
         color : {
             red : {
                 name : "red",
@@ -46,6 +47,7 @@ define(["./attachment/attachments"], function(attachments) {'use strict';
                 b : 0.3237214961
             }
         },
+
         parts : {
             actuators : {
                 wheel : {
@@ -88,7 +90,33 @@ define(["./attachment/attachments"], function(attachments) {'use strict';
                         return new attachments.Actuator.Jet();
                     }
                 }
-            }
+            },
+            
+            components : {
+            	generic : {
+            		name : "generic component",
+            		cost : 0,
+            		createPart : function () {
+            			return new attachments.Component();
+            		}
+            	},
+            	
+            	batteryPack : {
+            		name : "Battery Pack",
+            		cost : 0,
+            		createPart : function () {
+            			return new attachments.Component.BatteryPack();
+            		}
+            	},
+            	
+            	microprocessor : {
+            		name : "Microprocessor",
+            		cost : 0,
+            		createPart : function () {
+            			return new attachments.Component.Microprocessor();
+            		}
+            	}
+            }            
         },
 
     };
@@ -96,6 +124,7 @@ define(["./attachment/attachments"], function(attachments) {'use strict';
     var allSensors = [];
     var allChassis = [];
     var allActuators = [];
+    var allComponents = [];
     var allParts = [];
     var allColor = [];
     var catalogByName = {};
@@ -117,6 +146,17 @@ define(["./attachment/attachments"], function(attachments) {'use strict';
             allParts.push(p);
         }
     }
+    
+    
+    for (var key in catalog.parts.components) {
+    	if (catalog.parts.components.hasOwnProperty(key)) {
+    		var p = catalog.parts.components[key];
+    		catalogByName[key] = p;
+    		allComponents.push(p);
+    		//allParts.push(p);
+    	}
+    }
+    
 
     for (var key in catalog.chassis) {
         if (catalog.chassis.hasOwnProperty(key)) {
@@ -148,6 +188,10 @@ define(["./attachment/attachments"], function(attachments) {'use strict';
         createRandomSensor : function() {
             return utilities.getRandom(allActuators).createPart();
 
+        },
+        
+        createRandomComponent : function() {
+        	return utilities.getRandom(allComponents).createPart();
         },
 
         createPart : function(id) {
